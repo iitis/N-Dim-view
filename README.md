@@ -28,7 +28,7 @@ The plugin is designed to work with `dpVision` version X.X or higher.
 
 2. Copy the plugin folder to the `dpVision/plugins/` directory.
 
-3. Reconfigure your dpVision project with CMake or add a plugin project to dpVision solution in MS Visual Studio
+3. Reconfigure your dpVision project with CMake or add a plugin project (n-dim-view.vcxproj) to dpVision solution in MS Visual Studio
 
 4. Build dpVision project 
 
