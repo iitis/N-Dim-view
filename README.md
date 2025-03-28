@@ -21,9 +21,13 @@ The plugin is designed to work with `dpVision` version X.X or higher.
 
 2. Copy the plugin folder to the `dpVision/plugins/` directory.
 
-3. Launch `dpVision` and enable the plugin in the plugin manager.
+3. Reconfigure your dpVision project with CMake or add a plugin project to dpVision solution in MS Visual Studio
 
-4. Load your dataset and select the plugin from the visualisation panel.
+4. Build dpVision project 
+
+5. Launch `dpVision` and select the plugin in the plugin manager.
+
+6. Use plugin to load your dataset.
 
 <!-- 
 
