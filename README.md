@@ -79,10 +79,11 @@ Planned features include:
 - Export to interactive WebGL viewers
 - User feedback and usability testing
 
-## 🧑‍💻 Authors
+## 🧑‍💻 Author and Contributors
 
-- **Leszek Luchowski** – Concept, algorithm design, geometry, implementation
-- **Dariusz Pojda** – System integration, optimisation
+The main author of this plugin is **Leszek Luchowski**, responsible for the concept, model design, and algorithmic implementation.
+
+**Dariusz Pojda** contributed to the project by integrating the plugin with the `dpVision` platform and optimising its performance.
 
 ## 📄 License
 
