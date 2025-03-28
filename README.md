@@ -25,6 +25,8 @@ The plugin is designed to work with `dpVision` version X.X or higher.
 
 4. Load your dataset and select the plugin from the visualisation panel.
 
+<!-- 
+
 ## 📊 Input Format
 
 The plugin expects a dataset in the form of a matrix:
@@ -36,6 +38,8 @@ A separate configuration file (optional) can be used to:
 - assign dimensions to spatial coordinates (e.g., X, Y, Z)
 - define viewing parameters, PCA settings, or label colours
 
+-->
+
 ## 🚀 Example Use Cases
 
 - Visualising clusters in high-dimensional data
@@ -43,7 +47,9 @@ A separate configuration file (optional) can be used to:
 - Educational visualisation of abstract geometries (e.g., 4D rotation)
 - Dimensionality reduction with interpretability
 
+<!--
 ## 📷 Screenshots
+
 
 ![Swarm example](docs/img/swarm_example.png)
 *A swarm of avatars based on wine quality data.*
@@ -58,6 +64,7 @@ If you use this plugin in your research, please cite:
 > Leszek Luchowski, Dariusz Pojda.  
 > *Visualisation of a Multidimensional Point Cloud as a 3D Swarm of Avatars – A Plugin for dpVision.*  
 > IEEE Transactions on Visualization and Computer Graphics, 2025.
+-->
 
 ## 🛠️ Roadmap
 
