@@ -1,0 +1,6 @@
+{
+  "name": "(ll) N-Dim View",
+  "description": "An interactive 3D visualisation of multidimensional data using expressive avatars",
+  "className": "ConcretePlugin",
+  "version": "1.0"
+}
