@@ -16,7 +16,7 @@ The plugin is designed to work with `dpVision` version X.X or higher.
 
 1. Clone this repository:
     ```bash
-    git clone https://github.com/yourusername/avatarswarm.git
+    git clone https://github.com/iitis/n-dim-view.git
     ```
 
 2. Copy the plugin folder to the `dpVision/plugins/` directory.
