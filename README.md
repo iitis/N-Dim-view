@@ -10,6 +10,13 @@
 - **Manual or automatic assignment** – Flexible mapping of data dimensions to avatar appearance or spatial coordinates.
 - **Support for real and synthetic data** – Tested with a 15D wine quality dataset and an artificial 4D tesseract-shaped dataset.
 
+## 🧑‍💻 Author and Contributors
+
+The main author of this plugin is **[Leszek Luchowski](lluchowski@iitis.pl)**, responsible for the concept, model design, and algorithmic implementation.
+
+**[Dariusz Pojda](https://github.com/pojdulos)** contributed to the project by integrating the plugin with the `dpVision` platform and optimising its performance.
+
+
 ## 📦 Installation
 
 The plugin is designed to work with `dpVision` version X.X or higher.
@@ -78,12 +85,6 @@ Planned features include:
 - Scalability enhancements for large datasets
 - Export to interactive WebGL viewers
 - User feedback and usability testing
-
-## 🧑‍💻 Author and Contributors
-
-The main author of this plugin is **Leszek Luchowski**, responsible for the concept, model design, and algorithmic implementation.
-
-**Dariusz Pojda** contributed to the project by integrating the plugin with the `dpVision` platform and optimising its performance.
 
 ## 📄 License
 
