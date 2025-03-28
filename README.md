@@ -12,7 +12,7 @@
 
 ## 🧑‍💻 Author and Contributors
 
-The main author of this plugin is **[Leszek Luchowski](lluchowski@iitis.pl)**, responsible for the concept, model design, and algorithmic implementation.
+The main author of this plugin is **[Leszek Luchowski](mailto:lluchowski@iitis.pl)**, responsible for the concept, model design, and algorithmic implementation.
 
 **[Dariusz Pojda](https://github.com/pojdulos)** contributed to the project by integrating the plugin with the `dpVision` platform and optimising its performance.
 
