@@ -131,31 +131,31 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="ConcretePlugin.cpp" />
-    <ClCompile Include="CsvColumnAssignmentDialog.cpp" />
-    <ClCompile Include="CsvReader.cpp" />
-    <ClCompile Include="K3Arrow.cpp" />
-    <ClCompile Include="K3ChernoffFace.cpp" />
-    <ClCompile Include="K3Helpers.cpp" />
-    <ClCompile Include="K3HyperCloud.cpp" />
-    <ClCompile Include="K3HyperPoint.cpp" />
-    <ClCompile Include="K3RoseOfWinds.cpp" />
-    <ClCompile Include="K3Totem.cpp" />
+    <ClCompile Include="src/ConcretePlugin.cpp" />
+    <ClCompile Include="src/CsvColumnAssignmentDialog.cpp" />
+    <ClCompile Include="src/CsvReader.cpp" />
+    <ClCompile Include="src/K3Arrow.cpp" />
+    <ClCompile Include="src/K3ChernoffFace.cpp" />
+    <ClCompile Include="src/K3Helpers.cpp" />
+    <ClCompile Include="src/K3HyperCloud.cpp" />
+    <ClCompile Include="src/K3HyperPoint.cpp" />
+    <ClCompile Include="src/K3RoseOfWinds.cpp" />
+    <ClCompile Include="src/K3Totem.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="ConcretePlugin.h" />
-    <QtMoc Include="CsvColumnAssignmentDialog.h" />
-    <ClInclude Include="CsvReader.h" />
-    <ClInclude Include="K3Arrow.h" />
-    <ClInclude Include="K3ChernoffFace.h" />
-    <ClInclude Include="K3Helpers.h" />
-    <ClInclude Include="K3HyperCloud.h" />
-    <ClInclude Include="K3HyperPoint.h" />
-    <ClInclude Include="K3RoseOfWinds.h" />
-    <ClInclude Include="K3Totem.h" />
+    <QtMoc Include="src/ConcretePlugin.h" />
+    <QtMoc Include="src/CsvColumnAssignmentDialog.h" />
+    <ClInclude Include="src/CsvReader.h" />
+    <ClInclude Include="src/K3Arrow.h" />
+    <ClInclude Include="src/K3ChernoffFace.h" />
+    <ClInclude Include="src/K3Helpers.h" />
+    <ClInclude Include="src/K3HyperCloud.h" />
+    <ClInclude Include="src/K3HyperPoint.h" />
+    <ClInclude Include="src/K3RoseOfWinds.h" />
+    <ClInclude Include="src/K3Totem.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="metadata.json" />
+    <None Include="src/metadata.json" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
