@@ -81,8 +81,8 @@ Planned features include:
 
 ## 🧑‍💻 Authors
 
-- **Leszek Luchowski** – Concept, algorithm design, geometry
-- **Dariusz Pojda** – Implementation, system integration, optimisation
+- **Leszek Luchowski** – Concept, algorithm design, geometry, implementation
+- **Dariusz Pojda** – System integration, optimisation
 
 ## 📄 License
 
