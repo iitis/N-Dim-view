@@ -28,13 +28,13 @@ The plugin is designed to work with `dpVision` version X.X or higher.
 
 2. Copy the plugin folder to the `dpVision/plugins/` directory.
 
-3. Reconfigure your dpVision project with CMake or add a plugin project (n-dim-view.vcxproj) to dpVision solution in MS Visual Studio
+3. Reconfigure your dpVision project with CMake or &mdash; if you do not use CMake &mdash; simply add a plugin project (n-dim-view.vcxproj) to dpVision solution in MS Visual Studio
 
-4. Build dpVision project 
+4. Build your dpVision project 
 
-5. Launch `dpVision` and select the plugin in the plugin manager.
+5. Launch `dpVision` and find the plugin in the plugin manager.
 
-6. Use plugin to load your dataset.
+6. Use the plugin with your dataset.
 
 <!-- 
 
