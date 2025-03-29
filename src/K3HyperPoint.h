@@ -1,6 +1,7 @@
 #pragma once
 
-#include<Eigen/Geometry>
+#include <Eigen/Geometry>
+#include <vector>
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;

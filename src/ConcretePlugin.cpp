@@ -1,53 +1,53 @@
 /*
 MISJA:
-Stworzyæ nawigacjê nD
+StworzyÄ‡ nawigacjÄ™ nD
 
-- Za³o¿enia: nie korzystam z ruszania myszk¹, wszystko programowo.
+- ZaÅ‚oÅ¼enia: nie korzystam z ruszania myszkÄ…, wszystko programowo.
 
-- czy mo¿na reagowaæ na klawisze?
+- czy moÅ¼na reagowaÄ‡ na klawisze?
  
-- modyfikacja macierzy po³o¿enia obserwatora:
+- modyfikacja macierzy poÅ‚oÅ¼enia obserwatora:
 
   -  sterowanie 3D w aktualnej przestrzeni obserwacji;
-  - jak siê obracaæ ku innym wymiarom?
-	 - do kolumny "ku" dodawaæ porcjami,
+  - jak siÄ™ obracaÄ‡ ku innym wymiarom?
+	 - do kolumny "ku" dodawaÄ‡ porcjami,
 		   w wierszach x? y? z?
-  - Jak wyœwietlaæ n-wymiarow¹ ró¿ê wiatrów?
-	- strza³ki z wersorów tych wymiarów, które maj¹ udzia³ nie mniejszy ni¿...
+  - Jak wyÅ›wietlaÄ‡ n-wymiarowÄ… rÃ³Å¼Ä™ wiatrÃ³w?
+	- strzaÅ‚ki z wersorÃ³w tych wymiarÃ³w, ktÃ³re majÄ… udziaÅ‚ nie mniejszy niÅ¼...
 
   -  skrypty w plikach tekstowych;
 
-  CEL NAJBLI¯SZY:
-  Trajektoria obserwatora, za³o¿enia na pozycjonowanie w nD.
+  CEL NAJBLIÅ»SZY:
+  Trajektoria obserwatora, zaÅ‚oÅ¼enia na pozycjonowanie w nD.
 
-  - 3 widzialne wymiary ustalaæ w kolejnoœci zgodnej z numeracj¹ w hiperprzestrzeni
-  - A je¿eli s¹ mieszane? W kolejnoœci malej¹cej œredniej wa¿onej indeksów w nD.
+  - 3 widzialne wymiary ustalaÄ‡ w kolejnoÅ›ci zgodnej z numeracjÄ… w hiperprzestrzeni
+  - A jeÅ¼eli sÄ… mieszane? W kolejnoÅ›ci malejÄ…cej Å›redniej waÅ¼onej indeksÃ³w w nD.
 
-  Zak³adam - przynajmniej na razie - ¿e wymiary odzwierciedlane wygl¹dem
-	  (a nie lokalizaj¹) totemu bêd¹ "pojedyncze", tzn ka¿da cecha wygl¹du
-	  oddaje tylko jeden parametr Ÿród³owy. To wa¿ne ograniczenie na macierz Observer.
+  ZakÅ‚adam - przynajmniej na razie - Å¼e wymiary odzwierciedlane wyglÄ…dem
+	  (a nie lokalizajÄ…) totemu bÄ™dÄ… "pojedyncze", tzn kaÅ¼da cecha wyglÄ…du
+	  oddaje tylko jeden parametr ÅºrÃ³dÅ‚owy. To waÅ¼ne ograniczenie na macierz Observer.
 
-  Ruchy 3 widzialnych wymiarów w przestrzeni nD:
-  PILOTEM nazywam Ÿród³o komend dla obserwatora, mo¿e nim byæ:
-	  u¿ytkownik przy klawiaturze,
-	  skrypt wczytywany z pliku albo z tablicy sta³ych
-  Komend¹ mo¿e byæ:
-	  identyfikator (numer? nazwa?) któregoœ wymiaru z nD;
-		  tak¹ komendê wykonuje sie przez zwiêkszenie udzia³u wskazanego wymiaru...
-			- ale w czym i kosztem czego? Pasowa³oby w tym z Trzech,
-			   który ju¿ _tego_ wymiaru ma najwiêcej. Jeœli ¿aden nie ma, to w tym,
-			   który jest mu najbli¿ej œredni¹ wa¿on¹ indeksów.
-			   I kosztem dotychczasowych sk³adowych tego¿ wymiaru.
+  Ruchy 3 widzialnych wymiarÃ³w w przestrzeni nD:
+  PILOTEM nazywam ÅºrÃ³dÅ‚o komend dla obserwatora, moÅ¼e nim byÄ‡:
+	  uÅ¼ytkownik przy klawiaturze,
+	  skrypt wczytywany z pliku albo z tablicy staÅ‚ych
+  KomendÄ… moÅ¼e byÄ‡:
+	  identyfikator (numer? nazwa?) ktÃ³regoÅ› wymiaru z nD;
+		  takÄ… komendÄ™ wykonuje sie przez zwiÄ™kszenie udziaÅ‚u wskazanego wymiaru...
+			- ale w czym i kosztem czego? PasowaÅ‚oby w tym z Trzech,
+			   ktÃ³ry juÅ¼ _tego_ wymiaru ma najwiÄ™cej. JeÅ›li Å¼aden nie ma, to w tym,
+			   ktÃ³ry jest mu najbliÅ¼ej Å›redniÄ… waÅ¼onÄ… indeksÃ³w.
+			   I kosztem dotychczasowych skÅ‚adowych tegoÅ¼ wymiaru.
 			   Tylko: solidarnie czy najchudszy traci?
-	  identyfikator (numer? nazwa?) któregoœ wymiaru z 3D;
-		  tak¹ komendê wykonuje sie przez obrót widzialnego przekroju
-			 wokó³ wskazanego wymiaru o 45 stopni
+	  identyfikator (numer? nazwa?) ktÃ³regoÅ› wymiaru z 3D;
+		  takÄ… komendÄ™ wykonuje sie przez obrÃ³t widzialnego przekroju
+			 wokÃ³Å‚ wskazanego wymiaru o 45 stopni
 
 
    PROGRAM PRACY:
-   + napisaæ funkcjê, wyznaczaj¹c¹ œredni (wa¿enie) indeks w nD danego wymiaru 3D:
+   + napisaÄ‡ funkcjÄ™, wyznaczajÄ…cÄ… Å›redni (waÅ¼enie) indeks w nD danego wymiaru 3D:
    K3AverIndex(Observer, iSmallDim);
-   + Funkcja reguluj¹ca udzia³ danego (indeksem) wymiaru nD w danym (indeksem) w. 3D
+   + Funkcja regulujÄ…ca udziaÅ‚ danego (indeksem) wymiaru nD w danym (indeksem) w. 3D
    + K3AdjustShare
 
 
@@ -76,7 +76,7 @@ using namespace Eigen;
 void K3LogEntry(const wchar_t* filnam, const char* myText);
 
 #define K3GRAND_SCALE 5.0
-// by³o 0.5
+// byÅ‚o 0.5
 // QQ Scale!
 // #include<Eigen/Geometry>
 // #include <Eigen/SVD> // QQ czy dobrze?
@@ -95,9 +95,9 @@ void K3LogEntry(const wchar_t* filnam, const char* myText);
 
 // ============================================================
 // (DP): FUNKCJE DODANE PRZEZE MNIE W CELU UJEDNOLICENIA
-// I UPROSZCZENIA POTENCJALNEJ ZMIANY ŒCIE¯EK ZAPISU
-// Proponuje w kodzie zamiast pe³nej œcie¿ki u¿ywaæ: DATA_PATH(<nazwa_pliku>)
-// Mo¿esz mieæ oddzielny katalog dla danych i dla wynikowych screenshotów
+// I UPROSZCZENIA POTENCJALNEJ ZMIANY ÅšCIEÅ»EK ZAPISU
+// Proponuje w kodzie zamiast peÅ‚nej Å›cieÅ¼ki uÅ¼ywaÄ‡: DATA_PATH(<nazwa_pliku>)
+// MoÅ¼esz mieÄ‡ oddzielny katalog dla danych i dla wynikowych screenshotÃ³w
 
 #define WORK_DIR "c:/K3/Wielowymiar/"
 #define PNG_DIR "d:/K3/Wielowymiar/"
@@ -357,7 +357,7 @@ void K3AdjustShare(MatrixXd Observer, int iBigDim, int iSmallDim, double delta) 
 	int i;
 	double SumOfAbsolutes, Factor;
 	SumOfAbsolutes = 0.0;
-	for (i = 0; i < Observer.cols(); i++) { // QQ mo¿e warto pomin¹æ iBigDim?
+	for (i = 0; i < Observer.cols(); i++) { // QQ moÅ¼e warto pominÄ…Ä‡ iBigDim?
 		SumOfAbsolutes += abs(Observer(iSmallDim, i));
 	};
 	if (SumOfAbsolutes > 0.001) {
@@ -365,7 +365,7 @@ void K3AdjustShare(MatrixXd Observer, int iBigDim, int iSmallDim, double delta) 
 		if (Factor < 0.0) {
 			Factor = 0.0;
 		}
-		for (i = 0; i < Observer.cols(); i++) {  // QQ i tutaj te¿?
+		for (i = 0; i < Observer.cols(); i++) {  // QQ i tutaj teÅ¼?
 			Observer(iSmallDim, i) *= Factor;
 		};
 
@@ -451,9 +451,9 @@ void ConcretePlugin::onLoad()
 
 	UI::PLUGINPANEL::addButton(m_ID, L"csvReaderTest", L"Wczytaj plik CSV", 0, 0);
 
-	UI::PLUGINPANEL::addButton(m_ID, L"K3MetaChmura", L"Zrób K3MetaChmurê", 6, 0);
-	UI::PLUGINPANEL::addButton(m_ID, L"K3CzteroPajak", L"Zrób K3CzteroPajak", 7, 0);
-	UI::PLUGINPANEL::addButton(m_ID, L"K3Krata", L"Zrób Kratê", 8, 0);
+	UI::PLUGINPANEL::addButton(m_ID, L"K3MetaChmura", L"ZrÃ³b K3MetaChmurÄ™", 6, 0);
+	UI::PLUGINPANEL::addButton(m_ID, L"K3CzteroPajak", L"ZrÃ³b K3CzteroPajak", 7, 0);
+	UI::PLUGINPANEL::addButton(m_ID, L"K3Krata", L"ZrÃ³b KratÄ™", 8, 0);
 }
 
 
@@ -811,22 +811,22 @@ void K3Neg3(double A[3], double B[3]) {
 void ConcretePlugin::onButton(std::wstring name)
 {
 	if (0 == name.compare(L"csvReaderTest")) {
-		// Tu wczytujesz dane z pliku. Mo¿esz te¿ podaæ œcie¿kê jako parametr,
-		// wtedy sie nie poka¿e dialog wyboru pliku
-		// Wa¿ne:
-		// 1. zak³adam, ¿e dane sa rozdzielone œrednikami
-		// 2. pierwsza linia musi zawieraæ ng³ówki - czyli nazwy rzeczywistych cech
-		// Jeœli mia³byœ dane nie spe³niaj¹ce, zw³aszcza tego drugiego, to bêdziemy kombinowaæ
+		// Tu wczytujesz dane z pliku. MoÅ¼esz teÅ¼ podaÄ‡ Å›cieÅ¼kÄ™ jako parametr,
+		// wtedy sie nie pokaÅ¼e dialog wyboru pliku
+		// WaÅ¼ne:
+		// 1. zakÅ‚adam, Å¼e dane sa rozdzielone Å›rednikami
+		// 2. pierwsza linia musi zawieraÄ‡ ngÅ‚Ã³wki - czyli nazwy rzeczywistych cech
+		// JeÅ›li miaÅ‚byÅ› dane nie speÅ‚niajÄ…ce, zwÅ‚aszcza tego drugiego, to bÄ™dziemy kombinowaÄ‡
 		CsvReader::CsvData csv_data = CsvReader::loadFile();
 
-		// Kazda linia reprezentuje grupê, pierwszy string to jej nazwa
-		// nastêpnie w {} s¹ etykiety zdefiniwanych przez ciebie wymiarów w tej grupie
-		// Jesli {} jest puste tzn, ¿e grupa nie moze mieæ etykiet (np.: nienazwane)
-		// UWAGA - to nie sa nazwy wymiarów zwi¹zanych z plikiem Ÿród³owym (np. wino)
-		// tylko to jak je bêdziesz u¿ywa³ podczas wizualizowalizacji
-		// powi¹zanie tego z np. winem dzieje sie dopiero w okienku dialogowym
-		// dlatego jest to niezale¿ne od rodzaju danych
-		// Mo¿esz sobie to dowolnie zmodyfikowaæ, np dodac nowe elementy
+		// Kazda linia reprezentuje grupÄ™, pierwszy string to jej nazwa
+		// nastÄ™pnie w {} sÄ… etykiety zdefiniwanych przez ciebie wymiarÃ³w w tej grupie
+		// Jesli {} jest puste tzn, Å¼e grupa nie moze mieÄ‡ etykiet (np.: nienazwane)
+		// UWAGA - to nie sa nazwy wymiarÃ³w zwiÄ…zanych z plikiem ÅºrÃ³dÅ‚owym (np. wino)
+		// tylko to jak je bÄ™dziesz uÅ¼ywaÅ‚ podczas wizualizowalizacji
+		// powiÄ…zanie tego z np. winem dzieje sie dopiero w okienku dialogowym
+		// dlatego jest to niezaleÅ¼ne od rodzaju danych
+		// MoÅ¼esz sobie to dowolnie zmodyfikowaÄ‡, np dodac nowe elementy
 		QVector<GroupDefinition> groupDefs = {
 			{ "unnamed", {} },
 			{ "spacial", { "dimension_1", "dimension_2", "dimension_3", "dimension_4" } },
@@ -834,29 +834,29 @@ void ConcretePlugin::onButton(std::wstring name)
 		};
 
 
-		// Tu tworzysz sobie okienko dialogowe o takich parametrach jak ustawi³eœ wy¿ej
-		// csv_data.headers - to sa rzeczywiste etykiety z pliku (np. kwasowoœc)
-		// groupDefs - to s¹ opcje które bêdziesz móg³ wybieraæ, ustawione wy¿ej
+		// Tu tworzysz sobie okienko dialogowe o takich parametrach jak ustawiÅ‚eÅ› wyÅ¼ej
+		// csv_data.headers - to sa rzeczywiste etykiety z pliku (np. kwasowoÅ›c)
+		// groupDefs - to sÄ… opcje ktÃ³re bÄ™dziesz mÃ³gÅ‚ wybieraÄ‡, ustawione wyÅ¼ej
 		CsvColumnAssignmentDialog dlg(csv_data.headers, groupDefs);
 
-		// Tu uruchamiasz dialog i sprawdzasz czy klikniêto OK
+		// Tu uruchamiasz dialog i sprawdzasz czy klikniÄ™to OK
 		if (dlg.exec() == QDialog::Accepted) {
 
-			// Przypisañ i macierzy mozesz teraz u¿ywaæ w dowolnym miejscu plugina
-			// nie musisz tego robic jednym ci¹giem w tym miejscu
-			// radze tylko zawsze na pocz¹tku w³asnej procedury sprawdziæ czy nie s¹ puste
-			// (tzn -> czy plik zosta³ wczytany i pogrupowany)
+			// PrzypisaÅ„ i macierzy mozesz teraz uÅ¼ywaÄ‡ w dowolnym miejscu plugina
+			// nie musisz tego robic jednym ciÄ…giem w tym miejscu
+			// radze tylko zawsze na poczÄ…tku wÅ‚asnej procedury sprawdziÄ‡ czy nie sÄ… puste
+			// (tzn -> czy plik zostaÅ‚ wczytany i pogrupowany)
 			current_assignment = dlg.getAssignments();
 
 
-			// Konwersja do macierzy Eigen::Matrixxd, na której mo¿esz sobie dalej dzia³aæ.
-			// Ta macierz ma tyle kolumn co wymiarów, a wierszy tyle co próbek w Ÿródle z pominiêciem nag³ówków
+			// Konwersja do macierzy Eigen::Matrixxd, na ktÃ³rej moÅ¼esz sobie dalej dziaÅ‚aÄ‡.
+			// Ta macierz ma tyle kolumn co wymiarÃ³w, a wierszy tyle co prÃ³bek w ÅºrÃ³dle z pominiÄ™ciem nagÅ‚Ã³wkÃ³w
 			current_data_matrix = CsvReader::convertCsvDataToMatrix(csv_data);
-			// Ta macierz jest widoczna w ca³ym pluginie wiêc mo¿esz sobie inne kawa³ki kodu
-			// stworzyæ jako reakcjê na inny przycisk i j¹ tam odczytaæ. Warto tylko sprawdziæ czy nie jest pusta.
+			// Ta macierz jest widoczna w caÅ‚ym pluginie wiÄ™c moÅ¼esz sobie inne kawaÅ‚ki kodu
+			// stworzyÄ‡ jako reakcjÄ™ na inny przycisk i jÄ… tam odczytaÄ‡. Warto tylko sprawdziÄ‡ czy nie jest pusta.
 		}
 		else {
-			// Jeœli nie kliknieto OK - to zak³adam, ze zrezygnowa³eœ i odrzucam wszystko co wczyta³eœ
+			// JeÅ›li nie kliknieto OK - to zakÅ‚adam, ze zrezygnowaÅ‚eÅ› i odrzucam wszystko co wczytaÅ‚eÅ›
 			current_data_matrix = Eigen::MatrixXd();
 			current_assignment.clear();
 		}
@@ -1060,7 +1060,7 @@ void ConcretePlugin::onButton(std::wstring name)
 #define K3av 6
 #define K3avr 4
 
-			MatrixXd K3DenseCloud(K3hs + K3asr + K3hv + K3avr, K3CloudCard); // Wlknoc przeniesiono z do³u
+			MatrixXd K3DenseCloud(K3hs + K3asr + K3hv + K3avr, K3CloudCard); // Wlknoc przeniesiono z doÅ‚u
 			MatrixXd Obser_s(K3hs + K3asr, K3Dim);
 			K3FillMat(Obser_s, 0.0);
 			MatrixXd Obser_v(K3hv + K3avr, K3Dim);
@@ -1176,12 +1176,12 @@ void ConcretePlugin::onButton(std::wstring name)
 
 
 
-				// FILE* plik = _wfopen(L"C:/K3/Wielowymiar/ala.txt", L"r");   // ok 1599 rekordów
+				// FILE* plik = _wfopen(L"C:/K3/Wielowymiar/ala.txt", L"r");   // ok 1599 rekordÃ³w
 				// FILE* plik = _wfopen(DATA_PATH(L"NewCircleSquareEtc2_17.dat").c_str(), L"r");
-				// ok  rekordów
+				// ok  rekordÃ³w
 
 #if 0  // cutting out "inline" data read
-				FILE* plik = _wfopen(DATA_PATH(L"ScaledCyrcleSquareEtc2_17.dat").c_str(), L"r");   // ok  rekordów
+				FILE* plik = _wfopen(DATA_PATH(L"ScaledCyrcleSquareEtc2_17.dat").c_str(), L"r");   // ok  rekordÃ³w
 
 							// QQQQ Tu naprawde czytamy
 				if (plik) {
@@ -1242,7 +1242,7 @@ void ConcretePlugin::onButton(std::wstring name)
 						K3ThisSpot(2) *= 10;*/
 
 						VectorXd* X88 = new VectorXd(K3Dim);
-						*X88 = Observer * K3ThisSpot;  // QQ 22 II 2024: doda³em * na pocz¹tku    ######### TRANS #########
+						*X88 = Observer * K3ThisSpot;  // QQ 22 II 2024: dodaÅ‚em * na poczÄ…tku    ######### TRANS #########
 						X.push_back(*X88);
 
 
@@ -1293,7 +1293,7 @@ void ConcretePlugin::onButton(std::wstring name)
 				// K3ListMatrix(L"C:/K3/Wielowymiar/MujZrzut.txt", K3FunV, "K3FunV");
 
 
-				// MatrixXd K3DenseCloud(K3hs + K3asr + K3hv + K3avr, K3CloudCard); // Wlknoc przerzucam na pocz¹tek
+				// MatrixXd K3DenseCloud(K3hs + K3asr + K3hv + K3avr, K3CloudCard); // Wlknoc przerzucam na poczÄ…tek
 				// K3ListMatrix(L"C:/K3/Wielowymiar/MujZrzut.txt", K3NewObserver, "K3NewObserver");
 					K3ListMatrix(L"C:/K3/Wielowymiar/MujZrzut.txt", K3FullCloud, "K3FullCloud");
 				K3ListMatrix(L"C:/K3/Wielowymiar/MujZrzut.txt", K3NewObserver, "K3NewObserver");
@@ -1312,17 +1312,17 @@ void ConcretePlugin::onButton(std::wstring name)
 							// MatrixXd X77(1500, 6);
 
 
-				// (DP): Zwróæ uwagê, ¿e kilka linijek wy¿ej zapisujesz do tej macierzy wynik mno¿enia,
-				// wydaje mi siê, ¿e któraœ z tych operacji jest niepotrzebna.
+				// (DP): ZwrÃ³Ä‡ uwagÄ™, Å¼e kilka linijek wyÅ¼ej zapisujesz do tej macierzy wynik mnoÅ¼enia,
+				// wydaje mi siÄ™, Å¼e ktÃ³raÅ› z tych operacji jest niepotrzebna.
 				// K3DenseCloud = MatrixXd(6, K3CloudCard);
-				// (DP): UWAGA NA DRUGI PARAMETR - JEŒLI JEST ZA MA£Y TO SIE WYSYPUJE PRZY WCZYTYWANIU DANYCH
+				// (DP): UWAGA NA DRUGI PARAMETR - JEÅšLI JEST ZA MAÅY TO SIE WYSYPUJE PRZY WCZYTYWANIU DANYCH
 
 
 				K3ReadCSV_WithHeader(/* READING_CLOUD */ &K3DenseCloud, L"C:/K3/Wielowymiar/Tabulka.txt");
 				// K3ReadCSV_WithHeader(/* READING_CLOUD */ &K3DenseCloud, L"C:/K3/Wielowymiar/NewCircleSquareEtc3_13.dat");
 
 
-				// (DP): Jak siê ma poni¿sza funkcja do tego ¿e wy¿ej czytasz z tego samego pliku
+				// (DP): Jak siÄ™ ma poniÅ¼sza funkcja do tego Å¼e wyÅ¼ej czytasz z tego samego pliku
 				// Czy czasem nie czytasz go dwa razy? NewZigZagEDGE
 				// K3ReadCSV_WithHeader(/* READING_CLOUD */ &K3DenseCloud, DATA_PATH(L"NewCyrcleSquareEtc2_17.dat").c_str());
 				// K3ReadCSV_WithHeader(/* READING_CLOUD */ &K3DenseCloud, DATA_PATH(L"NewZigZag2_3.dat").c_str());
@@ -1475,7 +1475,7 @@ void ConcretePlugin::onButton(std::wstring name)
 
 						UI:Beep(440.0, 500.0);
 
-							UI::CAMERA::screenshot(PNG_PATH(K3QST), k3viewer); // To teraz bêdzie tutaj
+							UI::CAMERA::screenshot(PNG_PATH(K3QST), k3viewer); // To teraz bÄ™dzie tutaj
 
 						};
 					};
@@ -1485,7 +1485,7 @@ void ConcretePlugin::onButton(std::wstring name)
 			};
 
 			AP::WORKSPACE::removeAllModels();
-			qInfo() << "To ju¿ jest koniec..." << Qt::endl;
+			qInfo() << "To juÅ¼ jest koniec..." << Qt::endl;
 		}
 
 	}

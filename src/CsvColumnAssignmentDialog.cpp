@@ -13,8 +13,8 @@ CsvColumnAssignmentDialog::CsvColumnAssignmentDialog(const QStringList& headers,
     mainLayout = new QVBoxLayout(this);
     formLayout = new QFormLayout;
 
-    // Dodajemy domyœln¹ grupê "pomiñ" na pocz¹tek
-    groups.append({ "<skip this feature>", {} });
+    // Dodajemy domyÅ›lnÄ… grupÄ™ "pomiÅ„" na poczÄ…tek
+    groups.append(GroupDefinition( "<skip this feature>", {} ));
     groups += userGroups;
 
     buildUI();
@@ -23,14 +23,14 @@ CsvColumnAssignmentDialog::CsvColumnAssignmentDialog(const QStringList& headers,
     QPushButton* okButton = new QPushButton("OK");
     okButton->setDefault(true);
     connect(okButton, &QPushButton::clicked, this, [this]() {
-        // Walidacja unikalnoœci par grupa-etykieta
+        // Walidacja unikalnoÅ›ci par grupa-etykieta
         QSet<QString> used;
         for (const auto& widgets : rowWidgetsList) {
             int groupIdx = widgets.currentGroupIndex;
             int labelIdx = widgets.currentLabelIndex;
 
             if (groupIdx <= 0 || labelIdx < 0 || labelIdx >= groups[groupIdx].elementNames.size())
-                continue; // pomiñ lub brak etykiety
+                continue; // pomiÅ„ lub brak etykiety
 
             QString key = QString::number(groupIdx) + ":" + groups[groupIdx].elementNames[labelIdx];
             if (used.contains(key)) {
@@ -73,7 +73,7 @@ void CsvColumnAssignmentDialog::buildUI() {
         formLayout->addRow(headers[row], container);
         rowWidgetsList.append({ groupCombo, labelCombo, labelWidget });
 
-        // Domyœlnie ustawiamy grupê "<pomiñ>"
+        // DomyÅ›lnie ustawiamy grupÄ™ "<pomiÅ„>"
         groupCombo->setCurrentIndex(0);
     }
 }
@@ -126,7 +126,7 @@ QVector<ColumnAssignment> CsvColumnAssignmentDialog::getAssignments() const {
         assignment.featureIndex = i;
         assignment.featureName = headers[i];
 
-        assignment.groupIndex = (widgets.currentGroupIndex < 0) ? -1 : widgets.currentGroupIndex - 1; // pomiñ = -1, reszta od 0
+        assignment.groupIndex = (widgets.currentGroupIndex < 0) ? -1 : widgets.currentGroupIndex - 1; // pomiÅ„ = -1, reszta od 0
 
         assignment.groupName = (assignment.groupIndex < 0) ? QString() : groups[widgets.currentGroupIndex].name;
 

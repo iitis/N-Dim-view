@@ -14,15 +14,18 @@
 struct GroupDefinition {
     QString name;
     QStringList elementNames; // pusty = brak ograniczenia
+
+    GroupDefinition(const QString& n, QStringList c = {})
+    : name(n), elementNames(std::move(c)) {}
 };
 
 struct ColumnAssignment {
-    int featureIndex; // indeks cechy - wymiaru w pliku Ÿród³owym
+    int featureIndex; // indeks cechy - wymiaru w pliku ÅºrÃ³dÅ‚owym
     QString featureName; // nazwa cechy - jak wpisano w pierwszej linii pliku csv
-    int groupIndex; // indeks grupy - lub -1 jesli cecha nie ma byæ dalej analizowana
-    QString groupName; // nazwa tej grupy - taka jak sobie zdefiniujesz lub pusty QString jeœli by³o -1
-    std::optional<int> label_id; // indeks wybranej etykiety dla cechy w obrêbie grupy (jesli grupa ma etykiety) 
-    std::optional<QString> label_name; // nazwa tej etykiety taka jak sopbie zdefiniujesz (o ile oczywiœcie grupa ma etykiety)
+    int groupIndex; // indeks grupy - lub -1 jesli cecha nie ma byÄ‡ dalej analizowana
+    QString groupName; // nazwa tej grupy - taka jak sobie zdefiniujesz lub pusty QString jeÅ›li byÅ‚o -1
+    std::optional<int> label_id; // indeks wybranej etykiety dla cechy w obrÄ™bie grupy (jesli grupa ma etykiety) 
+    std::optional<QString> label_name; // nazwa tej etykiety taka jak sopbie zdefiniujesz (o ile oczywiÅ›cie grupa ma etykiety)
 };
 
 class CsvColumnAssignmentDialog : public QDialog {
