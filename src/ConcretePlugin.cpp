@@ -834,10 +834,24 @@ void ConcretePlugin::onButton(std::wstring name)
 		};
 
 
+		QVector<QPair<int, int>> defs = {
+			{0,-1}, // pierwsza cyfra to indeks grupy z listy powyżej (tu np. unnamed=0, spacial=1 itd) 
+			{1,0},  // a druga cyfra to indeks etykiety (też j.w.), dla grupy unnamed jest pomijany, wpisałem -1
+			{1,1},  // tych linii może być mniej niż parametrów win,
+			{1,2},  // wtedy ostatnie pola w dialogu nie bedą po prostu ustawione
+			{2,0},  // może być też więcej, wtedy one będą pominięte
+			{2,1},
+			{2,2},
+			{2,3},
+			{1,3},
+			{0,-1},
+			{0,-1}
+		};
+
 		// Tu tworzysz sobie okienko dialogowe o takich parametrach jak ustawiłeś wyżej
 		// csv_data.headers - to sa rzeczywiste etykiety z pliku (np. kwasowośc)
 		// groupDefs - to są opcje które będziesz mógł wybierać, ustawione wyżej
-		CsvColumnAssignmentDialog dlg(csv_data.headers, groupDefs);
+		CsvColumnAssignmentDialog dlg(csv_data.headers, groupDefs, defs);
 
 		// Tu uruchamiasz dialog i sprawdzasz czy kliknięto OK
 		if (dlg.exec() == QDialog::Accepted) {

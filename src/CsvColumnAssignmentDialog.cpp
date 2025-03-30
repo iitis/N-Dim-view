@@ -7,6 +7,7 @@
 
 CsvColumnAssignmentDialog::CsvColumnAssignmentDialog(const QStringList& headers,
     const QVector<GroupDefinition>& userGroups,
+    const QVector<QPair<int, int>>& defaults,
     QWidget* parent)
     : QDialog(parent), headers(headers) {
     setWindowTitle("Assign features to groups");
@@ -44,6 +45,19 @@ CsvColumnAssignmentDialog::CsvColumnAssignmentDialog(const QStringList& headers,
 
     mainLayout->addLayout(formLayout);
     mainLayout->addWidget(okButton);
+
+    int size = std::min(rowWidgetsList.size(), defaults.size());
+
+    if (!defaults.empty()) {
+        for (int i = 0; i < size; i++) {
+            int group = defaults[i].first;
+            rowWidgetsList[i].groupCombo->setCurrentIndex(group+1);
+            int label = defaults[i].second;
+            if (! userGroups[group].elementNames.empty() && label >= 0) {
+                rowWidgetsList[i].labelCombo->setCurrentIndex(label);
+            }
+        }
+    }
 }
 
 

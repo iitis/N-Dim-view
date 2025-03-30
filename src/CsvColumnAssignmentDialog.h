@@ -34,6 +34,7 @@ class CsvColumnAssignmentDialog : public QDialog {
 public:
     CsvColumnAssignmentDialog(const QStringList& headers,
         const QVector<GroupDefinition>& groups,
+        const QVector<QPair<int,int>>& defaults = QVector<QPair<int, int>>(),
         QWidget* parent = nullptr);
 
     QVector<ColumnAssignment> getAssignments() const;
