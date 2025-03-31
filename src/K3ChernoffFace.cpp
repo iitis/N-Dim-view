@@ -3,7 +3,7 @@
 #include "K3Helpers.h"
 
 K3ChernoffFace::K3ChernoffFace(int cx, int cy, double k3params[10])  /* */ : CImage(cx, cy, CImage::Format::Format_ARGB32) {
-	// QQ 13V: ten przyblokowany kawa³ek linijkê wy¿ej to on by³! Ale po co by³?
+	// QQ 13V: ten przyblokowany kawaÅ‚ek linijkÄ™ wyÅ¼ej to on byÅ‚! Ale po co byÅ‚?
 	//	this->CImage = new CImage(cx, cy, CImage::Format::Format_ARGB32);
 	//  Feature mapping:
 		// +0 skin colour (rainbow scale)
@@ -119,7 +119,7 @@ K3ChernoffFace::K3ChernoffFace(int cx, int cy, double k3params[10])  /* */ : CIm
 		painter.setPen(pen);
 		painter.drawLine(RightExoCanthion, yBrowsOut, RightEndoCanthion, yBrowsIn); //  (int x1, int y1, int x2, int y2);
 		painter.drawLine(LeftExoCanthion, yBrowsOut, LeftEndoCanthion, yBrowsIn); //  (int x1, int y1, int x2, int y2);
-		painter.drawLine(10, 10, 300, 300); //  (int x1, int y1, int x2, int y2);
+		// painter.drawLine(10, 10, 300, 300); //  (int x1, int y1, int x2, int y2);
 	}
 
 
@@ -131,19 +131,44 @@ K3ChernoffFace::K3ChernoffFace(int cx, int cy, double k3params[10])  /* */ : CIm
 	painter.drawEllipse((cx - cxNose) / 2, yEyes, cxNose, cyNose);
 
 	// Mouth:
-	int cxMouth = cxFace * (0.4 * (0.5 + k3params[4]));
-	int cyMouth = cyFace * (0.3 * (abs(k3params[5] - 0.5) + .05));
-	painter.setPen(Qt::red);
+//	int cxMouth = cxFace * (0.4 * (0.5 + k3params[4]));
+//	int cyMouth = cyFace * (0.3 * (abs(k3params[5] - 0.5) + .05));
+//	int cxMouth = cxFace * 0.8;
+//	int cyMouth = cyFace * 0.6;
+	pen.setWidth(30);
+	pen.setColor(Qt::red);
+	painter.setPen(pen);	// painter.drawLine(10, 10, 300, 300);
+
+//	jeÅ›li rozmiar ust ma byÄ‡ staÅ‚y i powiazany z rozmiarem buÅºki, to raczej tak :
+	//int cxMouth = cxFace * (0.4 * (0.5 + k3params[4]));
+	//int cyMouth = cyFace * (0.3 * (abs(k3params[5] - 0.5) + .05));
+	int cxMouth = cxFace / 1.4;
+	int cyMouth = cyFace / 3.6;
+
+	// painter.drawLine(10, 10, 300, 300);
+
+	if (k3params[5] > 0.5) {
+		painter.drawArc((cx - cxMouth) / 2, (cy - cyMouth) / 2 + cyFace * 0.007, cxMouth, cyMouth, 1, (180 * 16) - 1);
+		//painter.drawArc(1, 1, 100, 100, 1, (180 * 16) - 2);
+	}
+	else
+	{
+		painter.drawArc((cx - cxMouth) / 2, (cy - cyMouth) / 2 + cyFace * 0.007, cxMouth, cyMouth, (180 * 16) + 2, (180 * 16) - 2);
+		//painter.drawArc(1, 1, 100, 100, (180 * 16) + 2, (180 * 16) - 2);
+	};
+
+
+#if 0
 	if (k3params[5] > 0.5) {
 		painter.drawArc((cx - cxMouth) / 2, cy / 2 + cyFace * 0.007, cxMouth, cyMouth, 1, (180 * 16) - 1);
-		painter.drawArc(1, 1, 100, 100, 1, (180 * 16) - 2);
+		// painter.drawArc(1, 1, 100, 100, 1, (180 * 16) - 2);
 	}
 	else
 	{
 		painter.drawArc((cx - cxMouth) / 2, cy / 2 + cyFace * 0.007, cxMouth, cyMouth, (180 * 16) + 2, (180 * 16) - 2);
-		painter.drawArc(1, 1, 100, 100, (180 * 16) + 2, (180 * 16) - 2);
+		// painter.drawArc(1, 1, 100, 100, (180 * 16) + 2, (180 * 16) - 2);
 	};
-
+#endif
 
 
 

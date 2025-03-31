@@ -14,9 +14,4 @@ void DPVISION_DLL_API K3AddUnitProngs(double X[3], double Y[3], double Z[3]);
 void DPVISION_DLL_API K3ListMatrix(const wchar_t* filnam, MatrixXd XXX, const char* title);
 void DPVISION_DLL_API K3FillMeshToUnitCube(CMesh* ThisMesh, CRGBA Kolor);
 void DPVISION_DLL_API K3FindTransform(Eigen::Matrix4d Src, Eigen::Matrix4d Dst, Eigen::Matrix4d* RResult, int N);
-void DPVISION_DLL_API K3LogEntry(const wchar_t* filnam, const char* myText);
-
-void DPVISION_DLL_API K3ReadCSV_WithHeader(MatrixXd* X, const wchar_t* filnam);
-
-void DPVISION_DLL_API K3AddTotemMeshFromSpotQQQnicWeWogle(CMesh* whereto, Eigen::VectorXd K3HyperSpot, Eigen::VectorXd K3HyperLook);
 

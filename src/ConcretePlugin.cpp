@@ -5,7 +5,7 @@ Stworzyć nawigację nD
 - Założenia: nie korzystam z ruszania myszką, wszystko programowo.
 
 - czy można reagować na klawisze?
- 
+
 - modyfikacja macierzy położenia obserwatora:
 
   -  sterowanie 3D w aktualnej przestrzeni obserwacji;
@@ -75,7 +75,7 @@ using namespace Eigen;
 // dodatek LL:
 void K3LogEntry(const wchar_t* filnam, const char* myText);
 
-#define K3GRAND_SCALE 5.0
+#define K3GRAND_SCALE 50.0
 // było 0.5
 // QQ Scale!
 // #include<Eigen/Geometry>
@@ -159,78 +159,78 @@ void K3FillMat(MatrixXd& X, double a) {
 
 
 
-//void K3ReadCSV_WithHeader(MatrixXd* X, const wchar_t* filnam) {
-//	char K3ParNames[20][30];
-//
-//	int i;
-//	int j = 0;
-//	int nmin = 20;
-//
-//	for (i = 0; i < 20; i++) {
-//		K3ParNames[i][0] = (char)0;
-//	}
-//	FILE* plik = _wfopen(filnam, L"r");
-//	if (plik) {
-//		int DoneRead = 8;
-//		j = 0;
-//		MatrixXd ThisSpot(1, 20);
-//		/* DoneRead=fscanf(plik, "%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s",
-//		K3ParNames[0], K3ParNames[1], K3ParNames[2], K3ParNames[3], K3ParNames[4],
-//		K3ParNames[5], K3ParNames[6], K3ParNames[7], K3ParNames[8], K3ParNames[9],
-//		K3ParNames[10], K3ParNames[11], K3ParNames[12], K3ParNames[13], K3ParNames[14],
-//		K3ParNames[15], K3ParNames[16], K3ParNames[17], K3ParNames[18], K3ParNames[19]); */
-//		while (DoneRead != EOF) {
-//			char K3buf[300];
-//			char* K3Yad;
-//			K3Yad = fgets(K3buf, 290, plik);
-//			if (K3Yad == K3buf) {
-//				DoneRead = sscanf(K3buf, "%lf, %lf, %lf, %lf, %lf, %lf, %lf, %lf, %lf, %lf, %lf, %lf, %lf, %lf, %lf, %lf, %lf, %lf, %lf, %lf",
-//					&ThisSpot(0, 0), &ThisSpot(0, 1), &ThisSpot(0, 2), &ThisSpot(0, 3), &ThisSpot(0, 4),
-//					&ThisSpot(0, 5), &ThisSpot(0, 6), &ThisSpot(0, 7), &ThisSpot(0, 8), &ThisSpot(0, 9),
-//					&ThisSpot(0, 10), &ThisSpot(0, 11), &ThisSpot(0, 12), &ThisSpot(0, 13), &ThisSpot(0, 14),
-//					&ThisSpot(0, 15), &ThisSpot(0, 16), &ThisSpot(0, 17), &ThisSpot(0, 18), &ThisSpot(0, 19));
-//				if (DoneRead != EOF) {
-//					K3ListMatrix(L"C:/K3/Wielowymiar/MujZrzut.txt", ThisSpot, "ThisSpot read");
-//					if ((DoneRead > 2) /* && (j < 1400) */) {  // QQ ogran.
-//						for (i = 0; i < DoneRead; i++) {
-//							(*X)(i, j) = ThisSpot(0, i);
-//						}
-//						if (DoneRead < nmin) {
-//							nmin = DoneRead;
-//						}
-//					}
-//					else
-//					{
-//						DoneRead = EOF;
-//					}
-//					j++;
-//				}
-//			}
-//			else
-//			{
-//				DoneRead = EOF;
-//			}
-//		}
-//	};
-//	MatrixXd A;
-//	A = X->block(0, 0, nmin, j);
-//	*X = A; // .transpose();
-//
-//	fclose(plik);
-//};
+void K3ReadCSV_WithHeader(MatrixXd* X, const wchar_t* filnam) {
+	char K3ParNames[20][30];
+
+	int i;
+	int j = 0;
+	int nmin = 20;
+
+	for (i = 0; i < 20; i++) {
+		K3ParNames[i][0] = (char)0;
+	}
+	FILE* plik = _wfopen(filnam, L"r");
+	if (plik) {
+		int DoneRead = 8;
+		j = 0;
+		MatrixXd ThisSpot(1, 20);
+		/* DoneRead=fscanf(plik, "%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s",
+		K3ParNames[0], K3ParNames[1], K3ParNames[2], K3ParNames[3], K3ParNames[4],
+		K3ParNames[5], K3ParNames[6], K3ParNames[7], K3ParNames[8], K3ParNames[9],
+		K3ParNames[10], K3ParNames[11], K3ParNames[12], K3ParNames[13], K3ParNames[14],
+		K3ParNames[15], K3ParNames[16], K3ParNames[17], K3ParNames[18], K3ParNames[19]); */
+		while (DoneRead != EOF) {
+			char K3buf[300];
+			char* K3Yad;
+			K3Yad = fgets(K3buf, 290, plik);
+			if (K3Yad == K3buf) {
+				DoneRead = sscanf(K3buf, "%lf, %lf, %lf, %lf, %lf, %lf, %lf, %lf, %lf, %lf, %lf, %lf, %lf, %lf, %lf, %lf, %lf, %lf, %lf, %lf",
+					&ThisSpot(0, 0), &ThisSpot(0, 1), &ThisSpot(0, 2), &ThisSpot(0, 3), &ThisSpot(0, 4),
+					&ThisSpot(0, 5), &ThisSpot(0, 6), &ThisSpot(0, 7), &ThisSpot(0, 8), &ThisSpot(0, 9),
+					&ThisSpot(0, 10), &ThisSpot(0, 11), &ThisSpot(0, 12), &ThisSpot(0, 13), &ThisSpot(0, 14),
+					&ThisSpot(0, 15), &ThisSpot(0, 16), &ThisSpot(0, 17), &ThisSpot(0, 18), &ThisSpot(0, 19));
+				if (DoneRead != EOF) {
+					K3ListMatrix(L"C:/K3/Wielowymiar/MujZrzut.txt", ThisSpot, "ThisSpot read");
+					if ((DoneRead > 2) /* && (j < 1400) */) {  // QQ ogran.
+						for (i = 0; i < DoneRead; i++) {
+							(*X)(i, j) = ThisSpot(0, i);
+						}
+						if (DoneRead < nmin) {
+							nmin = DoneRead;
+						}
+					}
+					else
+					{
+						DoneRead = EOF;
+					}
+					j++;
+				}
+			}
+			else
+			{
+				DoneRead = EOF;
+			}
+		}
+	};
+	MatrixXd A;
+	A = X->block(0, 0, nmin, j);
+	*X = A; // .transpose();
+
+	fclose(plik);
+};
 
 
-//void K3LogEntry(const wchar_t* filnam, const char* mujText) {
-//	int i, j;
-//	time_t czas;
-//	FILE* plik = _wfopen(filnam, L"a");
-//	if (plik == NULL) {
-//		UI::MESSAGEBOX::error(L"To bardzo skomPLIKowane");
-//	}
-//	time(&czas);
-//	fprintf(plik, "LOG at Date=%s : %s \n", ctime(&czas), mujText);
-//	fclose(plik);
-//};
+void K3LogEntry(const wchar_t* filnam, const char* mujText) {
+	int i, j;
+	time_t czas;
+	FILE* plik = _wfopen(filnam, L"a");
+	if (plik == NULL) {
+		UI::MESSAGEBOX::error(L"To bardzo skomPLIKowane");
+	}
+	time(&czas);
+	fprintf(plik, "LOG at Date=%s : %s \n", ctime(&czas), mujText);
+	fclose(plik);
+};
 
 void K3_4x4viewN(MatrixXd* V, int k, double alfa) {
 
@@ -451,9 +451,10 @@ void ConcretePlugin::onLoad()
 
 	UI::PLUGINPANEL::addButton(m_ID, L"csvReaderTest", L"Wczytaj plik CSV", 0, 0);
 
-	UI::PLUGINPANEL::addButton(m_ID, L"K3MetaChmura", L"Zrób K3MetaChmurę", 6, 0);
+	UI::PLUGINPANEL::addButton(m_ID, L"K3Display", L"K3Display", 6, 0);
 	UI::PLUGINPANEL::addButton(m_ID, L"K3CzteroPajak", L"Zrób K3CzteroPajak", 7, 0);
 	UI::PLUGINPANEL::addButton(m_ID, L"K3Krata", L"Zrób Kratę", 8, 0);
+	UI::PLUGINPANEL::addButton(m_ID, L"K3Dance", L"K3Dance", 9, 0);
 }
 
 
@@ -464,123 +465,122 @@ void ConcretePlugin::onLoad()
 
 
 
-//void K3FillMeshToUnitCube(CMesh* ThisMesh, CRGBA Kolor) { // double l, double a) {
-//	CMesh* K3UnitCube = new CMesh();
-//	ThisMesh->addVertex(CVertex(0.0, 0.0, 0.0)); // , Kolor);
-//	ThisMesh->addVertex(CVertex(0.0, 0.0, 1.0)); //, Kolor);
-//	ThisMesh->addVertex(CVertex(0.0, 1.0, 0.0)); //, Kolor);
-//	ThisMesh->addVertex(CVertex(0.0, 1.0, 1.0)); //, Kolor);
-//	ThisMesh->addVertex(CVertex(1.0, 0.0, 0.0)); //, Kolor);
-//	ThisMesh->addVertex(CVertex(1.0, 0.0, 1.0)); //, Kolor);
-//	ThisMesh->addVertex(CVertex(1.0, 1.0, 0.0)); //, Kolor);
-//	ThisMesh->addVertex(CVertex(1.0, 1.0, 1.0)); //, Kolor);
-//	// looking from outside, vertices should be counterclockwise:
-//	ThisMesh->faces().push_back(CFace(1, 5, 3));
-//	//ThisMesh->fcolors().push_back(Kolor);
-//	ThisMesh->faces().push_back(CFace(7, 3, 5)); // face 0
-//
-//	ThisMesh->faces().push_back(CFace(4, 6, 5));
-//	//ThisMesh->fcolors().push_back(Kolor);
-//	ThisMesh->faces().push_back(CFace(7, 5, 6)); // face 1
-//
-//	ThisMesh->faces().push_back(CFace(0, 2, 4));
-//	//ThisMesh->fcolors().push_back(Kolor);
-//	ThisMesh->faces().push_back(CFace(6, 4, 2)); // face 2
-//
-//	ThisMesh->faces().push_back(CFace(1, 3, 0));
-//	//ThisMesh->fcolors().push_back(Kolor);
-//	ThisMesh->faces().push_back(CFace(2, 0, 3)); // face 3
-//
-//	ThisMesh->faces().push_back(CFace(2, 3, 6));
-//	//ThisMesh->fcolors().push_back(Kolor);
-//	ThisMesh->faces().push_back(CFace(7, 6, 3)); // face 4
-//
-//	ThisMesh->faces().push_back(CFace(0, 4, 1));
-//	//ThisMesh->fcolors().push_back(Kolor);
-//	ThisMesh->faces().push_back(CFace(5, 1, 4)); // face 5
-//
-//	// UI::MESSAGEBOX::error(L"Gonna color");
-//
-//	// Make front face translucent and red:
-//	for (int i = 0; i < 2; i++) {
-//		// ThisMesh->fcolors().push_back(CRGBA(0.9f, .3f, .3f, 0.3f));
-//		ThisMesh->fcolors().push_back(Kolor);
-//		// ThisMesh->fcolors().push_back(K3Color);
-//	};
-//
-//	for (int i = 0; i < 10; i++) {
-//		// ThisMesh->fcolors().push_back(CRGBA(0.3f, 0.3f, 1.0f, 1.0f));
-//		ThisMesh->fcolors().push_back(Kolor);
-//		// ThisMesh->fcolors().push_back(K3Color);
-//	};
-//
-//};
+void K3FillMeshToUnitCube(CMesh* ThisMesh, CRGBA Kolor) { // double l, double a) {
+	CMesh* K3UnitCube = new CMesh();
+	ThisMesh->addVertex(CVertex(0.0, 0.0, 0.0)); // , Kolor);
+	ThisMesh->addVertex(CVertex(0.0, 0.0, 1.0)); //, Kolor);
+	ThisMesh->addVertex(CVertex(0.0, 1.0, 0.0)); //, Kolor);
+	ThisMesh->addVertex(CVertex(0.0, 1.0, 1.0)); //, Kolor);
+	ThisMesh->addVertex(CVertex(1.0, 0.0, 0.0)); //, Kolor);
+	ThisMesh->addVertex(CVertex(1.0, 0.0, 1.0)); //, Kolor);
+	ThisMesh->addVertex(CVertex(1.0, 1.0, 0.0)); //, Kolor);
+	ThisMesh->addVertex(CVertex(1.0, 1.0, 1.0)); //, Kolor);
+	// looking from outside, vertices should be counterclockwise:
+	ThisMesh->faces().push_back(CFace(1, 5, 3));
+	//ThisMesh->fcolors().push_back(Kolor);
+	ThisMesh->faces().push_back(CFace(7, 3, 5)); // face 0
 
+	ThisMesh->faces().push_back(CFace(4, 6, 5));
+	//ThisMesh->fcolors().push_back(Kolor);
+	ThisMesh->faces().push_back(CFace(7, 5, 6)); // face 1
+
+	ThisMesh->faces().push_back(CFace(0, 2, 4));
+	//ThisMesh->fcolors().push_back(Kolor);
+	ThisMesh->faces().push_back(CFace(6, 4, 2)); // face 2
+
+	ThisMesh->faces().push_back(CFace(1, 3, 0));
+	//ThisMesh->fcolors().push_back(Kolor);
+	ThisMesh->faces().push_back(CFace(2, 0, 3)); // face 3
+
+	ThisMesh->faces().push_back(CFace(2, 3, 6));
+	//ThisMesh->fcolors().push_back(Kolor);
+	ThisMesh->faces().push_back(CFace(7, 6, 3)); // face 4
+
+	ThisMesh->faces().push_back(CFace(0, 4, 1));
+	//ThisMesh->fcolors().push_back(Kolor);
+	ThisMesh->faces().push_back(CFace(5, 1, 4)); // face 5
+
+	// UI::MESSAGEBOX::error(L"Gonna color");
+
+	// Make front face translucent and red:
+	for (int i = 0; i < 2; i++) {
+		// ThisMesh->fcolors().push_back(CRGBA(0.9f, .3f, .3f, 0.3f));
+		ThisMesh->fcolors().push_back(Kolor);
+		// ThisMesh->fcolors().push_back(K3Color);
+	};
+
+	for (int i = 0; i < 10; i++) {
+		// ThisMesh->fcolors().push_back(CRGBA(0.3f, 0.3f, 1.0f, 1.0f));
+		ThisMesh->fcolors().push_back(Kolor);
+		// ThisMesh->fcolors().push_back(K3Color);
+	};
+
+};
 // {
 //	CImage* im = new CImage(cx, cy, CImage::Format::Format_ARGB32);
 
-//
-//void K3AddTotemMeshFromSpotQQQnicWeWogle(CMesh* whereto, Eigen::VectorXd K3HyperSpot, Eigen::VectorXd K3HyperLook) {  // "HyperSight = DataPoint*Observer"
-//	CMesh* K3Korpus = new CMesh;
-//	Eigen::Matrix4d K3Position;
-//	K3Position << 1, 0, 0, K3HyperSpot[0],
-//		0, 2, 0, K3HyperSpot[1],
-//		0, 0, .6, K3HyperSpot[2],
-//		0, 0, 0, 1;
-//
-//	/*Eigen::Matrix4d K3MakeKorpus;
-//	K3MakeKorpus << 1, 0, 0, 0,
-//		0, 2, 0, 0,
-//		0, 0, .2, 0,
-//		0, 0, 0, 1;*/
-//
-//	K3FillMeshToUnitCube(K3Korpus, CRGBA(1.0f, 1.0f, 0.70f, 0.990f));  // qq kolorki
-//
-//	// Scale up the torso:
-//	for (int i = 0; i < K3Korpus->vertices().size(); i++)
-//	{
-//		K3Korpus->vertices()[i].transformByMatrix(K3Position);
-//	}
-//
-//
-//	for (int i = 0; i < K3Korpus->vertices().size(); i++)
-//	{
-//		K3Korpus->vertices()[i].transformByMatrix(K3Position);
-//	}
-//
-//	for (int i = 0; i < K3Korpus->vertices().size(); i++) {
-//		whereto->vertices().push_back(K3Korpus->vertices()[i]);
-//	};
-//
-//	for (int i = 0; i < K3Korpus->faces().size(); i++) {
-//		whereto->faces().push_back(K3Korpus->faces()[i]);
-//	};
-//
-//	// delete korpus;
-//
-//
-//	Eigen::Matrix4d K3MakeArm;
-//	K3MakeArm << 5, 0, 0, 0,
-//		0, .2, 0, 0,
-//		0, 0, .05, 0,
-//		0, 0, 0, 1;
-//
-//	double alfa = K3HyperLook[4];
-//
-//	Eigen::Matrix4d K3TwistArm;
-//	K3TwistArm << cos(alfa), -sin(alfa), 0, 0,
-//		sin(alfa), cos(alfa), 0, 0,
-//		0, 0, 1, 0,
-//		0, 0, 0, 1;
-//
-//	Eigen::Matrix4d K3ShiftArm;
-//	K3ShiftArm << 1, 0, 0, 2,
-//		0, 1, 0, 2,
-//		0, 0, 1, 0,
-//		0, 0, 0, 1;
-//
-//};
-//
+
+void K3AddTotemMeshFromSpotQQQnicWeWogle(CMesh* whereto, Eigen::VectorXd K3HyperSpot, Eigen::VectorXd K3HyperLook) {  // "HyperSight = DataPoint*Observer"
+	CMesh* K3Korpus = new CMesh;
+	Eigen::Matrix4d K3Position;
+	K3Position << 1, 0, 0, K3HyperSpot[0],
+		0, 2, 0, K3HyperSpot[1],
+		0, 0, .6, K3HyperSpot[2],
+		0, 0, 0, 1;
+
+	/*Eigen::Matrix4d K3MakeKorpus;
+	K3MakeKorpus << 1, 0, 0, 0,
+		0, 2, 0, 0,
+		0, 0, .2, 0,
+		0, 0, 0, 1;*/
+
+	K3FillMeshToUnitCube(K3Korpus, CRGBA(1.0f, 1.0f, 0.70f, 0.990f));  // qq kolorki
+
+	// Scale up the torso:
+	for (int i = 0; i < K3Korpus->vertices().size(); i++)
+	{
+		K3Korpus->vertices()[i].transformByMatrix(K3Position);
+	}
+
+
+	for (int i = 0; i < K3Korpus->vertices().size(); i++)
+	{
+		K3Korpus->vertices()[i].transformByMatrix(K3Position);
+	}
+
+	for (int i = 0; i < K3Korpus->vertices().size(); i++) {
+		whereto->vertices().push_back(K3Korpus->vertices()[i]);
+	};
+
+	for (int i = 0; i < K3Korpus->faces().size(); i++) {
+		whereto->faces().push_back(K3Korpus->faces()[i]);
+	};
+
+	// delete korpus;
+
+
+	Eigen::Matrix4d K3MakeArm;
+	K3MakeArm << 5, 0, 0, 0,
+		0, .2, 0, 0,
+		0, 0, .05, 0,
+		0, 0, 0, 1;
+
+	double alfa = K3HyperLook[4];
+
+	Eigen::Matrix4d K3TwistArm;
+	K3TwistArm << cos(alfa), -sin(alfa), 0, 0,
+		sin(alfa), cos(alfa), 0, 0,
+		0, 0, 1, 0,
+		0, 0, 0, 1;
+
+	Eigen::Matrix4d K3ShiftArm;
+	K3ShiftArm << 1, 0, 0, 2,
+		0, 1, 0, 2,
+		0, 0, 1, 0,
+		0, 0, 0, 1;
+
+};
+
 
 // Principal Component Analysis:
 MatrixXd ConcretePlugin::K3_Get_PCA_Funnel(MatrixXd X, int nd) {
@@ -698,7 +698,7 @@ MatrixXd /* ConcretePlugin:: */ oldK3_Get_PCA_Funnel(MatrixXd X, int nd) {
 	return R;
 };
 
-void  ConcretePlugin::K3MetaChmura(CModel3D* o, float d)
+void  ConcretePlugin::K3Display(CModel3D* o, float d)
 {
 	CMesh* dstMesh = (CMesh*)(o->getChild());
 
@@ -734,11 +734,14 @@ void  ConcretePlugin::K3MetaChmura(CModel3D* o, float d)
 
 void DPVISION_DLL_API K3AddMyCloud(CModel3D* K3MyModel, MatrixXd K3ObsCloud, MatrixXd K3ViewMat, double K3Toler) {
 	int k = K3ObsCloud.cols();
+	if (k > 200) {
+		k = 200;
+	};
 	int m = K3ObsCloud.rows();
-	MatrixXd K3LocalSpots(K3hs + K3asr + 1, k);  // WRONG: 5 = X Y Z d T (3D + distance from current 3D space + homogeneous extra dim)
+	MatrixXd K3LocalSpots(5, k);  // QQ: FUTURE: 5 = X Y Z d T (3D + distance from current 3D space + homogeneous extra dim)
 			// RIGHT??: 5 = X Y Z T d (4D + distance from current 3D space)
-	for (int i = 0; i < k; i += 1) {  // DARKU TUTAJ DALEM 10, ZEBY WYSWIETLAC MNIEJ ELEMENTOW
-		for (int j = 0; j < K3hs + K3asr + 1; j++) {
+	for (int i = 0; i < k; i += 10) {  // DARKU TUTAJ DALEM 10, ZEBY WYSWIETLAC MNIEJ ELEMENTOW
+		for (int j = 0; j < 5; j++) {
 			// std::cout << "shame on i, j, k:" << i << " " << j << " " << k << std::endl;
 			if (j < m) {  // missing dimensions? Fill with ones.
 				K3LocalSpots(j, i) = K3ObsCloud(j, i);
@@ -747,8 +750,8 @@ void DPVISION_DLL_API K3AddMyCloud(CModel3D* K3MyModel, MatrixXd K3ObsCloud, Mat
 				K3LocalSpots(j, i) = 1.0;
 			}
 		}
-		K3LocalSpots(K3hs + K3asr, i) = 1.0;  // homogeneous extra dim  // K3UNBLOCKED 2024.08.22
-					// QQ7  was "k", replaced with "i"!
+		K3LocalSpots(4, i) = 1.0;  // homogeneous extra dim  // K3UNBLOCKED 2024.08.22
+					   // QQ7  was "k", replaced with "i"!
 	}
 	// K3ListMatrix(L"C:/K3/Wielowymiar/M1142", K3ViewMat, "K3ViewMat*");
 	// K3ListMatrix(L"C:/K3/Wielowymiar/M1142", K3LocalSpots, "*K3LocalSpots");
@@ -761,17 +764,18 @@ void DPVISION_DLL_API K3AddMyCloud(CModel3D* K3MyModel, MatrixXd K3ObsCloud, Mat
 	// K3ListMatrix(L"C:/K3/Wielowymiar/MujZrzut.txt", K3LocalSpots, "K3LocalSpots 1246");
 
 	for (int i = 0; i < k; i++) {
-		if ((abs(K3LocalSpots(3, i)) < K3Toler) && (abs(K3LocalSpots(4, i)) != 0)) {
+		// if ((abs(K3LocalSpots(3, i)) < K3Toler) && (abs(K3LocalSpots(4, i)) != 0))
+		{
 			K3Totem* K3TenTotem;
 			i = i; //qq
 			Eigen::VectorXd P(4);
-			Eigen::VectorXd V(K3hv + K3avr);
+			Eigen::VectorXd V(m - 4);
 			// QQSize P is the position vector!
-			double askala = 0.1;
+			double askala = 0.1 / K3LocalSpots(4, i);
 			P << K3LocalSpots(0, i) * askala, K3LocalSpots(1, i)* askala, K3LocalSpots(2, i)* askala, K3LocalSpots(3, i)* askala; // Totem
 			// P << 15.0 * i, 15.0 * i + 0.1, 15.0 * i + 0.2, 4.04; // Totem
-			for (int j88 = 0; j88 < K3hv + K3avr; j88++) {
-				V(j88) = K3ObsCloud(5 + j88, i);
+			for (int j88 = 0; j88 < m - 4; j88++) {
+				V(j88) = K3ObsCloud(4 + j88, i);
 			}
 			// K3ListMatrix(const wchar_t* filnam, MatrixXd XXX, const char* title)
 			// K3ListMatrix(L"C:/K3/Wielowymiar/M1120", K3ObsCloud, "M1120");
@@ -799,7 +803,7 @@ void DPVISION_DLL_API K3AddMyCloud(CModel3D* K3MyModel, MatrixXd K3ObsCloud, Mat
 	// UI::updateAllViews();
 	std::cout << k << std::endl;
 
-	K3ListMatrix(DATA_PATH(L"M1120").c_str(), K3ObsCloud, "CloudAdded");
+	//	K3ListMatrix(DATA_PATH(L"M1120").c_str(), K3ObsCloud, "CloudAdded");
 }
 
 void K3Neg3(double A[3], double B[3]) {
@@ -808,8 +812,114 @@ void K3Neg3(double A[3], double B[3]) {
 	}
 }
 
+int ConcretePlugin::K3FormProjectionMatrix(Eigen::MatrixXd* RawData) {
+	// Use list of parameter choices and data matrix to create a projection matrix
+	// that projects the raw dimensions into the observables according to user wishes
+	int K3I_ListAnon[100];
+	int i88, j88, j_raw, j;
+	int K3I_taken_s[4] = { 0,0,0,0 };
+	int K3I_taken_v[10] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+	int K3I_Count_a = 0, K3I_Count_s = 0, K3I_Count_v = 0;
+	if (RawData->rows() * RawData->cols() > 0)
+	{
+		int K3_IDim = RawData->rows();
+		int K3_ICard = RawData->cols();
+		if (RawData != NULL) {
+		};
+		K3_IObs = new Eigen::MatrixXd(4 + 10, K3_IDim); // 4 spatial + 10 face params.
+		K3FillMat(*K3_IObs, 0.0);
+
+		for (int j = 0; j < K3_IDim; j++) {
+			int j_raw = current_assignment[j].featureIndex;
+			int j_boiled = 0;
+			switch (current_assignment[j].groupIndex) {
+			case -1:  // ignore
+				break;
+			case 0:  // unnamed
+				K3I_ListAnon[K3I_Count_a++] = j_raw;
+				break;
+			case 1:  // spacial
+				if (current_assignment[j].label_id.has_value()) {
+					j_boiled = current_assignment[j].label_id.value();
+					K3I_taken_s[j_boiled] = 2;
+					K3I_Count_s++;
+				}
+				(*K3_IObs)(j_boiled, current_assignment[j].featureIndex) = 1;
+				break;
+			case 2:  // visual
+				if (current_assignment[j].label_id.has_value()) {
+					j_boiled = current_assignment[j].label_id.value() + 4;
+					K3I_Count_v++;
+				};
+				(*K3_IObs)(j_boiled, current_assignment[j].featureIndex) = 1;
+				break;
+
+			}
+		};
+		// make funnel. Firt, get the anonymous together:
+		MatrixXd X_anon(K3I_Count_a, K3_ICard);
+		for (j88 = 0; j88 < K3I_Count_a; j88++) {
+			j_raw = K3I_ListAnon[j88];
+			for (i88 = 0; i88 < K3_ICard; i88++) {
+				X_anon(j88, i88) = (*RawData)(j_raw, i88);
+			};
+		};
+		if (K3I_Count_s < 4) {
+			int j_boiled = 0;
+			MatrixXd X88 = K3_Get_PCA_Funnel(X_anon, 4 - K3I_Count_s); // QQ K3I_Count_a);
+			K3ListMatrix(DATA_PATH(L"MojeLeje.txt").c_str(), X88, "Lejek");
+			for (j88 = 0; j88 < 4 - K3I_Count_s; j88++) {
+				while (K3I_taken_s[j_boiled] > 0) { // skip the takien rows
+					j_boiled++;
+				}; // qq uwaga na przekroczenie
+				if (j_boiled < 4) {
+					K3I_taken_s[j_boiled] = 3;
+					for (i88 = 0; i88 < K3I_Count_a; i88++) {
+						(*K3_IObs)(j_boiled, i88) = X88(j88, i88);
+					};
+				};
+
+			};
+
+		};
+
+		// K3_IObs READY!
+
+		// Now standardize the sigmas:
+
+		K3BoiledData = *K3_IObs * *RawData;
+		K3ListMatrix(DATA_PATH(L"MujStat.txt").c_str(), *RawData, "RawData");
+		K3ListMatrix(DATA_PATH(L"MujStat.txt").c_str(), *K3_IObs, "K3_IObs");
+		K3ListMatrix(DATA_PATH(L"MujStat.txt").c_str(), K3BoiledData, "K3BoiledData");
+		for (j = 0; j < K3BoiledData.rows(); j++) {
+			double S1 = 0.0, S2 = 0.0, M, D;
+			int N = K3BoiledData.cols()-2, i;
+			for (i = 1; i < N; i++) {
+				S1 += K3BoiledData(j, i);
+				S2 += (K3BoiledData(j, i) * K3BoiledData(j, i));
+			};
+			M = S1 / (double)N;
+			D = sqrt(S2 / (double)N - M * M);
+			if (D < 0.0001) {  // avoid division by zero
+				D = 0.0001;
+			};
+			for (i = 1; i < N; i++) {
+				// **K3_IObs.
+				K3BoiledData(j, i) = (K3BoiledData(j, i) -M)/ D ;
+				if (j < 4) {
+					K3BoiledData(j, i) = K3BoiledData(j, i) + 0.5;
+				};
+			};
+		};
+
+	};
+	K3ListMatrix(DATA_PATH(L"MujStat.txt").c_str(), *K3_IObs, "NEW_K3_IObs");
+
+	return(1);
+};
 void ConcretePlugin::onButton(std::wstring name)
 {
+	//Eigen::MatrixXd *K3_IObs;
 	if (0 == name.compare(L"csvReaderTest")) {
 		// Tu wczytujesz dane z pliku. Możesz też podać ścieżkę jako parametr,
 		// wtedy sie nie pokaże dialog wyboru pliku
@@ -829,28 +939,60 @@ void ConcretePlugin::onButton(std::wstring name)
 		// Możesz sobie to dowolnie zmodyfikować, np dodac nowe elementy
 		QVector<GroupDefinition> groupDefs = {
 			{ "unnamed", {} },
-			{ "spacial", { "dimension_1", "dimension_2", "dimension_3", "dimension_4" } },
-			{ "visual", { "left eye", "right eye", "nose", "bgcolor"}},
+			{ "spacial", { "X", "Y", "Z", "T" } },
+			{ "visual", { "Skin_C", "Hair_C", "Eye_S", "Nose_L", "Mouth_W", "Smile", "Frown", "Hair_L", "Face_Elong", "Iris_C"}},
 		};
-
-
+		/* to dopisz: */
 		QVector<QPair<int, int>> defs = {
-			{0,-1}, // pierwsza cyfra to indeks grupy z listy powyżej (tu np. unnamed=0, spacial=1 itd) 
-			{1,0},  // a druga cyfra to indeks etykiety (też j.w.), dla grupy unnamed jest pomijany, wpisałem -1
-			{1,1},  // tych linii może być mniej niż parametrów win,
-			{1,2},  // wtedy ostatnie pola w dialogu nie bedą po prostu ustawione
-			{2,0},  // może być też więcej, wtedy one będą pominięte
-			{2,1},
-			{2,2},
-			{2,3},
-			{1,3},
-			{0,-1},
-			{0,-1}
+	{0,-1}, // pierwsza cyfra to indeks grupy z listy powyżej (tu np. unnamed=0, spacial=1 itd)
+	{1,0},  // a druga cyfra to indeks etykiety (też j.w.), dla grupy unnamed jest pomijany, wpisałem -1
+	{1,1},  // tych linii może być mniej niż parametrów win,
+	{0,-1},  // wtedy ostatnie pola w dialogu nie bedą po prostu ustawione
+	{2,0},  // może być też więcej, wtedy one będą pominięte
+	{2,1},
+	{2,2},
+	{2,3},
+	{2,4},
+	{0,-1},
+	{0,-1}
 		};
+
+		defs = {
+			/* fix.ac.ty */	{2,9},
+			/* vol.ac.ty */	{2,1},
+			/* citric a. */	{0,-1},
+			/* res.sugar */	{1,2},
+			/* chlorides */	{0,-1},
+			/* free SO2  */	{2,6},
+			/* total SO2 */	{0,-2},
+			/* density   */	{2,0},
+			/* pH        */ {1,0},
+			/* sulphates */	{0,-1},
+			/* alcohol   */	{2,3},
+			/* quality   */	{2,5},
+		};
+
+#if 0
+		defs = {
+			/* fix.ac.ty */	{,},
+			/* vol.ac.ty */	{,},
+			/* citric a. */	{,},
+			/* res.sugar */	{,},
+			/* chlorides */	{,},
+			/* free SO2  */	{,},
+			/* total SO2 */	{,},
+			/* density   */	{,},
+			/* pH        */ {,},
+			/* sulphates */	{,},
+			/* alcohol   */	{,},
+			/* quality   */	{,},
+		};
+#endif
 
 		// Tu tworzysz sobie okienko dialogowe o takich parametrach jak ustawiłeś wyżej
 		// csv_data.headers - to sa rzeczywiste etykiety z pliku (np. kwasowośc)
 		// groupDefs - to są opcje które będziesz mógł wybierać, ustawione wyżej
+		// // STARE:  CsvColumnAssignmentDialog dlg(csv_data.headers, groupDefs);
 		CsvColumnAssignmentDialog dlg(csv_data.headers, groupDefs, defs);
 
 		// Tu uruchamiasz dialog i sprawdzasz czy kliknięto OK
@@ -863,11 +1005,18 @@ void ConcretePlugin::onButton(std::wstring name)
 			current_assignment = dlg.getAssignments();
 
 
+
+
 			// Konwersja do macierzy Eigen::Matrixxd, na której możesz sobie dalej działać.
 			// Ta macierz ma tyle kolumn co wymiarów, a wierszy tyle co próbek w źródle z pominięciem nagłówków
 			current_data_matrix = CsvReader::convertCsvDataToMatrix(csv_data);
 			// Ta macierz jest widoczna w całym pluginie więc możesz sobie inne kawałki kodu
 			// stworzyć jako reakcję na inny przycisk i ją tam odczytać. Warto tylko sprawdzić czy nie jest pusta.
+			ConcretePlugin::K3FormProjectionMatrix(&current_data_matrix);
+			// Tu LL: Wypełniam częściowo current_assignment, żeby mieć mniej klikania:
+			// current_assignment[0].groupIndex = 1;
+			// current_assignment[0].label_id = 0;  // Nie wyszło, odpuszczam.
+
 		}
 		else {
 			// Jeśli nie kliknieto OK - to zakładam, ze zrezygnowałeś i odrzucam wszystko co wczytałeś
@@ -984,524 +1133,143 @@ void ConcretePlugin::onButton(std::wstring name)
 		// _Thrd_yield();
 
 	}
-	else if (0 == name.compare(L"K3MetaChmura"))
+	else if (0 == name.compare(L"K3Display"))
 	{
-		// K3 My Menu Item:
-#define K3Dim 15
-// #define K3CloudCard 15
-#define K3CloudCard 12000
-		// 5662 
+		CModel3D* K3MyModel = new CModel3D();
+		// Eigen::MatrixXd K3FullCloud = current_data_matrix;
+		Eigen::MatrixXd K3DenseCloud = K3BoiledData; // *K3_IObs* K3FullCloud;
+		//		AP::WORKSPACE::addModel(K3MyModel);
+		AP::WORKSPACE::setCurrentModel(-1);
+		MatrixXd K3ViewMat(5, 5); // QQ Assuming we only deal with 4 spatial dimensions
+		K3FillMat(K3ViewMat, 0.0);
+		for (int i = 0; i < 4; i++) { // QQ Same as above: 4D only
+			K3ViewMat(i, i) = 50.0;  // QQ Scale! bigbig
+		}
+		K3ViewMat(4, 4) = 1.0;
+		K3AddMyCloud(K3MyModel, K3DenseCloud, K3ViewMat, 2000.3);
+		K3MyModel->importChildrenGeometry();
+
+		AP::WORKSPACE::addModel(K3MyModel); // QQ blok Wlknoc
+		UI::updateAllViews();
+		// _Thrd_yield();
+
+
+	}
+	else if (0 == name.compare(L"K3Dance"))
+	{
+		CModel3D* K3MyModel = new CModel3D();
+		MatrixXd K3ViewMat(5, 5); // QQ Assuming we only deal with 4 spatial dimensions
+		// Eigen::MatrixXd K3FullCloud = current_data_matrix;
+		Eigen::MatrixXd K3DenseCloud = K3BoiledData; // *K3_IObs* K3FullCloud;
+		//		AP::WORKSPACE::addModel(K3MyModel);
+		AP::WORKSPACE::setCurrentModel(-1);
+		void* k3viewer = UI::CAMERA::currentViewer();
 
 		delete_old_screenshots("Fot_*.png");
 
-		// Eigen::MatrixXd K3FullCloud(K3Dim, K3CloudCard);
-		Eigen::MatrixXd K3FullCloud = current_data_matrix;
-		int i88, j88, j_raw;
-		int K3I_taken_s[4] = { 0,0,0,0 };
-		int K3I_taken_v[10] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-		int K3I_Count_a = 0;
-		int K3I_ListAnon[100];
-		for (i88 = 0; i88 < 100; i88++) {
-			K3I_ListAnon[i88] = -1;
-		}
-		if (K3FullCloud.rows() * K3FullCloud.cols() > 0) {
-			int K3_IDim = K3FullCloud.rows();
-			int K3_ICard= K3FullCloud.cols();
 
-			Eigen::MatrixXd K3_IObs(4 + 10, K3_IDim); // 4 spatial + 10 face params.
-			K3FillMat(K3_IObs, 0.0);
+		// QQ9 ROLLING THE VOLUME LOOP
+		for (int i_plane = 0; i_plane < 5; i_plane++) {  // was 5 and is 12
+			for (double alfa = 0.0; alfa < 0.01 + 3.1415926 / 2.0; alfa += (3.1415926 / 24.0)) {
 
-			for (int j = 0; j < K3_IDim; j++) {
-				int j_raw= current_assignment[j].featureIndex;
-				int j_boiled = 0;
-				switch (current_assignment[j].groupIndex) {
-				case -1:  // ignore
-					break;
-				case 0:  // unnamed
-					K3I_ListAnon[K3I_Count_a++] = j_raw;
-					break;
-				case 1:  // spacial
-					if (current_assignment[j].label_id.has_value()) {
-						j_boiled = current_assignment[j].label_id.value();
+				{
+					FILE* plik = _wfopen(DATA_PATH(L"Liczniki.txt").c_str(), L"a");
+					if (plik == NULL) {
+						UI::MESSAGEBOX::error(L"To bardzo skomPLIKowane");
 					}
-					K3_IObs(j_boiled, current_assignment[j].featureIndex) = 1;
-					break;
-				case 2:  // visual
-					if (current_assignment[j].label_id.has_value()) {
-						j_boiled = current_assignment[j].label_id.value() + 4;
-					};
-					K3_IObs(j_boiled, current_assignment[j].featureIndex) = 1;
-					break;
 
-				}
-			};
-			// make funnel. Firt, get the anonymous together:
-			MatrixXd X_anon(K3I_Count_a, K3_ICard);
-			for (j88 = 0; j88 < K3I_Count_a; j88++) {
-				j_raw = K3I_ListAnon[j88];
-				for (i88 = 0; i88 < K3_ICard; i88++) {
-					X_anon(j88, i88) = K3FullCloud(j_raw, i88);
-				};
-			};
-			MatrixXd X88 = K3_Get_PCA_Funnel(X_anon, K3I_Count_a);
-
-
-
-			MatrixXd Observer(K3Dim, K3Dim); // Observer pojdzie precz, zamiast tego cztery macierze.
-			// K3Dim shall be split into 4 parts, not necessarily disjoint. See article.
-
-			/*
-			// number of human-identifiable parameters to be displayed hyperspacially:
-	#define K3hs 2  // density, pH
-	int K3_indhs[k3hs] = {7, 8};  // indices in input matrix
-	// number of human-identifiable parameters to be displayed by avatar appearance:
-	#define K3hv 2  // citric, suger
-	int K3_indhv[k3hv] = {2,3};
-	// number of NOT human-identifiable parameters to be displayed hyperspacially:
-	#define K3as 3
-	int K3_indas[k3hv] = {2,3};
-	// reduces to:
-	#define K3asr 2
-	// number of NOT human-identifiable parameters to be displayed by avatar appearance:
-	#define K3av 6
-	// reduces to:
-	#define K3avr 4 */
-
-#define K3hs 2  // density, pH
-#define K3as 3
-#define K3asr 2
-#define K3hv 2  // citric, suger,
-#define K3av 6
-#define K3avr 4
-
-			MatrixXd K3DenseCloud(K3hs + K3asr + K3hv + K3avr, K3CloudCard); // Wlknoc przeniesiono z dołu
-			MatrixXd Obser_s(K3hs + K3asr, K3Dim);
-			K3FillMat(Obser_s, 0.0);
-			MatrixXd Obser_v(K3hv + K3avr, K3Dim);
-			K3FillMat(Obser_v, 0.0);
-			Obser_s(0, 7) = 1;
-			Obser_s(1, 8) = 1;
-
-			Obser_v(0, 2) = 1;
-			Obser_v(1, 3) = 1;
-
-
-			Obser_s(0, 0) = 1;
-			Obser_s(1, 1) = 1;
-			Obser_s(2, 4) = 1;
-			Obser_s(3, 5) = 1;
-
-			Obser_v(0, 6) = 1;
-			Obser_v(1, 9) = 1;
-			Obser_v(2, 10) = 1;
-			Obser_v(3, 11) = 1;
-			//		MatrixXd K3_MessS(K3as, )
-
-
-			/*		int j = 0;
-					for (int i = 0; i < K3asr; i++) {
-						int k3flag = 0;
-						repeat{ k3flag = 0;
-						for(i88;i88<K3hs+K3a)
-						}until(2 > 3);
-					} */
-
-			int np_hs = 0, np_hv = 0, np_as = 0, np_av = 0;
-			// #define K3addHS(kk)  Obser_hs(np_hs++,kk)+=1.0;
-					/*	0	fixed_acidity	*/
-					/*	1	volatile_acidity	*/
-				/*	2	citric_acid	*/
-				/*	3	residual_sugar	*/
-					/*	4	chlorides	*/
-					/*	5	free_sulfur_dioxide	*/
-					/*	6	total_sulfur_dioxide	*/
-				/*	7	density	*/
-				/*	8	pH	*/
-					/*	9	sulphates	*/
-					/*	10	alcohol	*/
-					/*	11	quality	*/
-
-
-
-
-			{
-				// K3 loading CSV file:
-				char K3ParNames[12][30];
-
-
-				{// Clear log files: QQQ
-					FILE* plik = _wfopen(DATA_PATH(L"K3av.txt").c_str(), L"w");
+					fprintf(plik, "LL=%06d_x_%06d_OTO\n", i_plane,
+						(int)(100.0 * alfa + 3000.0));
 					fclose(plik);
-					plik = _wfopen(DATA_PATH(L"MujZrzut.txt").c_str(), L"w");
-					fclose(plik);
-					plik = _wfopen(DATA_PATH(L"MojeWidoki.txt").c_str(), L"w");
-					fclose(plik);
-
 				}
 
-				// K3ReadCSV_WithHeader(/* READING_CLOUD */ &K3FullCloud, DATA_PATH(L"CircleSquareEtc.dat").c_str());
-				// K3ReadCSV_WithHeader(/* READING_CLOUD */ &K3FullCloud, DATA_PATH(L"Tesseract.dat").c_str());
-				// K3ListMatrix(DATA_PATH(L"MujZrzut.txt").c_str(), K3FullCloud, "CSVK3FullCloud");
-				// UI::MESSAGEBOX::error(L"Got may data");  // LABEL GOTDATA
-
-
-				// Eigen::VectorXd X(15)[15]; //  double X[5][15];
-				std::vector< Eigen::VectorXd> X;
-				int j;
-				char K3Bufor[80];
-				Eigen::Matrix3d m3;
-				m3(1, 2) = 742;
-				QString K3QST;
-
-				// Test PCA:
-
-				if (1 < 0) {  // parentheses to block range of variables
-					MatrixXd X77(3, 100);
-					MatrixXd K3Axes77(3, 3);
-					K3Axes77 << 3.0, 4.0, 0.0, 4.0, -3.0, 0.0, 0.0, 0.0, 5.0;
-					for (int i77 = 0; i77 < 100; i77++) {
-						double a, b, c;
-						a = ((double)(rand() % 10000)) / 10000.0 * 3;
-						b = ((double)(rand() % 10000)) / 10000.0 * .8;
-						c = ((double)(rand() % 10000)) / 10000.0 * .5;
-
-						X77(0, i77) = a * K3Axes77(0, 0) + b * K3Axes77(0, 1) + c * K3Axes77(0, 2);
-						X77(1, i77) = a * K3Axes77(1, 0) + b * K3Axes77(1, 1) + c * K3Axes77(1, 2);
-						X77(2, i77) = a * K3Axes77(2, 0) + b * K3Axes77(2, 1) + c * K3Axes77(2, 2);
-
-
-					};
-					FILE* plik = _wfopen(DATA_PATH(L"Gugu.txt").c_str(), L"w");
-					fprintf(plik, "X77=[ ");
-					for (int i = 0; i < 100; i++) {
-						fprintf(plik, "%15lg,  %15lg,  %15lg\n", X77(0, i), X77(1, i), X77(2, i));
-					}
-					fprintf(plik, "]\n plot3(X77(:,1),X77(:,2),X77(:,3))\n");
-					fclose(plik);
-					//				std::cout << "X77:" << std::endl << X77 << "X77 over" << std::endl;
-					//MatrixXd ConcretePlugin::K3_Get_PCA_Funnel(MatrixXd X, int nd)
-					K3ListMatrix(DATA_PATH(L"K3av.txt").c_str(), X77, "L77=1317; X77");
-					MatrixXd X88;
-					X88 = K3_Get_PCA_Funnel(X77, 2);
-					K3ListMatrix(DATA_PATH(L"K3av.txt").c_str(), X88, "L77=1320; X88");
-				};  // End of if 1<0
-
-
-
-
-
-				// FILE* plik = _wfopen(L"C:/K3/Wielowymiar/ala.txt", L"r");   // ok 1599 rekordów
-				// FILE* plik = _wfopen(DATA_PATH(L"NewCircleSquareEtc2_17.dat").c_str(), L"r");
-				// ok  rekordów
-
-#if 0  // cutting out "inline" data read
-				FILE* plik = _wfopen(DATA_PATH(L"ScaledCyrcleSquareEtc2_17.dat").c_str(), L"r");   // ok  rekordów
-
-							// QQQQ Tu naprawde czytamy
-				if (plik) {
-					// fscanf(plik, "%[^,] %[^,]   %[^,] %[^,] %[^,] %[^,] %[^,] %[^,] %[^,] %[^,] %[^,] %[^,] %lf",
-					//fscanf(plik, "%s %s %s %s %s %s %s %s %s %s %s %s",
-					// K3ParNames[0], K3ParNames[1], K3ParNames[2],
-					//	K3ParNames[3], K3ParNames[4], K3ParNames[5],
-					//	K3ParNames[6], K3ParNames[7], K3ParNames[8],
-					//	K3ParNames[9], K3ParNames[10], K3ParNames[11]);
-					//  fgets(K3Bufor, 80, plik);
-					for (int j88 = 0; j88 < K3Dim; j88++) {
-						for (int i88 = 0; i88 < K3Dim; i88++) {
-							Observer(j88, i88) = 0.0;
-						}
-						Observer(j88, j88) = 1.0;
-
-					}
-					// K3AdjustShare(Observer, int iBigDim, int iSmallDim, double delta);
-					K3AdjustShare(Observer, 4, 0, 1000.0);
-					K3AdjustShare(Observer, 4, 1, 10.0);
-					K3AdjustShare(Observer, 4, 2, 10.0);
-
-					/*
-					// number of human-identifiable parameters to be displayed hyperspacially:
-	#define K3hs 2  // density, pH
-	// number of human-identifiable parameters to be displayed by avatar appearance:
-	#define K3hv 2  // citric, suger
-	// number of NOT human-identifiable parameters to be displayed hyperspacially:
-	#define K3as 3
-	// reduces to:
-	#define K3asr 2
-	// number of NOT human-identifiable parameters to be displayed by avatar appearance:
-	#define K3av 6
-	// reduces to:
-	#define K3avr 4
-	*/
-	// Dimension of
-#define K3ObsDim (K3hs+K3hv+K3asr+K3avr)
-
-					Eigen::VectorXd K3ThisSpot(K3Dim);
-					K3ThisSpot << 30, 2, 1.5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
-
-					Eigen::MatrixXd NewObserver(K3ObsDim, K3Dim);
-
-					// for (j = 0; j < 1599; j++) {
-					for (j = 0; j < K3CloudCard; j++) {
-						// for (int i898 = 0; i898 < 1; i898++) {
-						fscanf(plik, "%lf;%lf;%lf;%lf;%lf;%lf;%lf;%lf;%lf;%lf;%lf;%lf;%lf;%lf;%lf",
-							&K3ThisSpot(0), &K3ThisSpot(1), &K3ThisSpot(2), &K3ThisSpot(3), &K3ThisSpot(4),
-							&K3ThisSpot(5), &K3ThisSpot(6), &K3ThisSpot(7), &K3ThisSpot(8), &K3ThisSpot(9),
-							&K3ThisSpot(10), &K3ThisSpot(11), &K3ThisSpot(12), &K3ThisSpot(13), &K3ThisSpot(14));
-						// };
-						for (int i = 0; i < K3Dim; i++) {
-							K3FullCloud(i, j) = K3ThisSpot(i);
-						};
-						/*K3ThisSpot(0) *= 10;
-						K3ThisSpot(1) *= 10;
-						K3ThisSpot(2) *= 10;*/
-
-						VectorXd* X88 = new VectorXd(K3Dim);
-						*X88 = Observer * K3ThisSpot;  // QQ 22 II 2024: dodałem * na początku    ######### TRANS #########
-						X.push_back(*X88);
-
-
-
-						/*X[j][0], X[j][1], X[j][2], X[j][3],
-						X[j][4], X[j][5], X[j][6], X[j][7],
-						X[j][8], X[j][9], X[j][10], X[j][11]);*/
-
-					}
-					fclose(plik);  // UI::MESSAGEBOX::error(L"Got data");
-				};
-				// :End K3 loading CSV file
-#endif
-				Eigen::MatrixXd K3GasS(K3as, K3CloudCard);
-				// K3ListMatrix(L"C:/K3/Wielowymiar/K3av.txt", K3av, "K3av");
-				Eigen::MatrixXd K3GasV(K3av, K3CloudCard);
-				K3GasS = Obser_s * K3FullCloud;
-				K3ListMatrix(DATA_PATH(L"K3GasS.txt").c_str(), K3GasS, "K3GasS");
-				K3GasV = Obser_v * K3FullCloud;
-				MatrixXd K3FunS, K3FunV;
-				// K3FunS = K3_Get_PCA_Funnel(K3GasS, K3asr);
-				// K3FunV = K3_Get_PCA_Funnel(K3GasV, K3avr); //  qq
-				K3ListMatrix(DATA_PATH(L"MujZrzut.txt").c_str(), K3GasS, "K3GasS");
-				K3ListMatrix(DATA_PATH(L"MujZrzut.txt").c_str(), K3FunS, "K3FunS");
-				K3ListMatrix(DATA_PATH(L"MujZrzut.txt").c_str(), K3GasV, "K3GasVS");
-				K3ListMatrix(DATA_PATH(L"MujZrzut.txt").c_str(), K3FunV, "K3FunV");
-
-				MatrixXd K3NewObserver(K3hs + K3asr + K3hv + K3avr, K3Dim); // QQ Nie Card!
-				K3NewObserver << Obser_s,    // QQ Tutaj byk!
-					// K3FunS* Obser_as,
-					Obser_v,
-					// K3FunV* Obser_av;
-				/*K3FillMat(K3NewObserver, 0.0);
-				for (int j = 0; j < K3hs; j++) {
-					for (int i = 0; i < K3Dim) {
-						K3NewObserver(j, i) = Obser_hs(j, i);
-					}
-				}
-				for (int j = K3hs; j < K3hs+ K3asr; j++) {
-					for (int i = 0; i < K3Dim) {
-						K3NewObserver(j, i) = (j, i);
-					}
-				}  */
-
-				// K3ListMatrix(L"C:/K3/Wielowymiar/MujZrzut.txt", Obser_hs, "Obser_hs");
-				// K3ListMatrix(L"C:/K3/Wielowymiar/MujZrzut.txt", K3FunS, "K3FunS");
-				// K3ListMatrix(L"C:/K3/Wielowymiar/MujZrzut.txt", Obser_hv, "Obser_hv");
-				// K3ListMatrix(L"C:/K3/Wielowymiar/MujZrzut.txt", K3FunV, "K3FunV");
-
-
-				// MatrixXd K3DenseCloud(K3hs + K3asr + K3hv + K3avr, K3CloudCard); // Wlknoc przerzucam na początek
-				// K3ListMatrix(L"C:/K3/Wielowymiar/MujZrzut.txt", K3NewObserver, "K3NewObserver");
-					K3ListMatrix(L"C:/K3/Wielowymiar/MujZrzut.txt", K3FullCloud, "K3FullCloud");
-				K3ListMatrix(L"C:/K3/Wielowymiar/MujZrzut.txt", K3NewObserver, "K3NewObserver");
-
-
-				// NEUTRALIZE OBSERVER!
-				K3FillMat(K3NewObserver, 0.0);
-				for (int j = 0; j < 5; j++) {
-					K3NewObserver(j, j) = 1.0;
-				}
-
-				K3DenseCloud = K3NewObserver * K3FullCloud;
-
-
-				// shortcut! QQQQ QQQ QQ 
-							// MatrixXd X77(1500, 6);
-
-
-				// (DP): Zwróć uwagę, że kilka linijek wyżej zapisujesz do tej macierzy wynik mnożenia,
-				// wydaje mi się, że któraś z tych operacji jest niepotrzebna.
-				// K3DenseCloud = MatrixXd(6, K3CloudCard);
-				// (DP): UWAGA NA DRUGI PARAMETR - JEŚLI JEST ZA MAŁY TO SIE WYSYPUJE PRZY WCZYTYWANIU DANYCH
-
-
-				K3ReadCSV_WithHeader(/* READING_CLOUD */ &K3DenseCloud, L"C:/K3/Wielowymiar/Tabulka.txt");
-				// K3ReadCSV_WithHeader(/* READING_CLOUD */ &K3DenseCloud, L"C:/K3/Wielowymiar/NewCircleSquareEtc3_13.dat");
-
-
-				// (DP): Jak się ma poniższa funkcja do tego że wyżej czytasz z tego samego pliku
-				// Czy czasem nie czytasz go dwa razy? NewZigZagEDGE
-				// K3ReadCSV_WithHeader(/* READING_CLOUD */ &K3DenseCloud, DATA_PATH(L"NewCyrcleSquareEtc2_17.dat").c_str());
-				// K3ReadCSV_WithHeader(/* READING_CLOUD */ &K3DenseCloud, DATA_PATH(L"NewZigZag2_3.dat").c_str());
-				// QQQQ K3ReadCSV_WithHeader(/* READING_CLOUD */ &K3DenseCloud, DATA_PATH(L"ScaledCyrcleSquareEtc.dat").c_str());
-				// K3ListMatrix(L"C:/K3/Wielowymiar/MujZrzut.txt", K3DenseCloud, "K3DenseCloud csv");
-
-				MatrixXd K3ViewMat(K3hs + K3asr + 1, K3hs + K3asr + 1);
-				K3FillMat(K3ViewMat, 0.0);
-				for (int i = 0; i < K3hs + K3asr + 1; i++) {
-					K3ViewMat(i, i) = 1.0 * K3GRAND_SCALE;  // QQ Scale!
-				}
-				// K3ViewMat(K3hs + K3asr, K3hs + K3asr)=1.0;
-
-					//// Trying totem class:  // Wlknoc duzy blok
-				CModel3D* K3MyModel = new CModel3D();
-				//for (int iDataPoint = 0; iDataPoint < 0; iDataPoint++) { // QQ liczba!
-				//	K3Totem* K3ThisTotem = new K3Totem(X[iDataPoint], X[iDataPoint]); //  (K3ThisSpot);
-				//	//CMesh K3ThisTotem;
-				//	// K3AddTotemMeshFromSpot((CMesh*)K3ThisTotem, K3ThisSpot);
-
-				//	// K3MyModel->addChild((CMesh*)K3ThisTotem); //  .CMesh); // Wlknoc blok
-				//	//// delete &K3ThisTotem;
-				//	// QQ K3MyModel->importChildrenGeometry();
-				//};
-
-				// K3MyModel->importChildrenGeometry();
-
-
-				//for (int j = 0; j < 3; j++) {  // QQ 777 Debugging trick!
-				//	K3DenseCloud(j, 0) = 1.0;
-				//	K3DenseCloud(j, 1) = 10.0;
-				//	K3DenseCloud(j, 2) = 100.0;
-				//}
-				//for (int j = 3; j < 4; j++) {  // QQ 777 Debugging trick!
-				//	K3DenseCloud(j, 0) = 1.0;
-				//	K3DenseCloud(j, 1) = 1.0;
-				//	K3DenseCloud(j, 2) = 1.0;
-				//}
-	//			// (L"C:/K3/Wielowymiar/MujZrzut.txt", K3DenseCloud, "K3DenseCloud");
-	//			// K3ListMatrix(L"C:/K3/Wielowymiar/MujZrzut.txt", K3ViewMat, "K3ViewMat");
-
-
-				K3AddMyCloud(K3MyModel, K3DenseCloud, K3ViewMat, 2000.3);
-
-				//double RoseStem[3] = { 1, 1, 1 };
-				//CRGBA colorlist[20];
-				//// CRGBA K3_color(double en, double a)
-				//for (int i = 0; i < 15; i++) {
-				//	// colorlist[i] = K3_color((double(i) / 12.0), ((i > 1) ? 0.2 : 0.9));
-				//	colorlist[i] = K3_color(K3AverIndex(Observer, i) / 15.0, 0.8);
-				//};
-				// K3RoseOfWinds* IlNome = new K3RoseOfWinds(Observer, RoseStem, colorlist);
-				// K3MyModel->addChild((CMesh*)IlNome);
-	//			K3MyModel->importChildrenGeometry();
-	//			AP::WORKSPACE::addModel(K3MyModel); // QQ blok Wlknoc
-	//			UI::updateAllViews();
+				// Sleep(200);
 				// _Thrd_yield();
+				// AP::processEvents();
+//					AP::WORKSPACE::removeAllModels();
+				AP::processEvents();
+				// AP::WORKSPACE::removeImage(;
 				// K3MyModel = new CModel3D();
+				// double alfa = (double)i * 0.25;  // radians!
+// void K3_4x4viewN(MatrixXd *V, int k, double alfa)
 
-				// GLViewer* k3viewer = UI::CAMERA::currentViewer();
-				void* k3viewer = UI::CAMERA::currentViewer();
+				K3_4x4viewN(&K3ViewMat, i_plane, alfa);
+				K3ViewMat *= K3GRAND_SCALE;   //QQ9 SCALE
+				K3ViewMat(4, 4) = 1.0;
+				//{
+				//	char DescrIter[300];   // QQ w or no w?  wchar_t
 
-				// QQ9 ROLLING THE VOLUME LOOP
-				for (int i_plane = 0; i_plane < 5; i_plane++) {  // was 5 and is 12
-					for (double alfa = 0.0; alfa < 0.01 + 3.1415926 / 2.0; alfa += (3.1415926 / 24.0)) {
+				//	sprintf(DescrIter, "Rot_%03d_x_%04d ", i_plane,
+				//		(int)(100.0 * alfa + 3000.0));
+					// (L"C:/K3/Wielowymiar/MojeWidoki.txt", K3ViewMat, DescrIter);
+				//};
 
-						{
-							FILE* plik = _wfopen(DATA_PATH(L"Liczniki.txt").c_str(), L"a");
-							if (plik == NULL) {
-								UI::MESSAGEBOX::error(L"To bardzo skomPLIKowane");
-							}
+				// if (i % 2)
+				{
+					double RoseStem[3] = { -30, 40, 25 }; // QQ sET STEM LENGTH; was triple 1.
+					AP::WORKSPACE::removeAllModels();
 
-							fprintf(plik, "LL=%06d_x_%06d_OTO\n", i_plane,
-								(int)(100.0 * alfa + 3000.0));
-							fclose(plik);
-						}
+					K3MyModel = new CModel3D();
+					AP::WORKSPACE::addModel(K3MyModel);
+					AP::WORKSPACE::setCurrentModel(-1);
 
-						// Sleep(200);
-						// _Thrd_yield();
-						// AP::processEvents();
-	//					AP::WORKSPACE::removeAllModels();
-						AP::processEvents();
-						// AP::WORKSPACE::removeImage(;
-						// K3MyModel = new CModel3D();
-						// double alfa = (double)i * 0.25;  // radians!
-		// void K3_4x4viewN(MatrixXd *V, int k, double alfa)
-
-						K3_4x4viewN(&K3ViewMat, i_plane, alfa);
-						K3ViewMat *= K3GRAND_SCALE;   //QQ9 SCALE
-						K3ViewMat(4, 4) = 1.0;
-						//{
-						//	char DescrIter[300];   // QQ w or no w?  wchar_t
-
-						//	sprintf(DescrIter, "Rot_%03d_x_%04d ", i_plane,
-						//		(int)(100.0 * alfa + 3000.0));
-							// (L"C:/K3/Wielowymiar/MojeWidoki.txt", K3ViewMat, DescrIter);
-						//};
-
-						// if (i % 2)
-						{
-							double RoseStem[3] = { -30, 40, 25 }; // QQ sET STEM LENGTH; was triple 1.
-							AP::WORKSPACE::removeAllModels();
-
-							K3MyModel = new CModel3D();
-							AP::WORKSPACE::addModel(K3MyModel);
-							AP::WORKSPACE::setCurrentModel(-1);
-
-							// K3ListMatrix(DATA_PATH(L"MujZrzut.txt").c_str(), K3DenseCloud, "ViewDense"); // FotFilNam);
-							K3AddMyCloud(K3MyModel, K3DenseCloud, K3ViewMat, 5000.4); // 5000000.3);
+					// K3ListMatrix(DATA_PATH(L"MujZrzut.txt").c_str(), K3DenseCloud, "ViewDense"); // FotFilNam);
+					K3AddMyCloud(K3MyModel, K3DenseCloud, K3ViewMat, 5000.4); // 5000000.3);
 
 
 
 
 
-							// Znakiem QQ7 oznaczam blokady z 23 IX 2024
-							CRGBA colorlist[20];
-							// CRGBA K3_color(double en, double a)
-							// for (int i = 0; i < 15; i++) {
-								// colorlist[i] = K3_color((double(i) / 12.0), ((i > 1) ? 0.2 : 0.9));
-								// colorlist[i] = K3_color(K3AverIndex(Observer, i) / 15.0, 0.8);
-							//};
-							colorlist[0] = CRGBA((unsigned char)255, (unsigned char)0, (unsigned char)0);
-							colorlist[1] = CRGBA((unsigned char)0, (unsigned char)255, (unsigned char)0);
-							colorlist[2] = CRGBA((unsigned char)0, (unsigned char)0, (unsigned char)255);
-							colorlist[3] = CRGBA((unsigned char)255, (unsigned char)255, (unsigned char)0);
-							K3RoseOfWinds* MyRose = new K3RoseOfWinds(K3ViewMat, RoseStem, colorlist, 20.0);
-							// K3MyModel->addChild(MyRose);
+					// Znakiem QQ7 oznaczam blokady z 23 IX 2024
+					CRGBA colorlist[20];
+					// CRGBA K3_color(double en, double a)
+					// for (int i = 0; i < 15; i++) {
+						// colorlist[i] = K3_color((double(i) / 12.0), ((i > 1) ? 0.2 : 0.9));
+						// colorlist[i] = K3_color(K3AverIndex(Observer, i) / 15.0, 0.8);
+					//};
+					colorlist[0] = CRGBA((unsigned char)255, (unsigned char)0, (unsigned char)0);
+					colorlist[1] = CRGBA((unsigned char)0, (unsigned char)255, (unsigned char)0);
+					colorlist[2] = CRGBA((unsigned char)0, (unsigned char)0, (unsigned char)255);
+					colorlist[3] = CRGBA((unsigned char)255, (unsigned char)255, (unsigned char)0);
+					K3RoseOfWinds* MyRose = new K3RoseOfWinds(K3ViewMat, RoseStem, colorlist, 20.0);
+					// K3MyModel->addChild(MyRose);
 
-							// QQ Fpentli!
-							//					K3RoseO1fWinds* IlNome = new K3RoseOfWinds(Observer, RoseStem, colorlist);
-							//					K3MyModel->addChild((CMesh*)IlNome); // QQ future orphan
+					// QQ Fpentli!
+					//					K3RoseO1fWinds* IlNome = new K3RoseOfWinds(Observer, RoseStem, colorlist);
+					//					K3MyModel->addChild((CMesh*)IlNome); // QQ future orphan
 
-							K3MyModel->importChildrenGeometry();
+					K3MyModel->importChildrenGeometry();
 
-							UI::updateAllViews(false);
+					UI::updateAllViews(false);
 
-							qInfo() << "checkpoint" << Qt::endl;
+					qInfo() << "checkpoint" << Qt::endl;
 
-							//AP::processEvents();
-							//Sleep(40);
+					//AP::processEvents();
+					//Sleep(40);
 
-							QString K3QST = QString().sprintf("Fot_%03d_x_%04d_PK.png", i_plane, static_cast<int>(100.0 * alfa + 3000.0));
+					QString K3QST = QString().sprintf("Fot_%03d_x_%04d_PK.png", i_plane, static_cast<int>(100.0 * alfa + 3000.0));
 
-							qInfo() << "Zrzut ekranu do pliku: " << K3QST << " po nazwie";
+					qInfo() << "Zrzut ekranu do pliku: " << K3QST << " po nazwie";
 
-							QByteArray ba = K3QST.toLocal8Bit();
-							const char* c_str2 = ba.data();
+					QByteArray ba = K3QST.toLocal8Bit();
+					const char* c_str2 = ba.data();
 
-							K3ListMatrix(DATA_PATH(L"MujZrzut.txt").c_str(), K3ViewMat, c_str2); // "ViewMat"); // FotFilNam);
+					K3ListMatrix(DATA_PATH(L"MujZrzut.txt").c_str(), K3ViewMat, c_str2); // "ViewMat"); // FotFilNam);
 
-						UI:Beep(440.0, 500.0);
+				UI:Beep(440.0, 500.0);
 
-							UI::CAMERA::screenshot(PNG_PATH(K3QST), k3viewer); // To teraz będzie tutaj
+					UI::CAMERA::screenshot(PNG_PATH(K3QST), k3viewer); // To teraz będzie tutaj
 
-						};
-					};
 				};
-				//// :end of K3
-				// K3ListMatrix(L"C:/K3/Wielowymiar/MujZrzut.txt", K3ViewMat, "Po Pentlach!!!");
 			};
+		};
+		//// :end of K3
+		// K3ListMatrix(L"C:/K3/Wielowymiar/MujZrzut.txt", K3ViewMat, "Po Pentlach!!!");
 
-			AP::WORKSPACE::removeAllModels();
-			qInfo() << "To już jest koniec..." << Qt::endl;
-		}
+		AP::WORKSPACE::removeAllModels();
+		qInfo() << "To już jest koniec..." << Qt::endl;
+	};
+};
 
-	}
 
-}
+// }

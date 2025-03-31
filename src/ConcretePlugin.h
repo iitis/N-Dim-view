@@ -19,16 +19,20 @@ class DPVISION_DLL_API ConcretePlugin : public QObject, public PluginInterface
 
 	bool m_picking;
 
-	Eigen::MatrixXd current_data_matrix;
+	Eigen::MatrixXd current_data_matrix, *K3_IObs, K3BoiledData;
 	QVector<ColumnAssignment> current_assignment;
+
+
 
 public:
     ConcretePlugin(void);
 	~ConcretePlugin(void) override;
 
-	void K3MetaChmura(CModel3D* o, float d);
+	void K3Display(CModel3D* o, float d);
 	// Added by LL:
 	Eigen::MatrixXd K3_Get_PCA_Funnel(Eigen::MatrixXd X, int nd);
+	int K3FormProjectionMatrix(Eigen::MatrixXd* RawData);
+
 	// :added by LL
 
 
@@ -63,4 +67,3 @@ public:
 	/* ============= EVENT HANDLING END =========================*/
 
 };
-

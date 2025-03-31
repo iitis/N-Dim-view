@@ -2,7 +2,6 @@
 
 #include "qmath.h"
 
-#include "Mesh.h"
 #include "RGBA.h"
 #include "UI.h"
 #include "time.h"
@@ -37,7 +36,7 @@ CRGBA K3_color(double en, double a) // RGB <- energy = < 0.0, 1.0 >
 	if (en < 0) return CRGBA(0.0f, 0.0f, 0.0f, a);
 	if (en > 1) return CRGBA(1.0f, 1.0f, 1.0f, a);
 	// return spectral_color(780.0 - (780.0 - 380.0) * en, a);
-	return spectral_color(600.0 - (600.0 - 400.0) * en, a);
+	return spectral_color(600.0 - (600.0 - 400.0) * 0.7* en, a);
 };
 
 
@@ -124,9 +123,9 @@ void K3ListMatrix(const wchar_t* filnam, MatrixXd XXX, const char* title) {
 
 void K3FindTransform(Eigen::Matrix4d Src, Eigen::Matrix4d Dst, Eigen::Matrix4d* RResult, int N) {
 	// Z maila od Darka - dziekuje! QQ
-	// Za≥Ûømy, øe P i P' sπ juø wype≥nione danymi punktÛw.
-	Eigen::MatrixXf P(N, 4);   // Macierz punktÛw przed przekszta≥ceniem
-	Eigen::MatrixXf P_prime(N, 4); // Macierz punktÛw po przekszta≥ceniu
+	// Za≈Ç√≥≈ºmy, ≈ºe P i P' sƒÖ ju≈º wype≈Çnione danymi punkt√≥w.
+	Eigen::MatrixXf P(N, 4);   // Macierz punkt√≥w przed przekszta≈Çceniem
+	Eigen::MatrixXf P_prime(N, 4); // Macierz punkt√≥w po przekszta≈Çceniu
 
 	int i, j;
 	for (j = 0; j < 4; j++) {
@@ -137,9 +136,9 @@ void K3FindTransform(Eigen::Matrix4d Src, Eigen::Matrix4d Dst, Eigen::Matrix4d* 
 
 	}
 
-	// Tutaj wype≥nij P i P_prime odpowiednimi wartoúciami...
+	// Tutaj wype≈Çnij P i P_prime odpowiednimi warto≈õciami...
 
-	// Uøyj metody najmniejszych kwadratÛw (SVD) do znalezienia macierzy przekszta≥cenia M
+	// U≈ºyj metody najmniejszych kwadrat√≥w (SVD) do znalezienia macierzy przekszta≈Çcenia M
 	Eigen::MatrixXf M = P.jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(P_prime);
 
 
@@ -154,206 +153,17 @@ void K3FindTransform(Eigen::Matrix4d Src, Eigen::Matrix4d Dst, Eigen::Matrix4d* 
 
 	// std::cout << "X";
 	/*
-	// std::cout << "Macierz èrÛd≥owa Src:" << std::endl << Src << std::endl;
+	// std::cout << "Macierz ≈πr√≥d≈Çowa Src:" << std::endl << Src << std::endl;
 	// std::cout << "RResult:" << std::endl << RResult << std::endl;
 	// std::cout << "Macierz Docelowa Dst:" << std::endl << Dst << std::endl << std::endl;
 	// std::cout << "RResult:" << std::endl << RResult << std::endl << std::endl;
 
-	// std::cout << "Macierz èrÛd≥owa P:" << std::endl << P << std::endl;
+	// std::cout << "Macierz ≈πr√≥d≈Çowa P:" << std::endl << P << std::endl;
 	// std::cout << "RResult:" << std::endl << RResult << std::endl;
 	// std::cout << "Macierz Docelowa P_prime:" << std::endl << P_prime << std::endl << std::endl;
 	// std::cout << "RResult:" << std::endl << RResult << std::endl << std::endl;
 
-	// std::cout << "Macierz przekszta≥cenia M:" << std::endl << M << std::endl;
+	// std::cout << "Macierz przekszta≈Çcenia M:" << std::endl << M << std::endl;
 	// std::cout << "RResult:" << std::endl << RResult << std::endl;
 	*/
-}
-
-
-void K3FillMeshToUnitCube(CMesh* ThisMesh, CRGBA Kolor) { // double l, double a) {
-	CMesh* K3UnitCube = new CMesh();
-	ThisMesh->addVertex(CVertex(0.0, 0.0, 0.0)); // , Kolor);
-	ThisMesh->addVertex(CVertex(0.0, 0.0, 1.0)); //, Kolor);
-	ThisMesh->addVertex(CVertex(0.0, 1.0, 0.0)); //, Kolor);
-	ThisMesh->addVertex(CVertex(0.0, 1.0, 1.0)); //, Kolor);
-	ThisMesh->addVertex(CVertex(1.0, 0.0, 0.0)); //, Kolor);
-	ThisMesh->addVertex(CVertex(1.0, 0.0, 1.0)); //, Kolor);
-	ThisMesh->addVertex(CVertex(1.0, 1.0, 0.0)); //, Kolor);
-	ThisMesh->addVertex(CVertex(1.0, 1.0, 1.0)); //, Kolor);
-	// looking from outside, vertices should be counterclockwise:
-	ThisMesh->faces().push_back(CFace(1, 5, 3));
-	//ThisMesh->fcolors().push_back(Kolor);
-	ThisMesh->faces().push_back(CFace(7, 3, 5)); // face 0
-
-	ThisMesh->faces().push_back(CFace(4, 6, 5));
-	//ThisMesh->fcolors().push_back(Kolor);
-	ThisMesh->faces().push_back(CFace(7, 5, 6)); // face 1
-
-	ThisMesh->faces().push_back(CFace(0, 2, 4));
-	//ThisMesh->fcolors().push_back(Kolor);
-	ThisMesh->faces().push_back(CFace(6, 4, 2)); // face 2
-
-	ThisMesh->faces().push_back(CFace(1, 3, 0));
-	//ThisMesh->fcolors().push_back(Kolor);
-	ThisMesh->faces().push_back(CFace(2, 0, 3)); // face 3
-
-	ThisMesh->faces().push_back(CFace(2, 3, 6));
-	//ThisMesh->fcolors().push_back(Kolor);
-	ThisMesh->faces().push_back(CFace(7, 6, 3)); // face 4
-
-	ThisMesh->faces().push_back(CFace(0, 4, 1));
-	//ThisMesh->fcolors().push_back(Kolor);
-	ThisMesh->faces().push_back(CFace(5, 1, 4)); // face 5
-
-	// UI::MESSAGEBOX::error(L"Gonna color");
-
-	// Make front face translucent and red:
-	for (int i = 0; i < 2; i++) {
-		// ThisMesh->fcolors().push_back(CRGBA(0.9f, .3f, .3f, 0.3f));
-		ThisMesh->fcolors().push_back(Kolor);
-		// ThisMesh->fcolors().push_back(K3Color);
-	};
-
-	for (int i = 0; i < 10; i++) {
-		// ThisMesh->fcolors().push_back(CRGBA(0.3f, 0.3f, 1.0f, 1.0f));
-		ThisMesh->fcolors().push_back(Kolor);
-		// ThisMesh->fcolors().push_back(K3Color);
-	};
-
-};
-
-
-void K3LogEntry(const wchar_t* filnam, const char* mujText) {
-	int i, j;
-	time_t czas;
-	FILE* plik = _wfopen(filnam, L"a");
-	if (plik == NULL) {
-		UI::MESSAGEBOX::error(L"To bardzo skomPLIKowane");
-	}
-	time(&czas);
-	fprintf(plik, "LOG at Date=%s : %s \n", ctime(&czas), mujText);
-	fclose(plik);
-};
-
-
-
-void K3ReadCSV_WithHeader(MatrixXd* X, const wchar_t* filnam) {
-	char K3ParNames[20][30];
-
-	int i;
-	int j = 0;
-	int nmin = 20;
-
-	for (i = 0; i < 20; i++) {
-		K3ParNames[i][0] = (char)0;
-	}
-	FILE* plik = _wfopen(filnam, L"r");
-	if (plik) {
-		int DoneRead = 8;
-		j = 0;
-		MatrixXd ThisSpot(1, 20);
-		/* DoneRead=fscanf(plik, "%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s",
-		K3ParNames[0], K3ParNames[1], K3ParNames[2], K3ParNames[3], K3ParNames[4],
-		K3ParNames[5], K3ParNames[6], K3ParNames[7], K3ParNames[8], K3ParNames[9],
-		K3ParNames[10], K3ParNames[11], K3ParNames[12], K3ParNames[13], K3ParNames[14],
-		K3ParNames[15], K3ParNames[16], K3ParNames[17], K3ParNames[18], K3ParNames[19]); */
-		while (DoneRead != EOF) {
-			char K3buf[300];
-			char* K3Yad;
-			K3Yad = fgets(K3buf, 290, plik);
-			if (K3Yad == K3buf) {
-				DoneRead = sscanf(K3buf, "%lf, %lf, %lf, %lf, %lf, %lf, %lf, %lf, %lf, %lf, %lf, %lf, %lf, %lf, %lf, %lf, %lf, %lf, %lf, %lf",
-					&ThisSpot(0, 0), &ThisSpot(0, 1), &ThisSpot(0, 2), &ThisSpot(0, 3), &ThisSpot(0, 4),
-					&ThisSpot(0, 5), &ThisSpot(0, 6), &ThisSpot(0, 7), &ThisSpot(0, 8), &ThisSpot(0, 9),
-					&ThisSpot(0, 10), &ThisSpot(0, 11), &ThisSpot(0, 12), &ThisSpot(0, 13), &ThisSpot(0, 14),
-					&ThisSpot(0, 15), &ThisSpot(0, 16), &ThisSpot(0, 17), &ThisSpot(0, 18), &ThisSpot(0, 19));
-				if (DoneRead != EOF) {
-					K3ListMatrix(L"C:/K3/Wielowymiar/MujZrzut.txt", ThisSpot, "ThisSpot read");
-					if ((DoneRead > 2) /* && (j < 1400) */) {  // QQ ogran.
-						for (i = 0; i < DoneRead; i++) {
-							(*X)(i, j) = ThisSpot(0, i);
-						}
-						if (DoneRead < nmin) {
-							nmin = DoneRead;
-						}
-					}
-					else
-					{
-						DoneRead = EOF;
-					}
-					j++;
-				}
-			}
-			else
-			{
-				DoneRead = EOF;
-			}
-		}
-	};
-	MatrixXd A;
-	A = X->block(0, 0, nmin, j);
-	*X = A; // .transpose();
-
-	fclose(plik);
-};
-
-void K3AddTotemMeshFromSpotQQQnicWeWogle(CMesh* whereto, Eigen::VectorXd K3HyperSpot, Eigen::VectorXd K3HyperLook) {  // "HyperSight = DataPoint*Observer"
-	CMesh* K3Korpus = new CMesh;
-	Eigen::Matrix4d K3Position;
-	K3Position << 1, 0, 0, K3HyperSpot[0],
-		0, 2, 0, K3HyperSpot[1],
-		0, 0, .6, K3HyperSpot[2],
-		0, 0, 0, 1;
-
-	/*Eigen::Matrix4d K3MakeKorpus;
-	K3MakeKorpus << 1, 0, 0, 0,
-	0, 2, 0, 0,
-	0, 0, .2, 0,
-	0, 0, 0, 1;*/
-
-	K3FillMeshToUnitCube(K3Korpus, CRGBA(1.0f, 1.0f, 0.70f, 0.990f));  // qq kolorki
-
-	// Scale up the torso:
-	for (int i = 0; i < K3Korpus->vertices().size(); i++)
-	{
-		K3Korpus->vertices()[i].transformByMatrix(K3Position);
-	}
-
-
-	for (int i = 0; i < K3Korpus->vertices().size(); i++)
-	{
-		K3Korpus->vertices()[i].transformByMatrix(K3Position);
-	}
-
-	for (int i = 0; i < K3Korpus->vertices().size(); i++) {
-		whereto->vertices().push_back(K3Korpus->vertices()[i]);
-	};
-
-	for (int i = 0; i < K3Korpus->faces().size(); i++) {
-		whereto->faces().push_back(K3Korpus->faces()[i]);
-	};
-
-	// delete korpus;
-
-
-	Eigen::Matrix4d K3MakeArm;
-	K3MakeArm << 5, 0, 0, 0,
-		0, .2, 0, 0,
-		0, 0, .05, 0,
-		0, 0, 0, 1;
-
-	double alfa = K3HyperLook[4];
-
-	Eigen::Matrix4d K3TwistArm;
-	K3TwistArm << cos(alfa), -sin(alfa), 0, 0,
-		sin(alfa), cos(alfa), 0, 0,
-		0, 0, 1, 0,
-		0, 0, 0, 1;
-
-	Eigen::Matrix4d K3ShiftArm;
-	K3ShiftArm << 1, 0, 0, 2,
-		0, 1, 0, 2,
-		0, 0, 1, 0,
-		0, 0, 0, 1;
-
 }

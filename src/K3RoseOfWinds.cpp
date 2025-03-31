@@ -56,7 +56,7 @@ K3RoseOfWinds::K3RoseOfWinds(MatrixXd Observer, double* RoseStem, CRGBA* colorli
 	0, b, b, -b, -b, c, c, -c, -c, 0,
 	0, -b, b, b, -b, -c, c, c, -c, 0 };
 
-#define K3VersorScale 200.0  // QQ8 by³o 200.0. Zmiana na 400 nic dobrego nie zrobila.
+#define K3VersorScale 200.0  // QQ8 byÅ‚o 200.0. Zmiana na 400 nic dobrego nie zrobila.
 
 	double Xlen; // to check if vector visible
 
@@ -102,7 +102,7 @@ K3RoseOfWinds::K3RoseOfWinds(MatrixXd Observer, double* RoseStem, CRGBA* colorli
 			// Stem:
 			// faces().size;
 
-			// QQ_Ines Spróbowaæ PCA ca³oœci i interpretowaæ wyniki
+			// QQ_Ines SprÃ³bowaÄ‡ PCA caÅ‚oÅ›ci i interpretowaÄ‡ wyniki
 
 			this->faces().push_back(CFace(VertZeroIs, VertZeroIs + 1, VertZeroIs + 2));
 			this->faces().push_back(CFace(VertZeroIs, VertZeroIs + 2, VertZeroIs + 3));
@@ -153,7 +153,7 @@ K3RoseOfWinds::K3RoseOfWinds(MatrixXd K3ViewMat, double* RoseStem, CRGBA* colorl
 	0, b, b, -b, -b, c, c, -c, -c, 0,
 	0, -b, b, b, -b, -c, c, c, -c, 0 };
 
-	// #define K3VersorScale 200.0  // QQ8 by³o 200.0. Zmiana na 400 nic dobrego nie zrobila.
+	// #define K3VersorScale 200.0  // QQ8 byÅ‚o 200.0. Zmiana na 400 nic dobrego nie zrobila.
 
 	double Xlen2; // to check if vector visible
 
@@ -204,7 +204,7 @@ K3RoseOfWinds::K3RoseOfWinds(MatrixXd K3ViewMat, double* RoseStem, CRGBA* colorl
 			// Stem:
 			// faces().size;
 
-			// QQ_Ines Spróbowaæ PCA ca³oœci i interpretowaæ wyniki
+			// QQ_Ines SprÃ³bowaÄ‡ PCA caÅ‚oÅ›ci i interpretowaÄ‡ wyniki
 
 			this->faces().push_back(CFace(VertZeroIs, VertZeroIs + 1, VertZeroIs + 2));
 			this->faces().push_back(CFace(VertZeroIs, VertZeroIs + 2, VertZeroIs + 3));

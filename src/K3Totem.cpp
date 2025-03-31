@@ -33,9 +33,8 @@ K3Totem::K3Totem(Eigen::VectorXd K3HyperSpot, Eigen::VectorXd K3HyperLook) {
 	K3Position(3, 2) = 0.0;
 	K3Position(3, 3) = 0.2;    // QQVISUS  (was 1.0)
 
-	\
 		/* Od DP:
-		* akurat w wymienionym przypadku mo¿na jeszcze proœciej:
+		* akurat w wymienionym przypadku moÅ¼na jeszcze proÅ›ciej:
 
 	Eigen::Matrix4d K3Position = Eigen::Matrix4d::Identity();
 
@@ -46,7 +45,7 @@ K3Totem::K3Totem(Eigen::VectorXd K3HyperSpot, Eigen::VectorXd K3HyperLook) {
 	ale nie zawsze mamy takie oczywiste macierze :)
 		*/
 
-		K3FillMeshToUnitCube(korpus, K3_color(K3HyperLook[19] / 1.0, 1.0)); // CRGBA(1.0f, 1.0f, 0.0f, 0.6f));
+	K3FillMeshToUnitCube(korpus, CRGBA(0.2f, 0.20f, 1.0f, 1.0f)); // K3_color(K3HyperLook[19] / 1.0, 1.0)); // CRGBA(1.0f, 1.0f, 0.0f, 0.6f));
 	// Body color
 	// CAnnotationPoint *K3Navel = new CAnnotationPoint(0.5, .5, 1.0);
 
@@ -122,7 +121,7 @@ K3Totem::K3Totem(Eigen::VectorXd K3HyperSpot, Eigen::VectorXd K3HyperLook) {
 	}
 
 
-	this->addChild(LeftArm);
+	// this->addChild(LeftArm);
 
 
 	// delete korpus;?

@@ -1,4 +1,4 @@
-﻿#include "CsvReader.h"
+#include "CsvReader.h"
 
 #include <QFileDialog>
 #include <QDir>
