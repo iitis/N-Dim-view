@@ -46,14 +46,22 @@ CsvColumnAssignmentDialog::CsvColumnAssignmentDialog(const QStringList& headers,
     mainLayout->addLayout(formLayout);
     mainLayout->addWidget(okButton);
 
-    int size = std::min(rowWidgetsList.size(), defaults.size());
+    auto defs = defaults;
 
-    if (!defaults.empty()) {
-        for (int i = 0; i < size; i++) {
-            int group = defaults[i].first;
-            rowWidgetsList[i].groupCombo->setCurrentIndex(group+1);
-            int label = defaults[i].second;
-            if (! userGroups[group].elementNames.empty() && label >= 0) {
+    if (defs.empty()) {
+        for (int i = 0; i < rowWidgetsList.size(); i++) {
+            defs.push_back(QPair<int, int>(0, -1));
+        }
+    }
+
+    int size = std::min(rowWidgetsList.size(), defs.size());
+
+    for (int i = 0; i < size; i++) {
+        int group = defs[i].first;
+        rowWidgetsList[i].groupCombo->setCurrentIndex(group+1);
+        if (group >= 0) {
+            int label = defs[i].second;
+            if (!userGroups[group].elementNames.empty() && label >= 0) {
                 rowWidgetsList[i].labelCombo->setCurrentIndex(label);
             }
         }
