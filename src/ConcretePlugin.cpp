@@ -19,6 +19,8 @@
 using namespace Eigen;
 
 #define K3GRAND_SCALE 50.0
+
+
 // było 0.5
 // QQ Scale!
 // #include<Eigen/Geometry>
@@ -37,16 +39,75 @@ using namespace Eigen;
 #define K3avr 4
 
 
-// ============================================================
 
-//#include "Image.h"
+/*
 
-// Now to the job:
+ConcretePlugin::Registry static methods
 
-#define K3Dimensionality 15
+*/
 
-// :koniec dodatku LL
+void ConcretePlugin::Registry::storeAssignments(QSettings* settings, const QString& filePath, const QVector<QPair<int, int>>& vec)
+{
+	QString key = "assignments/" + QString::fromUtf8(filePath.toUtf8().toBase64(QByteArray::Base64UrlEncoding));
 
+	settings->remove(key);
+
+	settings->beginGroup(key);
+
+	QVariantList list;
+	for (const auto& pair : vec)
+		list << QVariant::fromValue(QPoint(pair.first, pair.second)); // łatwo zapisywalne
+
+	settings->setValue("definitions", list);
+	settings->setValue("timestamp", QDateTime::currentDateTimeUtc().toString(Qt::ISODate));
+	settings->endGroup();
+
+	settings->sync();
+}
+
+QVector<QPair<int, int>> ConcretePlugin::Registry::loadAssignments(QSettings* settings, const QString& filePath)
+{
+	QVector<QPair<int, int>> result;
+
+	QString key = "assignments/" + QString::fromUtf8(filePath.toUtf8().toBase64(QByteArray::Base64UrlEncoding));
+
+
+	settings->beginGroup(key);
+	QVariantList list = settings->value("definitions").toList();
+	for (const auto& item : list) {
+		QPoint p = item.toPoint();
+		result.append({ p.x(), p.y() });
+	}
+	settings->endGroup();
+
+	return result;
+}
+
+
+void ConcretePlugin::Registry::cleanupOldAssignments(QSettings* settings, int daysOld = 30)
+{
+	QDateTime now = QDateTime::currentDateTimeUtc();
+
+	settings->beginGroup("assignments");
+	QStringList keys = settings->childGroups();
+	for (const QString& group : keys) {
+		settings->beginGroup(group);
+		QString tsStr = settings->value("timestamp").toString();
+		QDateTime ts = QDateTime::fromString(tsStr, Qt::ISODate);
+		if (ts.isValid() && ts.daysTo(now) > daysOld)
+			settings->remove(""); // usuwa bieżącą grupę
+		settings->endGroup();
+	}
+	settings->endGroup();
+	settings->sync();
+}
+
+
+/*
+
+ConcretePlugin methods 
+
+*/
 
 ConcretePlugin::ConcretePlugin(void)
 {
@@ -126,21 +187,6 @@ MatrixXd ConcretePlugin::K3_Get_PCA_Funnel(MatrixXd X, int nd) {
 };
 
 
-void  ConcretePlugin::K3Display(CModel3D* o, float d)
-{
-	CMesh* dstMesh = (CMesh*)(o->getChild());
-
-	dstMesh->calcVN();
-
-	for (int i = 0; i < dstMesh->vnormals().size(); i++)
-	{
-		CVertex* v1 = &dstMesh->vertices()[i];
-		CVector3f* vn1 = &dstMesh->vnormals()[i];
-
-		v1->Set(v1->X() + d * vn1->X(), v1->Y() + d * vn1->Y(), v1->Z() + d * vn1->Z());
-		AP::processEvents();
-	}
-}
 
 // RotationMat = ProjectionMat.block<3, 3>(0, 0);
 // translationVec = ProjectionMat.block<3, 1>(0, 3);
@@ -160,7 +206,10 @@ void  ConcretePlugin::K3Display(CModel3D* o, float d)
 // reduces to:
 #define K3avr 4 */
 
-void DPVISION_DLL_API K3AddMyCloud(CModel3D* K3MyModel, MatrixXd K3ObsCloud, MatrixXd K3ViewMat, double K3Toler) {
+
+
+void ConcretePlugin::K3AddMyCloud(CModel3D* K3MyModel, MatrixXd K3ObsCloud, MatrixXd K3ViewMat, double K3Toler)
+{
 	int k = K3ObsCloud.cols();
 	if (k > 200) {
 		k = 200;
@@ -216,6 +265,9 @@ void DPVISION_DLL_API K3AddMyCloud(CModel3D* K3MyModel, MatrixXd K3ObsCloud, Mat
 			// K3LogEntry(L"C:/K3/Wielowymiar/MujZrzut.txt", "TotemDone");
 			K3TenTotem = new K3Totem(P, V); // K3ObsCloud.block(5, i, K3hv + K3avr, 1));
 			// K3ListMatrix(L"C:/K3/Wielowymiar/M1332.txt", K3ObsCloud, "TotemDone");
+			
+			K3TenTotem->setLabel(QString("awatar-%1").arg(i));
+
 			K3MyModel->addChild(K3TenTotem); // QQ blok Wlkanoc
 			// K3ListMatrix(L"C:/K3/Wielowymiar/M1120", K3ObsCloud, "TotemAdded");
 
@@ -346,62 +398,6 @@ int ConcretePlugin::K3FormProjectionMatrix(const Eigen::MatrixXd &RawData) {
 
 
 
-void saveFileData(QSettings* settings, const QString& filePath, const QVector<QPair<int, int>>& vec)
-{
-	QString key = "assignments/"+QString::fromUtf8(filePath.toUtf8().toBase64(QByteArray::Base64UrlEncoding));
-
-	settings->remove(key);
-
-	settings->beginGroup(key);
-
-	QVariantList list;
-	for (const auto& pair : vec)
-		list << QVariant::fromValue(QPoint(pair.first, pair.second)); // łatwo zapisywalne
-
-	settings->setValue("definitions", list);
-	settings->setValue("timestamp", QDateTime::currentDateTimeUtc().toString(Qt::ISODate));
-	settings->endGroup();
-
-	settings->sync();
-}
-
-QVector<QPair<int, int>> loadFileData(QSettings* settings, const QString& filePath)
-{
-	QVector<QPair<int, int>> result;
-	
-	QString key = "assignments/" + QString::fromUtf8(filePath.toUtf8().toBase64(QByteArray::Base64UrlEncoding));
-
-
-	settings->beginGroup(key);
-	QVariantList list = settings->value("definitions").toList();
-	for (const auto& item : list) {
-		QPoint p = item.toPoint();
-		result.append({ p.x(), p.y() });
-	}
-	settings->endGroup();
-
-	return result;
-}
-
-
-void cleanupOldEntries(QSettings* settings, int daysOld = 30)
-{
-	QDateTime now = QDateTime::currentDateTimeUtc();
-
-	settings->beginGroup("assignments");
-	QStringList keys = settings->childGroups();
-	for (const QString& group : keys) {
-		settings->beginGroup(group);
-		QString tsStr = settings->value("timestamp").toString();
-		QDateTime ts = QDateTime::fromString(tsStr, Qt::ISODate);
-		if (ts.isValid() && ts.daysTo(now) > daysOld)
-			settings->remove(""); // usuwa bieżącą grupę
-		settings->endGroup();
-	}
-	settings->endGroup();
-	settings->sync();
-}
-
 void ConcretePlugin::setDatasetLabel() {
 	if (current_data.matrix.size() != 0) {
 		UI::PLUGINPANEL::setLabel(m_ID, "K3DataSet", QFileInfo(current_data.file_path).fileName());
@@ -458,8 +454,8 @@ void ConcretePlugin::AssignGroups() {
 	auto settings = AppSettings::pluginSettings("N-Dim-view");
 	
 
-	//saveFileData(settings.get(), current_data.file_path, defs);
-	QVector<QPair<int, int>> defs = loadFileData(settings.get(), current_data.file_path);
+	//Registry::storeAssignments(settings.get(), current_data.file_path, defs);
+	QVector<QPair<int, int>> defs = Registry::loadAssignments(settings.get(), current_data.file_path);
 
 	// Tu tworzysz sobie okienko dialogowe o takich parametrach jak ustawiłeś wyżej
 	// csv_data.headers - to sa rzeczywiste etykiety z pliku (np. kwasowośc)
@@ -468,7 +464,8 @@ void ConcretePlugin::AssignGroups() {
 	CsvColumnAssignmentDialog dlg(current_data.headers, groupDefs, defs);
 
 	// Tu uruchamiasz dialog i sprawdzasz czy kliknięto OK
-	if (dlg.exec() == QDialog::Accepted) {
+	if (dlg.exec() == QDialog::Accepted) 
+	{
 
 		// Przypisań i macierzy mozesz teraz używać w dowolnym miejscu plugina
 		// nie musisz tego robic jednym ciągiem w tym miejscu
@@ -476,14 +473,13 @@ void ConcretePlugin::AssignGroups() {
 		// (tzn -> czy plik został wczytany i pogrupowany)
 		current_assignment = dlg.getAssignments();
 
-
 		defs.clear();
 		for (auto ass : current_assignment) {
 			defs.push_back(QPair<int, int>(ass.groupIndex, ass.label_id.value_or(-1)));
 		}
 
 		if (!defs.empty()) {
-			saveFileData(settings.get(), current_data.file_path, defs);
+			Registry::storeAssignments(settings.get(), current_data.file_path, defs);
 		}
 
 
@@ -596,12 +592,18 @@ void ConcretePlugin::K3Krata(int Nkrat, int Mkrat) {
 			// Create a totem whose position and appearance represents data.
 			// Assume the given K3HyperSpot = DataPoint*Observer ,
 			// i.e. has been projected into the observation space.
+
+			ToTen1->setLabel(QString("awatar[%1, %2]").arg(i).arg(j));
+
 			K3MyModel->addChild(ToTen1);
 		};
 
 		// }
 
 	}
+	
+	K3MyModel->setLabel("Grid of awatars");
+
 	AP::WORKSPACE::addModel(K3MyModel);
 	UI::updateAllViews();
 	// _Thrd_yield();
@@ -623,6 +625,8 @@ void ConcretePlugin::K3Display() {
 	K3ViewMat(4, 4) = 1.0;
 	K3AddMyCloud(K3MyModel, K3DenseCloud, K3ViewMat, 2000.3);
 	K3MyModel->importChildrenGeometry();
+
+	K3MyModel->setLabel("Static view");
 
 	AP::WORKSPACE::addModel(K3MyModel); // QQ blok Wlknoc
 	UI::updateAllViews();
@@ -783,8 +787,8 @@ void ConcretePlugin::K3LoadDataset() {
 	if (current_data.matrix.size() != 0) {
 		auto settings = AppSettings::pluginSettings("N-Dim-view");
 
-		//saveFileData(settings.get(), current_data.file_path, defs);
-		QVector<QPair<int, int>> defs = loadFileData(settings.get(), current_data.file_path);
+		//storeAssignments(settings.get(), current_data.file_path, defs);
+		QVector<QPair<int, int>> defs = Registry::loadAssignments(settings.get(), current_data.file_path);
 
 		if (!defs.isEmpty()) {
 			for (int i = 0; i < defs.size(); i++) {

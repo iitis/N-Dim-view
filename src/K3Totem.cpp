@@ -3,7 +3,7 @@
 
 #include "K3Helpers.h"
 
-void K3FillMeshToUnitCube(CMesh* ThisMesh, CRGBA Kolor) { // double l, double a) {
+void K3Totem::K3FillMeshToUnitCube(CMesh* ThisMesh, CRGBA Kolor) { // double l, double a) {
 	CMesh* K3UnitCube = new CMesh();
 	ThisMesh->addVertex(CVertex(0.0, 0.0, 0.0)); // , Kolor);
 	ThisMesh->addVertex(CVertex(0.0, 0.0, 1.0)); //, Kolor);
@@ -127,7 +127,7 @@ K3Totem::K3Totem(Eigen::VectorXd K3HyperSpot, Eigen::VectorXd K3HyperLook) {
 	}
 	K3LeftShoulder.transformByMatrix(K3Position);
 
-
+	korpus->setLabel("body");
 	this->addChild(korpus);
 	// this->addChild(K3Navel);
 	// this->addChild(K3Ad);
@@ -276,6 +276,8 @@ K3Totem::K3Totem(Eigen::VectorXd K3HyperSpot, Eigen::VectorXd K3HyperLook) {
 			// K3ImagePos.fromRowMatrixD(K3FaceToHeadRaw);
 			// K3Cher3->getTransform().fromRowMatrixD(K3D);
 			K3Cher3->getTransform().fromRowMatrixD(K3FaceToHeadRaw); // K3FaceToHeadRaw or K3D
+
+			K3Cher3->setLabel("face");
 
 			this->addChild((CModel3D*)K3Cher3); // QQ Wlknoc blok
 		}

@@ -9,6 +9,7 @@
 #include "CsvReader.h"
 
 class CModel3D;
+class QSettings;
 
 #define PNG_DIR "d:/K3/Wielowymiar/"
 
@@ -19,8 +20,9 @@ class DPVISION_DLL_API ConcretePlugin : public QObject, public PluginInterface
 	Q_INTERFACES(PluginInterface)
 
 	CsvReader::CsvData current_data;
-	//Eigen::MatrixXd current_data_matrix;
+
 	Eigen::MatrixXd *K3_IObs, K3BoiledData;
+
 	QVector<ColumnAssignment> current_assignment;
 
 	// Kazda linia reprezentuje grupê, pierwszy string to jej nazwa
@@ -39,27 +41,30 @@ class DPVISION_DLL_API ConcretePlugin : public QObject, public PluginInterface
 
 	QString png_save_dir;
 
-public:
-    ConcretePlugin(void);
-	~ConcretePlugin(void) override;
 
-	void K3Display(CModel3D* o, float d);
+	class Registry {
+	public:
+		static void storeAssignments(QSettings* settings, const QString& filePath, const QVector<QPair<int, int>>& vec);
+		static QVector<QPair<int, int>> loadAssignments(QSettings* settings, const QString& filePath);
+		static void cleanupOldAssignments(QSettings* settings, int daysOld);
+	};
+
 	Eigen::MatrixXd K3_Get_PCA_Funnel(Eigen::MatrixXd X, int nd);
-	int K3FormProjectionMatrix(const Eigen::MatrixXd &RawData);
-	//int K3FormProjectionMatrix(Eigen::MatrixXd* RawData);
-
+	void K3AddMyCloud(CModel3D* K3MyModel, Eigen::MatrixXd K3ObsCloud, Eigen::MatrixXd K3ViewMat, double K3Toler);
+	int K3FormProjectionMatrix(const Eigen::MatrixXd& RawData);
 	void setDatasetLabel();
 	void setAssignmentLabel();
-
+	void delete_old_screenshots(const QString& pattern);
 	void AssignGroups();
 	void K3CzteroPajak(double h05);
 	void K3Krata(int Nkrat, int Mkrat);
 	void K3Display();
-	void delete_old_screenshots(const QString& pattern);
 	void K3Dance(double grand_scale);
-
 	void K3LoadDataset();
 
+public:
+    ConcretePlugin(void);
+	~ConcretePlugin(void) override;
 
 	/* ============= EVENT HANDLING BEGIN =========================*/
 	virtual void onLoad() override;

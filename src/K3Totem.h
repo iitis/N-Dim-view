@@ -12,6 +12,7 @@ public:
 	// K3Totem(std::vector<double> K3HyperSpot);  // "K3HyperSpot = DataPoint*Observer"
 	K3Totem(Eigen::VectorXd P, Eigen::VectorXd V);  // "K3HyperSpot = DataPoint*Observer"
 
+	void K3FillMeshToUnitCube(CMesh* ThisMesh, CRGBA Kolor);
 	// AdjustData(std::vector<double> K3HyperSpot);  Eigen::VectorXd
 };
 
