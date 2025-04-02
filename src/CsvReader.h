@@ -16,12 +16,12 @@ class CsvReader
 public:
     struct CsvData {
         QStringList headers;
-        QVector<Eigen::VectorXd> samples;
+        Eigen::MatrixXd matrix;
+        QString file_path;
     };
 
     static CsvData loadFile(const QString & = QString());
     static CsvData loadCsvToEigenVectors(const QString& filePath, QRegularExpression regsep = QRegularExpression("[,;\t]"));
-    static Eigen::MatrixXd convertCsvDataToMatrix(const CsvData& csv_data);
 };
 
 

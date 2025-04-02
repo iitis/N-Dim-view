@@ -39,6 +39,7 @@ CsvReader::CsvData CsvReader::loadCsvToEigenVectors(const QString& filePath, QRe
     QTextStream in(&file);
     bool firstLine = true;
     int dimension = 0;
+    QVector<Eigen::VectorXd> tempSamples;
 
     while (!in.atEnd()) {
         QString line = in.readLine().trimmed();
@@ -63,17 +64,15 @@ CsvReader::CsvData CsvReader::loadCsvToEigenVectors(const QString& filePath, QRe
             firstLine = false;
 
             if (hasText) {
-                // Mamy teksty – to są nagłówki
                 for (QString& header : parts)
                     header = header.remove(QRegularExpression("^\"|\"$"));
                 result.headers = parts;
                 continue;
             }
             else {
-                // Brak nagłówków – generujemy własne
                 result.headers.clear();
                 for (int i = 0; i < dimension; ++i)
-                    result.headers << QString("Feature %1").arg(i + 1);
+                    result.headers << QString("Kolumna %1").arg(i + 1);
                 // spadamy dalej i przetwarzamy tę linię jako dane
             }
         }
@@ -95,28 +94,20 @@ CsvReader::CsvData CsvReader::loadCsvToEigenVectors(const QString& filePath, QRe
                 vec[i] = value;
             }
         }
-        result.samples.append(vec);
+        tempSamples.append(vec);
     }
 
+    int numRows = tempSamples.size();
+    int numCols = (numRows > 0) ? tempSamples[0].size() : 0;
+    Eigen::MatrixXd mat(numCols, numRows);
+
+    for (int row = 0; row < numRows; ++row)
+        for (int col = 0; col < numCols; ++col)
+            mat(col, row) = tempSamples[row](col);
+
+    result.matrix = mat;
+
+    result.file_path = filePath;
     return result;
 }
-
-Eigen::MatrixXd CsvReader::convertCsvDataToMatrix(const CsvData& csv_data)
-{
-    if (csv_data.samples.isEmpty()) return Eigen::MatrixXd();
-
-    int numRows = csv_data.samples.size();         // liczba próbek (wiersze)
-    int numCols = csv_data.samples[0].size();      // liczba wymiarów (kolumny)
-
-    Eigen::MatrixXd mat(numCols, numRows); // odwrotnie niż wcześniej
-
-    for (int row = 0; row < numRows; ++row) {
-        for (int col = 0; col < numCols; ++col) {
-            mat(col, row) = csv_data.samples[row](col);
-        }
-    }
-
-    return mat;
-}
-
 

@@ -3,6 +3,59 @@
 
 #include "K3Helpers.h"
 
+void K3Totem::K3FillMeshToUnitCube(CMesh* ThisMesh, CRGBA Kolor) { // double l, double a) {
+	CMesh* K3UnitCube = new CMesh();
+	ThisMesh->addVertex(CVertex(0.0, 0.0, 0.0)); // , Kolor);
+	ThisMesh->addVertex(CVertex(0.0, 0.0, 1.0)); //, Kolor);
+	ThisMesh->addVertex(CVertex(0.0, 1.0, 0.0)); //, Kolor);
+	ThisMesh->addVertex(CVertex(0.0, 1.0, 1.0)); //, Kolor);
+	ThisMesh->addVertex(CVertex(1.0, 0.0, 0.0)); //, Kolor);
+	ThisMesh->addVertex(CVertex(1.0, 0.0, 1.0)); //, Kolor);
+	ThisMesh->addVertex(CVertex(1.0, 1.0, 0.0)); //, Kolor);
+	ThisMesh->addVertex(CVertex(1.0, 1.0, 1.0)); //, Kolor);
+	// looking from outside, vertices should be counterclockwise:
+	ThisMesh->faces().push_back(CFace(1, 5, 3));
+	//ThisMesh->fcolors().push_back(Kolor);
+	ThisMesh->faces().push_back(CFace(7, 3, 5)); // face 0
+
+	ThisMesh->faces().push_back(CFace(4, 6, 5));
+	//ThisMesh->fcolors().push_back(Kolor);
+	ThisMesh->faces().push_back(CFace(7, 5, 6)); // face 1
+
+	ThisMesh->faces().push_back(CFace(0, 2, 4));
+	//ThisMesh->fcolors().push_back(Kolor);
+	ThisMesh->faces().push_back(CFace(6, 4, 2)); // face 2
+
+	ThisMesh->faces().push_back(CFace(1, 3, 0));
+	//ThisMesh->fcolors().push_back(Kolor);
+	ThisMesh->faces().push_back(CFace(2, 0, 3)); // face 3
+
+	ThisMesh->faces().push_back(CFace(2, 3, 6));
+	//ThisMesh->fcolors().push_back(Kolor);
+	ThisMesh->faces().push_back(CFace(7, 6, 3)); // face 4
+
+	ThisMesh->faces().push_back(CFace(0, 4, 1));
+	//ThisMesh->fcolors().push_back(Kolor);
+	ThisMesh->faces().push_back(CFace(5, 1, 4)); // face 5
+
+	// UI::MESSAGEBOX::error(L"Gonna color");
+
+	// Make front face translucent and red:
+	for (int i = 0; i < 2; i++) {
+		// ThisMesh->fcolors().push_back(CRGBA(0.9f, .3f, .3f, 0.3f));
+		ThisMesh->fcolors().push_back(Kolor);
+		// ThisMesh->fcolors().push_back(K3Color);
+	};
+
+	for (int i = 0; i < 10; i++) {
+		// ThisMesh->fcolors().push_back(CRGBA(0.3f, 0.3f, 1.0f, 1.0f));
+		ThisMesh->fcolors().push_back(Kolor);
+		// ThisMesh->fcolors().push_back(K3Color);
+	};
+
+};
+
+
 K3Totem::K3Totem(Eigen::VectorXd K3HyperSpot, Eigen::VectorXd K3HyperLook) {
 	// Create a totem whose position and appearance represents data.
 	// Assume the given K3HyperSpot = DataPoint*Observer ,
@@ -74,7 +127,7 @@ K3Totem::K3Totem(Eigen::VectorXd K3HyperSpot, Eigen::VectorXd K3HyperLook) {
 	}
 	K3LeftShoulder.transformByMatrix(K3Position);
 
-
+	korpus->setLabel("body");
 	this->addChild(korpus);
 	// this->addChild(K3Navel);
 	// this->addChild(K3Ad);
@@ -223,6 +276,8 @@ K3Totem::K3Totem(Eigen::VectorXd K3HyperSpot, Eigen::VectorXd K3HyperLook) {
 			// K3ImagePos.fromRowMatrixD(K3FaceToHeadRaw);
 			// K3Cher3->getTransform().fromRowMatrixD(K3D);
 			K3Cher3->getTransform().fromRowMatrixD(K3FaceToHeadRaw); // K3FaceToHeadRaw or K3D
+
+			K3Cher3->setLabel("face");
 
 			this->addChild((CModel3D*)K3Cher3); // QQ Wlknoc blok
 		}

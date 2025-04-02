@@ -139,7 +139,7 @@ K3RoseOfWinds::K3RoseOfWinds(MatrixXd K3ViewMat, double* RoseStem, CRGBA* colorl
 {
 	// int j, j88, i;
 
-	K3ListMatrix(L"C:/K3/Wielowymiar/MojaRurza.txt", K3ViewMat, "K3ViewMat in rose:");
+	//dp-04-02// K3ListMatrix(DATA_PATH("MojaRurza.txt"), K3ViewMat, "K3ViewMat in rose:");
 	// CMesh* this = new CMesh();
 
 #define K3ArrowHeadShare 0.1

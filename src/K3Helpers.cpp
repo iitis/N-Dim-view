@@ -1,10 +1,35 @@
 #include "K3Helpers.h"
 
+#include "K3Arrow.h"
+#include "Model3D.h"
+
 #include "qmath.h"
 
 #include "RGBA.h"
 #include "UI.h"
 #include "time.h"
+
+
+
+QString DATA_PATH(const QString &fname)
+{
+	//std::wstring path(TO_WIDE_STRING(WORK_DIR));
+	QString path(WORK_DIR);
+	path.append(fname);
+	return path;
+}
+
+
+
+
+
+
+
+void K3Neg3(double A[3], double B[3]) {
+	for (int i = 0; i < 3; i++) {
+		B[i] = -A[i];
+	}
+}
 
 CRGBA spectral_color(double l, double a) // RGB <- lambda l = < 380,780 > [nm]
 { // original:  https://stackoverflow.com/questions/22141206/how-do-i-draw-a-rainbow-in-freeglut/22149027#22149027
@@ -94,10 +119,10 @@ void K3AddUnitProngs(double X[3], double Y[3], double Z[3]) {
 	K3ToUnity(Y, 3);
 }
 
-void K3ListMatrix(const wchar_t* filnam, MatrixXd XXX, const char* title) {
+void K3ListMatrix(const QString &filnam, MatrixXd XXX, const char* title) {
 	int i, j;
 	time_t czas;
-	FILE* plik = _wfopen(filnam, L"a");
+	FILE* plik = fopen(filnam.toStdString().c_str(), "a");
 	if (plik == NULL) {
 		UI::MESSAGEBOX::error(L"To bardzo skomPLIKowane");
 	}
@@ -167,3 +192,101 @@ void K3FindTransform(Eigen::Matrix4d Src, Eigen::Matrix4d Dst, Eigen::Matrix4d* 
 	// std::cout << "RResult:" << std::endl << RResult << std::endl;
 	*/
 }
+
+
+
+void K3FillMat(MatrixXd& X, double a) {
+	int j, i;
+	for (j = 0; j < X.rows(); j++) {
+		for (i = 0; i < X.cols(); i++) {
+			X(j, i) = a;
+		}
+	}
+}
+
+
+void K3_4x4viewN(MatrixXd* V, int k, double alfa) {
+
+	/*
+0, 1, 2, 3,
+0, 2, 1, 3,
+0, 3, 1, 2,
+1, 3, 0, 2,
+1, 2, 0, 3,
+3, 2, 0, 1*/
+
+	int k3tasOLD[6][4] =
+	{
+0, 1, 2, 3,  // 1 2 swapped
+0, 2, -1, 3,  // 1 3
+0, 3, -1, -2,  // 0 2DR
+-1, -2, -0, -3,  // 0 3
+-3, -2, -0, 1 };
+	int k3tas[6][4] =
+	{
+		1, 2, 3, 4,  // 1 2 swapped
+			1, 3, -2, 4,  // 1 3
+			1, 4, -2, -3,  // 0 2
+			-2, 4, -1, -3,  // 1 3
+			-2, -3, -1, -4,  // 0 3
+			-4, -3, -1, 2 };
+	int k3_TurnPlane[6][2] = {
+		1,2,
+		1,3,
+		0,2,
+		1,3,
+		0,3,
+		0,2 };
+	K3FillMat(*V, 0.0);
+	for (int i = 0; i < 4; i++) {
+		if (k3tas[k][i] > 0) {
+			(*V)(i, abs(k3tas[k][i]) - 1) = 1.0;
+		}
+		else {
+			(*V)(i, abs(k3tas[k][i]) - 1) = -1.0;
+		}
+	}
+	// k = k % 3;
+	int ia = k3_TurnPlane[k][0];
+	int ib = k3_TurnPlane[k][1];
+
+	double sa = sin(alfa);
+	double ca = cos(alfa);
+	double a4[4] = { 0, 0, 0, 0 };
+	double b4[4] = { 0, 0, 0, 0 };
+	for (int i = 0; i < 4; i++) {
+		a4[i] += ca * (*V)(ia, i) + sa * (*V)(ib, i);
+		b4[i] += ca * (*V)(ib, i) - sa * (*V)(ia, i);
+	}
+	for (int i = 0; i < 4; i++) {
+		(*V)(ia, i) = a4[i];
+		(*V)(ib, i) = b4[i];
+	};
+}
+
+
+
+void K3ArrowsArc(double Center[3], double A[3], double B[3], CModel3D* K3MyModel, double R, int n, CRGBA* colour) {
+	// make arc from Center+A to Center+B, made of 12 short arrows
+	int i, i88, i99;
+	double a[3], b[3];
+	for (int i = 0; i < n + 0; i++) {
+		for (int i88 = 0; i88 < 3; i88++) {
+			double Rup = 1.0 + 1.0 * ((double)(2 * n - 2 * i)) * ((double)(2 * i)) / ((double)(n * n));
+			a[i88] = A[i88] * Rup * ((double)(n - i) / (double)n) + B[i88] * Rup * ((double)(i) / (double)n);
+			Rup = 1.0 + 1.0 * ((double)(2 * n - 2 * (i + 1))) * ((double)(2 * (i + 1))) / ((double)(n * n));
+			b[i88] = A[i88] * Rup * ((double)(n - i - 1) / (double)n) + B[i88] * Rup * ((double)(i + 1) / (double)n);
+			double da;
+			da = 0.3 * (b[i88] - a[i88]);
+			b[i88] += da / 3.0;
+			a[i88] -= da / 3.0;
+			a[i88] += Center[i88];
+			b[i88] += Center[i88];
+
+		};
+		K3Arrow* Arro1 = new K3Arrow(a, b, R, colour);
+		K3MyModel->addChild(Arro1);
+	}
+};
+
+
