@@ -11,11 +11,10 @@ class CModel3D;
 
 
 #define WORK_DIR "c:/K3/Wielowymiar/"
-#define PNG_DIR "d:/K3/Wielowymiar/"
 
 QString DPVISION_DLL_API DATA_PATH(const QString &fname);
-QString DPVISION_DLL_API PNG_PATH(const QString &fname);
-void DPVISION_DLL_API delete_old_screenshots(const QString& pattern);
+//QString DPVISION_DLL_API PNG_PATH(const QString &fname);
+//void DPVISION_DLL_API delete_old_screenshots(const QString& pattern);
 
 void DPVISION_DLL_API K3Neg3(double A[3], double B[3]);
 CRGBA DPVISION_DLL_API K3_color(double en, double a);

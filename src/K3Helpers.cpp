@@ -10,8 +10,8 @@
 #include "time.h"
 
 
-#define LITERAL_STRINGIFY(x) L ## x
-#define TO_WIDE_STRING(x) LITERAL_STRINGIFY(x)
+//#define LITERAL_STRINGIFY(x) L ## x
+//#define TO_WIDE_STRING(x) LITERAL_STRINGIFY(x)
 
 QString DATA_PATH(const QString &fname)
 {
@@ -21,36 +21,36 @@ QString DATA_PATH(const QString &fname)
 	return path;
 }
 
-QString PNG_PATH(const QString &fname)
-{
-	QString path(PNG_DIR);
-	path.append(fname);
-	return path;
-}
+//QString PNG_PATH(const QString &fname)
+//{
+//	QString path(PNG_DIR);
+//	path.append(fname);
+//	return path;
+//}
 
-void delete_old_screenshots(const QString& pattern)
-{
-	QDir dir(PNG_DIR);
-	if (!dir.exists()) {
-		qWarning() << "Directory does not exist:" << PNG_DIR; return;
-	}
-
-	QStringList filters;
-	filters << pattern;
-	dir.setNameFilters(filters);
-	QFileInfoList fileList = dir.entryInfoList();
-	for (const QFileInfo& fileInfo : fileList) {
-		if (fileInfo.isFile()) {
-			QFile file(fileInfo.absoluteFilePath());
-			if (file.remove()) {
-				qDebug() << "Deleted:" << fileInfo.fileName();
-			}
-			else {
-				qWarning() << "Failed to delete:" << fileInfo.fileName();
-			}
-		}
-	}
-}
+//void delete_old_screenshots(const QString& pattern)
+//{
+//	QDir dir(PNG_DIR);
+//	if (!dir.exists()) {
+//		qWarning() << "Directory does not exist:" << PNG_DIR; return;
+//	}
+//
+//	QStringList filters;
+//	filters << pattern;
+//	dir.setNameFilters(filters);
+//	QFileInfoList fileList = dir.entryInfoList();
+//	for (const QFileInfo& fileInfo : fileList) {
+//		if (fileInfo.isFile()) {
+//			QFile file(fileInfo.absoluteFilePath());
+//			if (file.remove()) {
+//				qDebug() << "Deleted:" << fileInfo.fileName();
+//			}
+//			else {
+//				qWarning() << "Failed to delete:" << fileInfo.fileName();
+//			}
+//		}
+//	}
+//}
 
 
 

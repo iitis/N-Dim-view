@@ -25,21 +25,35 @@ CsvColumnAssignmentDialog::CsvColumnAssignmentDialog(const QStringList& headers,
     okButton->setDefault(true);
     connect(okButton, &QPushButton::clicked, this, [this]() {
         // Walidacja unikalności par grupa-etykieta
+        int unnamed_cnt = 0;
+        int spacial_cnt = 0;
+
         QSet<QString> used;
         for (const auto& widgets : rowWidgetsList) {
             int groupIdx = widgets.currentGroupIndex;
             int labelIdx = widgets.currentLabelIndex;
+
+            if (groupIdx == 1) // note that there is <skip> group added as 0
+                unnamed_cnt++;
+            else if (groupIdx == 2)
+                spacial_cnt++;
 
             if (groupIdx <= 0 || labelIdx < 0 || labelIdx >= groups[groupIdx].elementNames.size())
                 continue; // pomiń lub brak etykiety
 
             QString key = QString::number(groupIdx) + ":" + groups[groupIdx].elementNames[labelIdx];
             if (used.contains(key)) {
-                QMessageBox::warning(this, "Error", "The same identifier has been assigned more than once in the same group.");
+                QMessageBox::warning(this, "N-Dim-view plugin error", "The same identifier has been assigned more than once in the same group.");
                 return; // nie zamykamy dialogu
             }
             used.insert(key);
         }
+
+        if ((unnamed_cnt < 1) && (spacial_cnt < 4)) {
+            QMessageBox::warning(this, "N-Dim-view plugin error", "At least 1 element in the unnamed group or at least 4 elements in the spacial group must be assigned for the PCA to function properly.");
+            return; // nie zamykamy dialogu
+        }
+
         accept();
         });
 

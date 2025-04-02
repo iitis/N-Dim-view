@@ -14,6 +14,7 @@
 #include "K3ChernoffFace.h"
 #include "K3RoseOfWinds.h"
 
+#include <QFileDialog>
 
 using namespace Eigen;
 
@@ -49,6 +50,8 @@ using namespace Eigen;
 
 ConcretePlugin::ConcretePlugin(void)
 {
+	png_save_dir = PNG_DIR;
+
 	current_data.headers = QStringList();
 	current_data.matrix = Eigen::MatrixXd();
 	current_assignment = QVector<ColumnAssignment>();
@@ -63,13 +66,24 @@ void ConcretePlugin::onLoad()
 {
 	UI::PLUGINPANEL::create(m_ID, L"N-Dim View");
 
-	UI::PLUGINPANEL::addButton(m_ID, L"csvReaderTest", L"Load data from .csv/.dat", 0, 0);
-	UI::PLUGINPANEL::addButton(m_ID, L"assignGroups", L"Assign data to groups", 1, 0);
+	UI::PLUGINPANEL::addLabel(m_ID, L"lbl0", L"Dataset:", 0,0);
+	UI::PLUGINPANEL::addLabel(m_ID, L"K3DataSet", L"NOT SET, PLEASE LOAD", 1, 0);
+	UI::PLUGINPANEL::addButton(m_ID, L"csvReaderTest", L"Load data from .csv/.dat", 2, 0);
 
-	UI::PLUGINPANEL::addButton(m_ID, L"K3Display", L"Static view", 6, 0);
-	//UI::PLUGINPANEL::addButton(m_ID, L"K3CzteroPajak", L"Make four-spider", 7, 0);
-	UI::PLUGINPANEL::addButton(m_ID, L"K3Krata", L"Create a grid of avatars", 8, 0);
-	UI::PLUGINPANEL::addButton(m_ID, L"K3Dance", L"Let's dance", 9, 0);
+	UI::PLUGINPANEL::addLabel(m_ID, L"lbl1", L"Assignments:", 3, 0);
+	UI::PLUGINPANEL::addLabel(m_ID, L"K3Assignment", L"NOT ASSIGNED YET", 4, 0);
+	UI::PLUGINPANEL::addButton(m_ID, L"assignGroups", L"Assign data to groups", 5, 0);
+
+	
+	UI::PLUGINPANEL::addLabel(m_ID, L"lbl2", L"Actions:", 6, 0);
+
+	//UI::PLUGINPANEL::addLabel(m_ID, L"lbl3", L"1. Static view of dataset\nprojected to 4D space.\nIt is next displayed\nand can be navigated in 3D", 11, 0);
+	UI::PLUGINPANEL::addButton(m_ID, L"K3Display", L"Static view", 12, 0);
+	//UI::PLUGINPANEL::addButton(m_ID, L"K3CzteroPajak", L"Make four-spider", 22, 0);
+	//UI::PLUGINPANEL::addLabel(m_ID, L"lbl4", L"2. Sample view of grid of avatars", 31, 0);
+	UI::PLUGINPANEL::addButton(m_ID, L"K3Krata", L"Grid of avatars", 32, 0);
+	//UI::PLUGINPANEL::addLabel(m_ID, L"lbl5", L"3. Generate animation of avatars.", 41, 0);
+	UI::PLUGINPANEL::addButton(m_ID, L"K3Dance", L"Let's dance", 42, 0);
 }
 
 
@@ -279,7 +293,7 @@ int ConcretePlugin::K3FormProjectionMatrix(const Eigen::MatrixXd &RawData) {
 		if (K3I_Count_s < 4) {
 			int j_boiled = 0;
 			MatrixXd X88 = K3_Get_PCA_Funnel(X_anon, 4 - K3I_Count_s); // QQ K3I_Count_a);
-			K3ListMatrix(DATA_PATH("MojeLeje.txt"), X88, "Lejek");
+			//dp-04-02// K3ListMatrix(DATA_PATH("MojeLeje.txt"), X88, "Lejek");
 			for (j88 = 0; j88 < 4 - K3I_Count_s; j88++) {
 				while (K3I_taken_s[j_boiled] > 0) { // skip the takien rows
 					j_boiled++;
@@ -300,9 +314,9 @@ int ConcretePlugin::K3FormProjectionMatrix(const Eigen::MatrixXd &RawData) {
 		// Now standardize the sigmas:
 
 		K3BoiledData = *K3_IObs * RawData;
-		K3ListMatrix(DATA_PATH("MujStat.txt"), RawData, "RawData");
-		K3ListMatrix(DATA_PATH("MujStat.txt"), *K3_IObs, "K3_IObs");
-		K3ListMatrix(DATA_PATH("MujStat.txt"), K3BoiledData, "K3BoiledData");
+		//dp-04-02// K3ListMatrix(DATA_PATH("MujStat.txt"), RawData, "RawData");
+		//dp-04-02// K3ListMatrix(DATA_PATH("MujStat.txt"), *K3_IObs, "K3_IObs");
+		//dp-04-02// K3ListMatrix(DATA_PATH("MujStat.txt"), K3BoiledData, "K3BoiledData");
 		for (j = 0; j < K3BoiledData.rows(); j++) {
 			double S1 = 0.0, S2 = 0.0, M, D;
 			int N = K3BoiledData.cols()-2, i;
@@ -325,7 +339,7 @@ int ConcretePlugin::K3FormProjectionMatrix(const Eigen::MatrixXd &RawData) {
 		};
 
 	};
-	K3ListMatrix(DATA_PATH("MujStat.txt"), *K3_IObs, "NEW_K3_IObs");
+	//dp-04-02// K3ListMatrix(DATA_PATH("MujStat.txt"), *K3_IObs, "NEW_K3_IObs");
 
 	return(1);
 };
@@ -388,28 +402,39 @@ void cleanupOldEntries(QSettings* settings, int daysOld = 30)
 	settings->sync();
 }
 
+void ConcretePlugin::setDatasetLabel() {
+	if (current_data.matrix.size() != 0) {
+		UI::PLUGINPANEL::setLabel(m_ID, "K3DataSet", QFileInfo(current_data.file_path).fileName());
+	}
+	else {
+		UI::PLUGINPANEL::setLabel(m_ID, L"K3DataSet", L"NOT SET, PLEASE LOAD");
+	}
+}
+
+void ConcretePlugin::setAssignmentLabel() {
+	int visual = 0, spacial = 0, unnamed = 0, skipped = 0;
+
+	if (current_assignment.isEmpty()) {
+		UI::PLUGINPANEL::setLabel(m_ID, "K3Assignment", "NOT ASSIGNED YET");
+	}
+	else {
+		for (auto ass : current_assignment) {
+			switch (ass.groupIndex) {
+			case -1: skipped++; break;
+			case 0: unnamed++; break;
+			case 1: spacial++; break;
+			case 2: visual++; break;
+			default: break;
+			}
+		}
+
+		QString txt = QString("visual: %1, spacial: %2,\nunnamed: %3, skipped: %4").arg(visual).arg(spacial).arg(unnamed).arg(skipped);
+		UI::PLUGINPANEL::setLabel(m_ID, "K3Assignment", txt);
+	}
+}
 
 void ConcretePlugin::AssignGroups() {
-	if (current_data.matrix.size() == 0) {
-		UI::MESSAGEBOX::error("You need to load data first !", "N-Dim-view plugin error");
-		return;
-	}
 
-	// Kazda linia reprezentuje grupę, pierwszy string to jej nazwa
-	// następnie w {} są etykiety zdefiniwanych przez ciebie wymiarów w tej grupie
-	// Jesli {} jest puste tzn, że grupa nie moze mieć etykiet (np.: nienazwane)
-	// UWAGA - to nie sa nazwy wymiarów związanych z plikiem źródłowym (np. wino)
-	// tylko to jak je będziesz używał podczas wizualizowalizacji
-	// powiązanie tego z np. winem dzieje sie dopiero w okienku dialogowym
-	// dlatego jest to niezależne od rodzaju danych
-	// Możesz sobie to dowolnie zmodyfikować, np dodac nowe elementy
-	QVector<GroupDefinition> groupDefs = {
-		{ "unnamed", {} },
-		{ "spacial", { "X", "Y", "Z", "T" } },
-		{ "visual", { "Skin_C", "Hair_C", "Eye_S", "Nose_L", "Mouth_W", "Smile", "Frown", "Hair_L", "Face_Elong", "Iris_C"}},
-	};
-	
-	
 	// pierwsza cyfra to indeks grupy z listy powyżej (tu np. unnamed=0, spacial=1 itd)
 	// a druga cyfra to indeks etykiety (też j.w.), dla grupy unnamed jest pomijany, wpisałem -1
 	// tych linii może być mniej niż parametrów win,
@@ -451,6 +476,7 @@ void ConcretePlugin::AssignGroups() {
 		// (tzn -> czy plik został wczytany i pogrupowany)
 		current_assignment = dlg.getAssignments();
 
+
 		defs.clear();
 		for (auto ass : current_assignment) {
 			defs.push_back(QPair<int, int>(ass.groupIndex, ass.label_id.value_or(-1)));
@@ -460,7 +486,7 @@ void ConcretePlugin::AssignGroups() {
 			saveFileData(settings.get(), current_data.file_path, defs);
 		}
 
-		K3FormProjectionMatrix(current_data.matrix);
+
 	}
 	else {
 		// Jeśli nie kliknieto OK - to zakładam, ze zrezygnowałeś i odrzucam wszystko co wczytałeś
@@ -604,6 +630,33 @@ void ConcretePlugin::K3Display() {
 }
 
 
+void ConcretePlugin::delete_old_screenshots(const QString& pattern)
+{
+	QDir dir(png_save_dir);
+
+	if (!dir.exists()) {
+		qWarning() << "Directory does not exist:" << PNG_DIR; return;
+	}
+
+	QStringList filters;
+	filters << pattern;
+	dir.setNameFilters(filters);
+	QFileInfoList fileList = dir.entryInfoList();
+	for (const QFileInfo& fileInfo : fileList) {
+		if (fileInfo.isFile()) {
+			QFile file(fileInfo.absoluteFilePath());
+			if (file.remove()) {
+				qDebug() << "Deleted:" << fileInfo.fileName();
+			}
+			else {
+				qWarning() << "Failed to delete:" << fileInfo.fileName();
+			}
+		}
+	}
+}
+
+
+
 void ConcretePlugin::K3Dance(double grand_scale) {
 	CModel3D* K3MyModel = new CModel3D();
 	MatrixXd K3ViewMat(5, 5); // QQ Assuming we only deal with 4 spatial dimensions
@@ -620,6 +673,7 @@ void ConcretePlugin::K3Dance(double grand_scale) {
 	for (int i_plane = 0; i_plane < 5; i_plane++) {  // was 5 and is 12
 		for (double alfa = 0.0; alfa < 0.01 + 3.1415926 / 2.0; alfa += (3.1415926 / 24.0)) {
 
+			/*dp-04-02
 			{
 				FILE* plik = fopen(DATA_PATH("Liczniki.txt").toStdString().c_str(), "a");
 				if (plik == NULL) {
@@ -630,6 +684,7 @@ void ConcretePlugin::K3Dance(double grand_scale) {
 					(int)(100.0 * alfa + 3000.0));
 				fclose(plik);
 			}
+			dp-04-02*/
 
 			// Sleep(200);
 			// _Thrd_yield();
@@ -702,11 +757,15 @@ void ConcretePlugin::K3Dance(double grand_scale) {
 				QByteArray ba = K3QST.toLocal8Bit();
 				const char* c_str2 = ba.data();
 
-				K3ListMatrix(DATA_PATH("MujZrzut.txt"), K3ViewMat, c_str2); // "ViewMat"); // FotFilNam);
+				//dp-04-02// K3ListMatrix(DATA_PATH("MujZrzut.txt"), K3ViewMat, c_str2); // "ViewMat"); // FotFilNam);
 
 				//UI::Beep(440.0, 500.0);
 
-				UI::CAMERA::screenshot(PNG_PATH(K3QST), k3viewer); // To teraz będzie tutaj
+				QString path(png_save_dir);
+				path.append("/");
+				path.append(K3QST);
+
+				UI::CAMERA::screenshot(path, k3viewer); // To teraz będzie tutaj
 
 			};
 		};
@@ -718,31 +777,101 @@ void ConcretePlugin::K3Dance(double grand_scale) {
 	qInfo() << "To już jest koniec..." << Qt::endl;
 }
 
+void ConcretePlugin::K3LoadDataset() {
+	current_data = CsvReader::loadFile();
+	current_assignment = QVector<ColumnAssignment>();
+	if (current_data.matrix.size() != 0) {
+		auto settings = AppSettings::pluginSettings("N-Dim-view");
+
+		//saveFileData(settings.get(), current_data.file_path, defs);
+		QVector<QPair<int, int>> defs = loadFileData(settings.get(), current_data.file_path);
+
+		if (!defs.isEmpty()) {
+			for (int i = 0; i < defs.size(); i++) {
+				auto d = defs[i];
+
+				ColumnAssignment c;
+
+				c.featureIndex = i;
+				c.featureName = current_data.headers[i];
+
+				c.groupIndex = d.first;
+				c.label_id = d.second;
+				if (c.groupIndex >= 0) {
+					c.groupName = groupDefs[c.groupIndex].name;
+					if (!groupDefs[c.groupIndex].elementNames.isEmpty() && c.label_id.has_value()) {
+						c.label_name = groupDefs[c.groupIndex].elementNames[c.label_id.value()];
+					}
+				}
+
+				current_assignment.push_back(c);
+			}
+		}
+	}
+}
 
 void ConcretePlugin::onButton(std::wstring name)
 {
 	if (0 == name.compare(L"csvReaderTest")) {
-		current_data = CsvReader::loadFile();
-		current_assignment = QVector<ColumnAssignment>();
+		K3LoadDataset();
+		setDatasetLabel();
+		setAssignmentLabel();
 	}
 	else if (0 == name.compare(L"assignGroups")) {
+		if (current_data.matrix.size() == 0) {
+			UI::MESSAGEBOX::error("You need to load data first !", "N-Dim-view plugin error");
+			return;
+		}
+
 		AssignGroups();
+		setAssignmentLabel();
 	}
 	else if (0 == name.compare(L"K3CzteroPajak"))
 	{
-		K3CzteroPajak(0.3536); //parametr zamiast: #define h05 0.3536
+		if (current_data.matrix.size() == 0) {
+			UI::MESSAGEBOX::error("You need to load data first !", "N-Dim-view plugin error");
+			return;
+		}
+
+		// NOTE: Need to check if 1 unnamed or 4 spacial exists (for PCA)
+		K3FormProjectionMatrix(current_data.matrix);
+
+		K3CzteroPajak(0.3536);
 	}
 	else if (0 == name.compare(L"K3Krata"))
 	{
-		// parametry zamiast: #define Nkrat 8 i #define Mkrat 6
+		// UWAGA: Krata nie korzysta z wczytywanych danych...
+
 		K3Krata(8, 6);
 	}
 	else if (0 == name.compare(L"K3Display"))
 	{
+		if (current_data.matrix.size() == 0) {
+			UI::MESSAGEBOX::error("You need to load data first !", "N-Dim-view plugin error");
+			return;
+		}
+
+		// NOTE: Need to check if 1 unnamed or 4 spacial exists (for PCA)
+		K3FormProjectionMatrix(current_data.matrix);
+
 		K3Display();
 	}
 	else if (0 == name.compare(L"K3Dance"))
 	{
+		if (current_data.matrix.size() == 0) {
+			UI::MESSAGEBOX::error("You need to load data first !", "N-Dim-view plugin error");
+			return;
+		}
+
+		png_save_dir = QDir::toNativeSeparators( QFileDialog::getExistingDirectory(0, QString::fromUtf8("Select animation folder"), png_save_dir) );
+
+		if (png_save_dir.isEmpty() || !QDir(png_save_dir).exists()) {
+			return;
+		}
+
+		// NOTE: Need to check if 1 unnamed or 4 spacial exists (for PCA)
+		K3FormProjectionMatrix(current_data.matrix);
+
 		K3Dance(K3GRAND_SCALE);
 	}
 }
