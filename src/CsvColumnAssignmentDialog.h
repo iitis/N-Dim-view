@@ -10,6 +10,7 @@
 #include <QMap>
 #include <QSet>
 #include <optional>
+#include <QScrollArea>
 
 struct GroupDefinition {
     QString name;
@@ -44,6 +45,9 @@ private:
     QVector<GroupDefinition> groups;
     QFormLayout* formLayout;
     QVBoxLayout* mainLayout;
+
+    QScrollArea* scrollArea;
+    QWidget* innerWidget;
 
     struct RowWidgets {
         QComboBox* groupCombo;

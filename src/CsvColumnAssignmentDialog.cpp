@@ -4,25 +4,68 @@
 #include <QPushButton>
 #include <QHBoxLayout>
 #include <QMessageBox>
+#include <QScrollArea>
+#include <QScrollBar>
 
 CsvColumnAssignmentDialog::CsvColumnAssignmentDialog(const QStringList& headers,
     const QVector<GroupDefinition>& userGroups,
     const QVector<QPair<int, int>>& defaults,
     QWidget* parent)
     : QDialog(parent), headers(headers) {
-    setWindowTitle("Assign features to groups");
-    mainLayout = new QVBoxLayout(this);
-    formLayout = new QFormLayout;
 
-    // Dodajemy domyślną grupę "pomiń" na początek
-    groups.append(GroupDefinition( "<skip this feature>", {} ));
+    // Scroll area
+    scrollArea = new QScrollArea(this);
+    scrollArea->setWidgetResizable(true);
+
+    // Wewnętrzny widget
+    innerWidget = new QWidget();
+
+    innerWidget->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    scrollArea->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    this->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+
+    mainLayout = new QVBoxLayout();
+    formLayout = new QFormLayout();
+    mainLayout->addLayout(formLayout);
+    innerWidget->setLayout(mainLayout);
+    scrollArea->setWidget(innerWidget);
+
+    // Główne layouty
+    QVBoxLayout* outerLayout = new QVBoxLayout(this);
+    outerLayout->addWidget(scrollArea);
+
+    // Przycisk OK
+    QPushButton *okButton = new QPushButton("OK");
+    okButton->setDefault(true);
+    outerLayout->addWidget(okButton);
+    setLayout(outerLayout);
+
+    groups.append(GroupDefinition("<skip this feature>", {}));
     groups += userGroups;
-
     buildUI();
+
+    scrollArea->setMaximumHeight(QWIDGETSIZE_MAX); // Tymczasowo bez limitu
+    innerWidget->adjustSize();
+
+    int maxScrollHeight = 400;
+
+    int scrollContentHeight = innerWidget->sizeHint().height();
+    int dialogFrameHeight = layout()->sizeHint().height() - innerWidget->sizeHint().height();
+
+    int scrollAreaHeight = std::min(scrollContentHeight, maxScrollHeight);
+
+    int finalHeight = scrollAreaHeight + dialogFrameHeight;
+
+    int minWidth = std::max(400, innerWidget->sizeHint().width() + scrollArea->verticalScrollBar()->sizeHint().width());
+
+    resize(minWidth, finalHeight);
+
+    scrollArea->setMaximumHeight(maxScrollHeight);
+
+    setMaximumHeight(finalHeight);
+
     connectSignals();
 
-    QPushButton* okButton = new QPushButton("OK");
-    okButton->setDefault(true);
     connect(okButton, &QPushButton::clicked, this, [this]() {
         // Walidacja unikalności par grupa-etykieta
         int unnamed_cnt = 0;
@@ -57,8 +100,6 @@ CsvColumnAssignmentDialog::CsvColumnAssignmentDialog(const QStringList& headers,
         accept();
         });
 
-    mainLayout->addLayout(formLayout);
-    mainLayout->addWidget(okButton);
 
     auto defs = defaults;
 
