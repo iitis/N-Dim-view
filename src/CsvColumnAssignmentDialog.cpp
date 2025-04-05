@@ -95,13 +95,13 @@ void CsvColumnAssignmentDialog::buildUI() {
 
         QWidget* labelWidget = new QWidget;
         QHBoxLayout* labelLayout = new QHBoxLayout(labelWidget);
-        labelLayout->addWidget(new QLabel("Label:"));
+        //labelLayout->addWidget(new QLabel("Label:"));
         labelLayout->addWidget(labelCombo);
         labelLayout->setContentsMargins(0, 0, 0, 0);
         labelWidget->setVisible(false);
 
         QWidget* container = new QWidget;
-        QVBoxLayout* vbox = new QVBoxLayout(container);
+        QHBoxLayout* vbox = new QHBoxLayout(container);
         vbox->addWidget(groupCombo);
         vbox->addWidget(labelWidget);
         vbox->setContentsMargins(0, 0, 0, 0);
