@@ -1,10 +1,9 @@
 #include "K3Totem.h"
-#include "K3ChernoffFace.h"
 
 #include "K3Helpers.h"
 
 void K3Totem::K3FillMeshToUnitCube(CMesh* ThisMesh, CRGBA Kolor) { // double l, double a) {
-	CMesh* K3UnitCube = new CMesh();
+	//CMesh* K3UnitCube = new CMesh();
 	ThisMesh->addVertex(CVertex(0.0, 0.0, 0.0)); // , Kolor);
 	ThisMesh->addVertex(CVertex(0.0, 0.0, 1.0)); //, Kolor);
 	ThisMesh->addVertex(CVertex(0.0, 1.0, 0.0)); //, Kolor);
@@ -54,6 +53,107 @@ void K3Totem::K3FillMeshToUnitCube(CMesh* ThisMesh, CRGBA Kolor) { // double l, 
 	};
 
 };
+
+
+K3ChernoffFace* K3Totem::make_face(std::vector<std::optional<double>> values, CMesh* korpus)
+{
+	//int nnn = K3HyperLook.rows();
+	//double k3xx[] = { 0.4,0.3,0.8,0.9,0.7,0.6,0.5,0.4,0.7, 0.9 };
+	//for (int i = 0; i < std::min(10, nnn); i++) { // size(K3HyperLook,1)
+	//	k3xx[i] = K3HyperLook[i];
+	//}
+
+	double cx, cy;
+	//K3ChernoffFace* K3Cher3;   // 9781 1159
+	K3ChernoffFace* K3Cher3 = new K3ChernoffFace(cx = 600, cy = 800, values);
+	//CImage* CimCher3 = (CImage*)K3Cher3;
+	//CTransform K3ImagePos;
+	//K3ImagePos = CimCher3->getTransform();
+
+
+	double K3D[16] = { 2.0,0.0,0.0,0.0, 0.0,1.0,0.0,0.0,  0.0,0.0,1.0,44.0,  0.0,0.0,10.0,1.0 };
+
+	// korpus->vertices()[i]
+
+	Eigen::Matrix4Xd K3SourceFaceFrame(4, 5), K3DestFaceFrame(4, 5);
+
+
+	Eigen::Matrix4d K3FaceToHead;
+	K3SourceFaceFrame(0, 0) = cx / 40.;
+	K3SourceFaceFrame(0, 1) = -cx / 40.;
+	K3SourceFaceFrame(0, 2) = -cx / 40.;
+	// K3SourceFaceFrame(0, 3) = cx / 40.;
+	K3SourceFaceFrame(0, 3) = 0.0;
+
+	K3SourceFaceFrame(1, 0) = cy / 40.;
+	K3SourceFaceFrame(1, 1) = cy / 40.;
+	K3SourceFaceFrame(1, 2) = -cy / 40.;
+	// K3SourceFaceFrame(1, 3) = -cy / 40.;
+	K3SourceFaceFrame(1, 3) = 0.0;
+
+	K3SourceFaceFrame(2, 0) = 0.0;
+	K3SourceFaceFrame(2, 1) = 0.0;
+	K3SourceFaceFrame(2, 2) = 0.0;
+	// K3SourceFaceFrame(2, 3) = 0.0;
+	K3SourceFaceFrame(2, 3) = 10.0;
+
+	K3SourceFaceFrame(3, 0) = 1.0;
+	K3SourceFaceFrame(3, 1) = 1.0;
+	K3SourceFaceFrame(3, 2) = 1.0;
+	// K3SourceFaceFrame(3, 3) = 1.0;
+	K3SourceFaceFrame(3, 3) = 1.0;
+
+	double drawbar[3];
+	double L1[3], L2[3];
+	for (int i88 = 0; i88 < 3; i88++) {
+		L1[i88] = korpus->vertices()[5][i88] / korpus->vertices()[5][3] - korpus->vertices()[1][i88] / korpus->vertices()[1][3];
+		L2[i88] = korpus->vertices()[3][i88] / korpus->vertices()[3][3] - korpus->vertices()[1][i88] / korpus->vertices()[1][3];
+	}
+	drawbar[0] = L1[1] * L2[2] - L2[1] * L1[2];
+	drawbar[1] = L1[2] * L2[0] - L2[2] * L1[0];
+	drawbar[2] = L1[0] * L2[1] - L2[0] * L1[1];
+
+	K3DestFaceFrame(0, 0) = korpus->vertices()[7][0];
+	K3DestFaceFrame(0, 1) = korpus->vertices()[3][0];
+	K3DestFaceFrame(0, 2) = korpus->vertices()[1][0];
+	// K3DestFaceFrame(0, 3) = korpus->vertices()[5][0];
+	K3DestFaceFrame(0, 3) = (korpus->vertices()[0][0] + korpus->vertices()[2][0] + korpus->vertices()[4][0] + korpus->vertices()[6][0]) / 4.0; // +drawbar[0];
+
+	K3DestFaceFrame(1, 0) = korpus->vertices()[7][1];
+	K3DestFaceFrame(1, 1) = korpus->vertices()[3][1];
+	K3DestFaceFrame(1, 2) = korpus->vertices()[1][1];
+	// K3DestFaceFrame(1, 3) = korpus->vertices()[5][1];
+	K3DestFaceFrame(1, 3) = (korpus->vertices()[0][1] + korpus->vertices()[2][1] + korpus->vertices()[4][1] + korpus->vertices()[6][1]) / 4.0; // + drawbar[1];
+
+	K3DestFaceFrame(2, 0) = .01 + korpus->vertices()[7][2];
+	K3DestFaceFrame(2, 1) = .01 + korpus->vertices()[3][2];
+	K3DestFaceFrame(2, 2) = .01 + korpus->vertices()[1][2];
+	// K3DestFaceFrame(2, 3) = korpus->vertices()[5][2];
+	K3DestFaceFrame(2, 3) = .01 + (korpus->vertices()[0][2] + korpus->vertices()[2][2] + korpus->vertices()[4][2] + korpus->vertices()[6][2]) / 4.0; // + drawbar[2];
+
+	K3DestFaceFrame(3, 0) = 1.0;
+	K3DestFaceFrame(3, 1) = 1.0;
+	K3DestFaceFrame(3, 2) = 1.0;
+	// K3DestFaceFrame(3, 3) = 1.0;
+	K3DestFaceFrame(3, 3) = 1.0;
+
+	K3FindTransform(K3SourceFaceFrame, K3DestFaceFrame, &K3FaceToHead, 4); // ( K3DestFaceFrame.inv   .inverse());
+	double K3FaceToHeadRaw[16];
+	for (int j88 = 0; j88 < 4; j88++) {
+		for (int i88 = 0; i88 < 4; i88++) {
+			K3FaceToHeadRaw[4 * j88 + i88] = K3FaceToHead(j88, i88);   // QQ: Trying transposition!
+		}
+
+	}
+
+	// K3ImagePos.fromRowMatrixD(K3FaceToHeadRaw);
+	// K3Cher3->getTransform().fromRowMatrixD(K3D);
+	K3Cher3->getTransform().fromRowMatrixD(K3FaceToHeadRaw); // K3FaceToHeadRaw or K3D
+
+	K3Cher3->setLabel("face");
+
+	return K3Cher3;
+}
 
 
 K3Totem::K3Totem(Eigen::VectorXd K3HyperSpot, Eigen::VectorXd K3HyperLook) {
@@ -181,106 +281,15 @@ K3Totem::K3Totem(Eigen::VectorXd K3HyperSpot, Eigen::VectorXd K3HyperLook) {
 	// delete LeftArm;
 
 	// Now let's put a face on it:
-	if (1) {   // NO FACE!
-		{
-			int nnn = K3HyperLook.rows();
-			double k3xx[] = { 0.4,0.3,0.8,0.9,0.7,0.6,0.5,0.4,0.7, 0.9 };
-			for (int i = 0; i < std::min(10, nnn); i++) { // size(K3HyperLook,1)
-				k3xx[i] = K3HyperLook[i];
-			}
 
-			double cx, cy;
-			//K3ChernoffFace* K3Cher3;   // 9781 1159
-			K3ChernoffFace* K3Cher3 = new K3ChernoffFace(cx = 600, cy = 800, k3xx);
-			//CImage* CimCher3 = (CImage*)K3Cher3;
-			//CTransform K3ImagePos;
-			//K3ImagePos = CimCher3->getTransform();
+	// tymczasowo:
+	std::vector<std::optional<double>> values( { 0.4, 0.3, 0.8, 0.9, 0.7, 0.6, 0.5, 0.4, 0.7, 0.9 } );
+	// std::vector<std::optional<double>> values(10);
 
+	for (int i = 0; i < std::min(10, static_cast<int>(K3HyperLook.rows())); i++)
+		values[i] = K3HyperLook[i];
 
-			double K3D[16] = { 2.0,0.0,0.0,0.0, 0.0,1.0,0.0,0.0,  0.0,0.0,1.0,44.0,  0.0,0.0,10.0,1.0 };
+	this->addChild( (CModel3D*) make_face(values, korpus) );
 
-			// korpus->vertices()[i]
-
-			Eigen::Matrix4Xd K3SourceFaceFrame(4, 5), K3DestFaceFrame(4, 5);
-
-
-			Eigen::Matrix4d K3FaceToHead;
-			K3SourceFaceFrame(0, 0) = cx / 40.;
-			K3SourceFaceFrame(0, 1) = -cx / 40.;
-			K3SourceFaceFrame(0, 2) = -cx / 40.;
-			// K3SourceFaceFrame(0, 3) = cx / 40.;
-			K3SourceFaceFrame(0, 3) = 0.0;
-
-			K3SourceFaceFrame(1, 0) = cy / 40.;
-			K3SourceFaceFrame(1, 1) = cy / 40.;
-			K3SourceFaceFrame(1, 2) = -cy / 40.;
-			// K3SourceFaceFrame(1, 3) = -cy / 40.;
-			K3SourceFaceFrame(1, 3) = 0.0;
-
-			K3SourceFaceFrame(2, 0) = 0.0;
-			K3SourceFaceFrame(2, 1) = 0.0;
-			K3SourceFaceFrame(2, 2) = 0.0;
-			// K3SourceFaceFrame(2, 3) = 0.0;
-			K3SourceFaceFrame(2, 3) = 10.0;
-
-			K3SourceFaceFrame(3, 0) = 1.0;
-			K3SourceFaceFrame(3, 1) = 1.0;
-			K3SourceFaceFrame(3, 2) = 1.0;
-			// K3SourceFaceFrame(3, 3) = 1.0;
-			K3SourceFaceFrame(3, 3) = 1.0;
-
-			double drawbar[3];
-			double L1[3], L2[3];
-			for (int i88 = 0; i88 < 3; i88++) {
-				L1[i88] = korpus->vertices()[5][i88] / korpus->vertices()[5][3] - korpus->vertices()[1][i88] / korpus->vertices()[1][3];
-				L2[i88] = korpus->vertices()[3][i88] / korpus->vertices()[3][3] - korpus->vertices()[1][i88] / korpus->vertices()[1][3];
-			}
-			drawbar[0] = L1[1] * L2[2] - L2[1] * L1[2];
-			drawbar[1] = L1[2] * L2[0] - L2[2] * L1[0];
-			drawbar[2] = L1[0] * L2[1] - L2[0] * L1[1];
-
-
-			K3DestFaceFrame(0, 0) = korpus->vertices()[7][0];
-			K3DestFaceFrame(0, 1) = korpus->vertices()[3][0];
-			K3DestFaceFrame(0, 2) = korpus->vertices()[1][0];
-			// K3DestFaceFrame(0, 3) = korpus->vertices()[5][0];
-			K3DestFaceFrame(0, 3) = (korpus->vertices()[0][0] + korpus->vertices()[2][0] + korpus->vertices()[4][0] + korpus->vertices()[6][0]) / 4.0; // +drawbar[0];
-
-			K3DestFaceFrame(1, 0) = korpus->vertices()[7][1];
-			K3DestFaceFrame(1, 1) = korpus->vertices()[3][1];
-			K3DestFaceFrame(1, 2) = korpus->vertices()[1][1];
-			// K3DestFaceFrame(1, 3) = korpus->vertices()[5][1];
-			K3DestFaceFrame(1, 3) = (korpus->vertices()[0][1] + korpus->vertices()[2][1] + korpus->vertices()[4][1] + korpus->vertices()[6][1]) / 4.0; // + drawbar[1];
-
-			K3DestFaceFrame(2, 0) = .01 + korpus->vertices()[7][2];
-			K3DestFaceFrame(2, 1) = .01 + korpus->vertices()[3][2];
-			K3DestFaceFrame(2, 2) = .01 + korpus->vertices()[1][2];
-			// K3DestFaceFrame(2, 3) = korpus->vertices()[5][2];
-			K3DestFaceFrame(2, 3) = .01 + (korpus->vertices()[0][2] + korpus->vertices()[2][2] + korpus->vertices()[4][2] + korpus->vertices()[6][2]) / 4.0; // + drawbar[2];
-
-			K3DestFaceFrame(3, 0) = 1.0;
-			K3DestFaceFrame(3, 1) = 1.0;
-			K3DestFaceFrame(3, 2) = 1.0;
-			// K3DestFaceFrame(3, 3) = 1.0;
-			K3DestFaceFrame(3, 3) = 1.0;
-
-			K3FindTransform(K3SourceFaceFrame, K3DestFaceFrame, &K3FaceToHead, 4); // ( K3DestFaceFrame.inv   .inverse());
-			double K3FaceToHeadRaw[16];
-			for (int j88 = 0; j88 < 4; j88++) {
-				for (int i88 = 0; i88 < 4; i88++) {
-					K3FaceToHeadRaw[4 * j88 + i88] = K3FaceToHead(j88, i88);   // QQ: Trying transposition!
-				}
-
-			}
-
-			// K3ImagePos.fromRowMatrixD(K3FaceToHeadRaw);
-			// K3Cher3->getTransform().fromRowMatrixD(K3D);
-			K3Cher3->getTransform().fromRowMatrixD(K3FaceToHeadRaw); // K3FaceToHeadRaw or K3D
-
-			K3Cher3->setLabel("face");
-
-			this->addChild((CModel3D*)K3Cher3); // QQ Wlknoc blok
-		}
-	}
 };
 // end of K3Totem

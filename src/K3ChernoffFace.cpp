@@ -2,9 +2,7 @@
 
 #include "K3Helpers.h"
 
-K3ChernoffFace::K3ChernoffFace(int cx, int cy, double k3params[10])  /* */ : CImage(cx, cy, CImage::Format::Format_ARGB32) {
-	// QQ 13V: ten przyblokowany kawałek linijkę wyżej to on był! Ale po co był?
-	//	this->CImage = new CImage(cx, cy, CImage::Format::Format_ARGB32);
+K3ChernoffFace::K3ChernoffFace(int cx, int cy, std::vector<std::optional<double>> k3params) : CImage(cx, cy, CImage::Format::Format_ARGB32) {
 	//  Feature mapping:
 		// +0 skin colour (rainbow scale)
 		// +1 hair colour (incl. facial hair, if any)
@@ -16,11 +14,19 @@ K3ChernoffFace::K3ChernoffFace(int cx, int cy, double k3params[10])  /* */ : CIm
 		// +7 - hair length
 		// +8 - face elongation
 		// +9 - iris color
+
 	int cxFace, cyFace;
 	QImage* Qthis = (QImage*)this;
 	QPainter painter(Qthis); // (this->CImage);
-	cxFace = cx * (0.6 - 0.38 * k3params[8]);
-	cyFace = cy * (0.6 + 0.38 * k3params[8]);
+
+	if (k3params[8].has_value()) {
+		cxFace = cx * (0.6 - 0.38 * k3params[8].value());
+		cyFace = cy * (0.6 + 0.38 * k3params[8].value());
+	}
+	else {
+		cxFace = cx * 0.6;
+		cyFace = cy * 0.6;
+	}
 
 	QPen pen;
 	// QColor QmujKolor;
@@ -34,8 +40,12 @@ K3ChernoffFace::K3ChernoffFace(int cx, int cy, double k3params[10])  /* */ : CIm
 	pen.setColor(CanvasColor);
 	painter.fillRect(0, 0, cx, cy / 2, CanvasColor);
 
+	if (k3params[0].has_value())
+		mujKolor = K3_color(k3params[0].value(), 1.0); // ;(0.3, 0.4)
+	else
+		mujKolor = K3_color(0.0, 0.0);
 
-	mujKolor = K3_color(k3params[0], 1.0); // ;(0.3, 0.4)
+
 	k3R = mujKolor.red(); k3G = mujKolor.green();
 	k3B = mujKolor.blue(); k3A = mujKolor.alpha();
 	QColor QmujKolor(mujKolor.red(), mujKolor.green(), mujKolor.blue(), mujKolor.alpha());
@@ -60,18 +70,25 @@ K3ChernoffFace::K3ChernoffFace(int cx, int cy, double k3params[10])  /* */ : CIm
 
 
 	// Now hair:
-	mujKolor = K3_color(k3params[1], 1.0);
-	k3R = mujKolor.red(); k3G = mujKolor.green();
-	k3B = mujKolor.blue(); k3A = mujKolor.alpha();
-	QmujKolor.setAlpha((int)(mujKolor.alpha()));
-	QmujKolor.setRed((int)(mujKolor.red()));
-	QmujKolor.setGreen((int)(mujKolor.green()));
-	QmujKolor.setBlue((int)(mujKolor.blue()));
-	pen.setColor(Qhaircolor = QmujKolor);
-	painter.fillRect((cx - cxFace / 4) / 2, (cy - cyFace) / 2, cxFace / 4, cyFace * (k3params[7]) / 4, QmujKolor);
+	if (k3params[1].has_value() && k3params[7].has_value()) {
+		mujKolor = K3_color(k3params[1].value(), 1.0);
+		k3R = mujKolor.red(); k3G = mujKolor.green();
+		k3B = mujKolor.blue(); k3A = mujKolor.alpha();
+		QmujKolor.setAlpha((int)(mujKolor.alpha()));
+		QmujKolor.setRed((int)(mujKolor.red()));
+		QmujKolor.setGreen((int)(mujKolor.green()));
+		QmujKolor.setBlue((int)(mujKolor.blue()));
+		pen.setColor(Qhaircolor = QmujKolor);
+		painter.fillRect((cx - cxFace / 4) / 2, (cy - cyFace) / 2, cxFace / 4, cyFace * (k3params[7].value()) / 4, QmujKolor);
+	}
+
 
 	// Now eyes:
-	double factEyes = (k3params[2] + 1.0) * 0.5;
+	double factEyes = 0.0;
+	if (k3params[2].has_value()) {
+		factEyes = (k3params[2].value() + 1.0) * 0.5;
+	}
+
 	int yEyes = cy / 2 - cyFace / 3;
 	int dxEyes = cxFace / 3;
 	int cxEyes = (factEyes * cxFace) / 4;
@@ -82,7 +99,6 @@ K3ChernoffFace::K3ChernoffFace(int cx, int cy, double k3params[10])  /* */ : CIm
 	LeftEndoCanthion = cx / 2 + dxEyes - cxEyes / 2;
 	LeftExoCanthion = LeftEndoCanthion + cxEyes;
 
-
 	// pen.setColor(Qt::black);
 	painter.setBrush(Qt::white);
 	painter.setPen(Qt::black);
@@ -91,8 +107,13 @@ K3ChernoffFace::K3ChernoffFace(int cx, int cy, double k3params[10])  /* */ : CIm
 	painter.drawEllipse(cx / 2 - dxEyes - cxEyes / 2, yEyes - cyEyes / 2, cxEyes, cyEyes);
 	painter.drawEllipse(cx / 2 + dxEyes - cxEyes / 2, yEyes - cyEyes / 2, cxEyes, cyEyes);
 
+
 	// Irises:
-	mujKolor = K3_color(0.5 + 0 * k3params[9], 1.0);
+	if (k3params[9].has_value())
+		mujKolor = K3_color(0.5 + 0 * k3params[9].value(), 1.0);
+	else
+		mujKolor = K3_color(0.0, 0.0);
+
 	k3R = mujKolor.red(); k3G = mujKolor.green();
 	k3B = mujKolor.blue(); k3A = mujKolor.alpha();
 	QmujKolor.setAlpha((int)(mujKolor.alpha()));
@@ -110,8 +131,9 @@ K3ChernoffFace::K3ChernoffFace(int cx, int cy, double k3params[10])  /* */ : CIm
 	// painter.drawEllipse(cx / 2 - dxEyes - cxEyes / 6, yEyes - cyEyes / 6, cxEyes / 3, cyEyes / 3);
 	// painter.drawEllipse(cx / 2 + dxEyes - cxEyes / 6, yEyes - cyEyes / 6, cxEyes / 3, cyEyes / 3);
 
+	if (k3params[0].has_value())
 	{ // Digression - eyebrows:
-		int yBrowsIn = cy / 2 - cyFace * 2 / 5 - k3params[0];
+		int yBrowsIn = cy / 2 - cyFace * 2 / 5 - k3params[0].value();
 		int yBrowsOut = cy / 2 - cyFace * 2 / 5;
 		// pen.setBrush(Qt::blue);
 		// pen.setColor(Qt::red);
@@ -124,52 +146,59 @@ K3ChernoffFace::K3ChernoffFace(int cx, int cy, double k3params[10])  /* */ : CIm
 
 
 	// Nose:
-	painter.setBrush(Qt::white);
-	painter.setPen(Qt::black);
-	int cxNose = cxEyes;
-	int cyNose = cyFace * (1.0 + k3params[3]) / 4;
-	painter.drawEllipse((cx - cxNose) / 2, yEyes, cxNose, cyNose);
+	if (k3params[3].has_value()) {
+		painter.setBrush(Qt::white);
+		painter.setPen(Qt::black);
+		int cxNose = cxEyes;
+		int cyNose = cyFace * (1.0 + k3params[3].value()) / 4;
+		painter.drawEllipse((cx - cxNose) / 2, yEyes, cxNose, cyNose);
+	}
+
 
 	// Mouth:
-//	int cxMouth = cxFace * (0.4 * (0.5 + k3params[4]));
-//	int cyMouth = cyFace * (0.3 * (abs(k3params[5] - 0.5) + .05));
-//	int cxMouth = cxFace * 0.8;
-//	int cyMouth = cyFace * 0.6;
-	pen.setWidth(30);
-	pen.setColor(Qt::red);
-	painter.setPen(pen);	// painter.drawLine(10, 10, 300, 300);
-
-//	jeśli rozmiar ust ma być stały i powiazany z rozmiarem buźki, to raczej tak :
-	//int cxMouth = cxFace * (0.4 * (0.5 + k3params[4]));
-	//int cyMouth = cyFace * (0.3 * (abs(k3params[5] - 0.5) + .05));
-	int cxMouth = cxFace / 1.4;
-	int cyMouth = cyFace / 3.6;
-
-	// painter.drawLine(10, 10, 300, 300);
-
-	if (k3params[5] > 0.5) {
-		painter.drawArc((cx - cxMouth) / 2, (cy - cyMouth) / 2 + cyFace * 0.007, cxMouth, cyMouth, 1, (180 * 16) - 1);
-		//painter.drawArc(1, 1, 100, 100, 1, (180 * 16) - 2);
-	}
-	else
+	if (k3params[5].has_value())
 	{
-		painter.drawArc((cx - cxMouth) / 2, (cy - cyMouth) / 2 + cyFace * 0.007, cxMouth, cyMouth, (180 * 16) + 2, (180 * 16) - 2);
-		//painter.drawArc(1, 1, 100, 100, (180 * 16) + 2, (180 * 16) - 2);
-	};
+
+		//	int cxMouth = cxFace * (0.4 * (0.5 + k3params[4]));
+		//	int cyMouth = cyFace * (0.3 * (abs(k3params[5] - 0.5) + .05));
+		//	int cxMouth = cxFace * 0.8;
+		//	int cyMouth = cyFace * 0.6;
+		pen.setWidth(30);
+		pen.setColor(Qt::red);
+		painter.setPen(pen);	// painter.drawLine(10, 10, 300, 300);
+
+		//	jeśli rozmiar ust ma być stały i powiazany z rozmiarem buźki, to raczej tak :
+			//int cxMouth = cxFace * (0.4 * (0.5 + k3params[4]));
+			//int cyMouth = cyFace * (0.3 * (abs(k3params[5] - 0.5) + .05));
+		int cxMouth = cxFace / 1.4;
+		int cyMouth = cyFace / 3.6;
+
+		// painter.drawLine(10, 10, 300, 300);
+
+		if (k3params[5] > 0.5) {
+			painter.drawArc((cx - cxMouth) / 2, (cy - cyMouth) / 2 + cyFace * 0.007, cxMouth, cyMouth, 1, (180 * 16) - 1);
+			//painter.drawArc(1, 1, 100, 100, 1, (180 * 16) - 2);
+		}
+		else
+		{
+			painter.drawArc((cx - cxMouth) / 2, (cy - cyMouth) / 2 + cyFace * 0.007, cxMouth, cyMouth, (180 * 16) + 2, (180 * 16) - 2);
+			//painter.drawArc(1, 1, 100, 100, (180 * 16) + 2, (180 * 16) - 2);
+		};
 
 
 #if 0
-	if (k3params[5] > 0.5) {
-		painter.drawArc((cx - cxMouth) / 2, cy / 2 + cyFace * 0.007, cxMouth, cyMouth, 1, (180 * 16) - 1);
-		// painter.drawArc(1, 1, 100, 100, 1, (180 * 16) - 2);
-	}
-	else
-	{
-		painter.drawArc((cx - cxMouth) / 2, cy / 2 + cyFace * 0.007, cxMouth, cyMouth, (180 * 16) + 2, (180 * 16) - 2);
-		// painter.drawArc(1, 1, 100, 100, (180 * 16) + 2, (180 * 16) - 2);
-	};
+		if (k3params[5] > 0.5) {
+			painter.drawArc((cx - cxMouth) / 2, cy / 2 + cyFace * 0.007, cxMouth, cyMouth, 1, (180 * 16) - 1);
+			// painter.drawArc(1, 1, 100, 100, 1, (180 * 16) - 2);
+		}
+		else
+		{
+			painter.drawArc((cx - cxMouth) / 2, cy / 2 + cyFace * 0.007, cxMouth, cyMouth, (180 * 16) + 2, (180 * 16) - 2);
+			// painter.drawArc(1, 1, 100, 100, (180 * 16) + 2, (180 * 16) - 2);
+		};
 #endif
 
+	}
 
 
 	// Now test the spectrum:

@@ -215,8 +215,12 @@ void ConcretePlugin::K3AddMyCloud(CModel3D* K3MyModel, MatrixXd K3ObsCloud, Matr
 		k = 200;
 	};
 	int m = K3ObsCloud.rows();
+
+
 	MatrixXd K3LocalSpots(5, k);  // QQ: FUTURE: 5 = X Y Z d T (3D + distance from current 3D space + homogeneous extra dim)
 			// RIGHT??: 5 = X Y Z T d (4D + distance from current 3D space)
+
+
 	for (int i = 0; i < k; i += 10) {  // DARKU TUTAJ DALEM 10, ZEBY WYSWIETLAC MNIEJ ELEMENTOW
 		for (int j = 0; j < 5; j++) {
 			// std::cout << "shame on i, j, k:" << i << " " << j << " " << k << std::endl;
@@ -247,9 +251,13 @@ void ConcretePlugin::K3AddMyCloud(CModel3D* K3MyModel, MatrixXd K3ObsCloud, Matr
 			i = i; //qq
 			Eigen::VectorXd P(4);
 			Eigen::VectorXd V(m - 4);
+			
 			// QQSize P is the position vector!
+			
 			double askala = 0.1 / K3LocalSpots(4, i);
+			
 			P << K3LocalSpots(0, i) * askala, K3LocalSpots(1, i)* askala, K3LocalSpots(2, i)* askala, K3LocalSpots(3, i)* askala; // Totem
+			
 			// P << 15.0 * i, 15.0 * i + 0.1, 15.0 * i + 0.2, 4.04; // Totem
 			for (int j88 = 0; j88 < m - 4; j88++) {
 				V(j88) = K3ObsCloud(4 + j88, i);
@@ -295,17 +303,29 @@ int ConcretePlugin::K3FormProjectionMatrix(const Eigen::MatrixXd &RawData) {
 	// Use list of parameter choices and data matrix to create a projection matrix
 	// that projects the raw dimensions into the observables according to user wishes
 	int K3I_ListAnon[100];
-	int i88, j88, j_raw, j;
+	//int i88, j88, j_raw, j;
+	
+	// container for 4 spatial dimensions
 	int K3I_taken_s[4] = { 0,0,0,0 };
-	int K3I_taken_v[10] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-	int K3I_Count_a = 0, K3I_Count_s = 0, K3I_Count_v = 0;
+
+	// container for 10 visual dimensions - NOT USED
+	//int K3I_taken_v[10] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+	
+	// counters for anonimous, spatial and visual dimensions
+	int K3I_Count_a = 0;
+	int K3I_Count_s = 0;
+	int K3I_Count_v = 0;
+
 	if (RawData.rows() * RawData.cols() > 0)
 	{
 		int K3_IDim = RawData.rows();
 		int K3_ICard = RawData.cols();
 
-		K3_IObs = new Eigen::MatrixXd(4 + 10, K3_IDim); // 4 spatial + 10 face params.
-		K3FillMat(*K3_IObs, 0.0);
+		// array: 14 nammed dims x all dims
+		Eigen::MatrixXd K3_IObs(4 + 10, K3_IDim); // 4 spatial + 10 face params.
+
+
+		K3FillMat(K3_IObs, 0.0);
 
 		for (int j = 0; j < K3_IDim; j++) {
 			int j_raw = current_assignment[j].featureIndex;
@@ -322,54 +342,95 @@ int ConcretePlugin::K3FormProjectionMatrix(const Eigen::MatrixXd &RawData) {
 					K3I_taken_s[j_boiled] = 2;
 					K3I_Count_s++;
 				}
-				(*K3_IObs)(j_boiled, current_assignment[j].featureIndex) = 1;
+				K3_IObs(j_boiled, current_assignment[j].featureIndex) = 1;
 				break;
 			case 2:  // visual
 				if (current_assignment[j].label_id.has_value()) {
 					j_boiled = current_assignment[j].label_id.value() + 4;
 					K3I_Count_v++;
 				};
-				(*K3_IObs)(j_boiled, current_assignment[j].featureIndex) = 1;
+				K3_IObs(j_boiled, current_assignment[j].featureIndex) = 1;
 				break;
 
 			}
 		};
+		
+
 		// make funnel. Firt, get the anonymous together:
+		// 
+		// NOTE: full row can be copied in single step:
+		
 		MatrixXd X_anon(K3I_Count_a, K3_ICard);
-		for (j88 = 0; j88 < K3I_Count_a; j88++) {
-			j_raw = K3I_ListAnon[j88];
-			for (i88 = 0; i88 < K3_ICard; i88++) {
-				X_anon(j88, i88) = RawData(j_raw, i88);
-			};
-		};
+		for (int j88 = 0; j88 < K3I_Count_a; ++j88) {
+			X_anon.row(j88) = RawData.row(K3I_ListAnon[j88]);
+		}
+
+		//MatrixXd X_anon(K3I_Count_a, K3_ICard);
+		//for (j88 = 0; j88 < K3I_Count_a; j88++) {
+		//	j_raw = K3I_ListAnon[j88];
+		//	for (i88 = 0; i88 < K3_ICard; i88++) {
+		//		X_anon(j88, i88) = RawData(j_raw, i88);
+		//	};
+		//};
+
+
+
+
+		// if less than 4 spatial dims was selected by user 
+		// use PCA to interpolate missing spatial dimensions:
 		if (K3I_Count_s < 4) {
 			int j_boiled = 0;
-			MatrixXd X88 = K3_Get_PCA_Funnel(X_anon, 4 - K3I_Count_s); // QQ K3I_Count_a);
-			//dp-04-02// K3ListMatrix(DATA_PATH("MojeLeje.txt"), X88, "Lejek");
-			for (j88 = 0; j88 < 4 - K3I_Count_s; j88++) {
-				while (K3I_taken_s[j_boiled] > 0) { // skip the takien rows
-					j_boiled++;
-				}; // qq uwaga na przekroczenie
+			MatrixXd X88 = K3_Get_PCA_Funnel(X_anon, 4 - K3I_Count_s);
+
+			for (int j88 = 0; j88 < 4 - K3I_Count_s; ++j88) {
+				// find first empty row
+				while (j_boiled < 4 && K3I_taken_s[j_boiled] > 0) {
+					++j_boiled;
+				}
 				if (j_boiled < 4) {
 					K3I_taken_s[j_boiled] = 3;
-					for (i88 = 0; i88 < K3I_Count_a; i88++) {
-						(*K3_IObs)(j_boiled, i88) = X88(j88, i88);
-					};
-				};
+					K3_IObs.row(j_boiled).head(K3I_Count_a) = X88.row(j88);
+				}
+			}
+		}
 
-			};
 
-		};
+		// if less than 4 spatial dims was selected by user:
+		//if (K3I_Count_s < 4) {
+		//	int j_boiled = 0;
+		//	
+		//	MatrixXd X88 = K3_Get_PCA_Funnel(X_anon, 4 - K3I_Count_s); // QQ K3I_Count_a);
+		//	
+		//	//dp-04-02// K3ListMatrix(DATA_PATH("MojeLeje.txt"), X88, "Lejek");
+		//	for (j88 = 0; j88 < 4 - K3I_Count_s; j88++) {
+		//		while (K3I_taken_s[j_boiled] > 0) { // skip the taken rows
+		//			j_boiled++;
+		//		}; // qq uwaga na przekroczenie
+		//		
+		//		if (j_boiled < 4) {
+		//			K3I_taken_s[j_boiled] = 3;
+		//			for (i88 = 0; i88 < K3I_Count_a; i88++) {
+		//				K3_IObs(j_boiled, i88) = X88(j88, i88);
+		//			};
+		//		};
+
+		//	};
+
+		//};
+
+
+
 
 		// K3_IObs READY!
 
-		// Now standardize the sigmas:
+		// Now standarize the sigmas:
 
-		K3BoiledData = *K3_IObs * RawData;
+		K3BoiledData = K3_IObs * RawData;
+
 		//dp-04-02// K3ListMatrix(DATA_PATH("MujStat.txt"), RawData, "RawData");
 		//dp-04-02// K3ListMatrix(DATA_PATH("MujStat.txt"), *K3_IObs, "K3_IObs");
 		//dp-04-02// K3ListMatrix(DATA_PATH("MujStat.txt"), K3BoiledData, "K3BoiledData");
-		for (j = 0; j < K3BoiledData.rows(); j++) {
+		for (int j = 0; j < K3BoiledData.rows(); j++) {
 			double S1 = 0.0, S2 = 0.0, M, D;
 			int N = K3BoiledData.cols()-2, i;
 			for (i = 1; i < N; i++) {

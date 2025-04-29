@@ -21,7 +21,7 @@ class DPVISION_DLL_API ConcretePlugin : public QObject, public PluginInterface
 
 	CsvReader::CsvData current_data;
 
-	Eigen::MatrixXd *K3_IObs, K3BoiledData;
+	Eigen::MatrixXd K3BoiledData;
 
 	QVector<ColumnAssignment> current_assignment;
 
