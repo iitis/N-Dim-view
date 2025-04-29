@@ -2,55 +2,23 @@
 
 #include "K3Helpers.h"
 
-K3ChernoffFace::K3ChernoffFace(int cx, int cy, std::vector<std::optional<double>> k3params) : CImage(cx, cy, CImage::Format::Format_ARGB32) {
-	//  Feature mapping:
-		// +0 skin colour (rainbow scale)
-		// +1 hair colour (incl. facial hair, if any)
-		// +2 - eye size
-		// +3 - nose height
-		// +4 - mouth width
-		// +5 - smile
-		// 6 - eybrow frown
-		// +7 - hair length
-		// +8 - face elongation
-		// +9 - iris color
-
-	int cxFace, cyFace;
-	QImage* Qthis = (QImage*)this;
-	QPainter painter(Qthis); // (this->CImage);
-
-	if (k3params[8].has_value()) {
-		cxFace = cx * (0.6 - 0.38 * k3params[8].value());
-		cyFace = cy * (0.6 + 0.38 * k3params[8].value());
-	}
-	else {
-		cxFace = cx * 0.6;
-		cyFace = cy * 0.6;
-	}
-
-	QPen pen;
-	// QColor QmujKolor;
+// visual[0] is Skin_C
+void draw_Face_oval(QPainter& painter, int cx, int cy, int cxFace, int cyFace, std::optional<double> feature)
+{
 	CRGBA mujKolor;
-	int k3R, k3G, k3B, k3A;
-	QColor CanvasColor;
-	CanvasColor.setAlpha((int)0);
-	CanvasColor.setRed((int)255);
-	CanvasColor.setGreen((int)255);
-	CanvasColor.setBlue((int)111);
-	pen.setColor(CanvasColor);
-	painter.fillRect(0, 0, cx, cy / 2, CanvasColor);
-
-	if (k3params[0].has_value())
-		mujKolor = K3_color(k3params[0].value(), 1.0); // ;(0.3, 0.4)
+	if (feature.has_value())
+		mujKolor = K3_color(feature.value(), 1.0); // ;(0.3, 0.4)
 	else
 		mujKolor = K3_color(0.0, 0.0);
 
 
+	int k3R, k3G, k3B, k3A;
 	k3R = mujKolor.red(); k3G = mujKolor.green();
 	k3B = mujKolor.blue(); k3A = mujKolor.alpha();
 	QColor QmujKolor(mujKolor.red(), mujKolor.green(), mujKolor.blue(), mujKolor.alpha());
-	QColor Qhaircolor;
 
+
+	QPen pen;
 	pen.setWidth(6); //  (k3R + k3G - k3B - k3A);
 	pen.setColor(QmujKolor);
 	// pen.setColor(QColor(255, 255, 0, 0));
@@ -59,34 +27,38 @@ K3ChernoffFace::K3ChernoffFace(int cx, int cy, std::vector<std::optional<double>
 	// painter.drawPoint(25, 25);
 	// Face oval:
 	painter.drawEllipse((cx - cxFace) / 2, (cy - cyFace) / 2, cxFace, cyFace);
+}
 
-	int yf0 = (cy - cyFace) / 2;
-	int yf1 = yf0 + (1.0 * cyFace) / 12;
-	int yf2 = yf0 + (2.0 * cyFace) / 12;
-	int yf3 = yf0 + (3.0 * cyFace) / 12;
-	int yf4 = yf0 + (4.0 * cyFace) / 12;
-	int yf8 = yf0 + (8.0 * cyFace) / 12;
-	int yf11 = yf0 + (11.0 * cyFace) / 12;
-
-
-	// Now hair:
-	if (k3params[1].has_value() && k3params[7].has_value()) {
-		mujKolor = K3_color(k3params[1].value(), 1.0);
+// visual[1] is Hair_C, visual[7] is Hair_L
+QColor draw_Hair(QPainter& painter, int cx, int cy, int cxFace, int cyFace, std::optional<double> feature1, std::optional<double> feature7)
+{
+	QColor Qhaircolor(qRgba(0,0,0,0));
+	if (feature1.has_value() && feature7.has_value()) {
+		CRGBA mujKolor = K3_color(feature1.value(), 1.0);
+		int k3R, k3G, k3B, k3A;
 		k3R = mujKolor.red(); k3G = mujKolor.green();
 		k3B = mujKolor.blue(); k3A = mujKolor.alpha();
-		QmujKolor.setAlpha((int)(mujKolor.alpha()));
-		QmujKolor.setRed((int)(mujKolor.red()));
-		QmujKolor.setGreen((int)(mujKolor.green()));
-		QmujKolor.setBlue((int)(mujKolor.blue()));
-		pen.setColor(Qhaircolor = QmujKolor);
-		painter.fillRect((cx - cxFace / 4) / 2, (cy - cyFace) / 2, cxFace / 4, cyFace * (k3params[7].value()) / 4, QmujKolor);
+
+		QColor Qhaircolor;
+		Qhaircolor.setAlpha((int)(mujKolor.alpha()));
+		Qhaircolor.setRed((int)(mujKolor.red()));
+		Qhaircolor.setGreen((int)(mujKolor.green()));
+		Qhaircolor.setBlue((int)(mujKolor.blue()));
+
+		QPen pen;
+		pen.setColor(Qhaircolor);
+		painter.fillRect((cx - cxFace / 4) / 2, (cy - cyFace) / 2, cxFace / 4, cyFace * (feature7.value()) / 4, Qhaircolor);
 	}
 
+	return Qhaircolor;
+}
 
-	// Now eyes:
+// visual[2] is Eye_S
+std::tuple<int, int, int, int, int, int, int, int> draw_Eyes(QPainter& painter, int cx, int cy, int cxFace, int cyFace, std::optional<double> feature)
+{
 	double factEyes = 0.0;
-	if (k3params[2].has_value()) {
-		factEyes = (k3params[2].value() + 1.0) * 0.5;
+	if (feature.has_value()) {
+		factEyes = (feature.value() + 1.0) * 0.5;
 	}
 
 	int yEyes = cy / 2 - cyFace / 3;
@@ -107,23 +79,138 @@ K3ChernoffFace::K3ChernoffFace(int cx, int cy, std::vector<std::optional<double>
 	painter.drawEllipse(cx / 2 - dxEyes - cxEyes / 2, yEyes - cyEyes / 2, cxEyes, cyEyes);
 	painter.drawEllipse(cx / 2 + dxEyes - cxEyes / 2, yEyes - cyEyes / 2, cxEyes, cyEyes);
 
+	return { dxEyes, yEyes, cxEyes, cyEyes, RightExoCanthion, RightEndoCanthion, LeftEndoCanthion, LeftExoCanthion };
+}
 
-	// Irises:
-	if (k3params[9].has_value())
-		mujKolor = K3_color(0.5 + 0 * k3params[9].value(), 1.0);
+// visual[3] is Nose_L
+void draw_visual_3(QPainter& painter, std::optional<double> feature)
+{
+
+}
+
+// visual[4] is Mouth_W
+void draw_visual_4(QPainter& painter, std::optional<double> feature)
+{
+
+}
+
+// visual[5] is Smile
+void draw_visual_5(QPainter& painter, std::optional<double> feature)
+{
+
+}
+
+// visual[6] is Frown
+void draw_visual_6(QPainter& painter, std::optional<double> feature)
+{
+
+}
+
+// visual[7] is Hair_L
+void draw_visual_7(QPainter& painter, std::optional<double> feature)
+{
+	// see: draw_Hair
+}
+
+// visual[8] is Face_Elong
+std::pair<int, int> get_Face_Elong(QPainter& painter, int cx, int cy, std::optional<double> feature)
+{
+	int cxFace, cyFace;
+	if (feature.has_value()) {
+		cxFace = cx * (0.6 - 0.38 * feature.value());
+		cyFace = cy * (0.6 + 0.38 * feature.value());
+	}
+	else {
+		cxFace = cx * 0.6;
+		cyFace = cy * 0.6;
+	}
+
+	return { cxFace, cyFace };
+}
+
+// visual[9] is Iris_C
+QColor draw_Irises(QPainter& painter, int cx, int cy, int dxEyes, int yEyes, int cxEyes, int cyEyes, std::optional<double> feature)
+{
+	CRGBA mujKolor;
+	if (feature.has_value())
+		mujKolor = K3_color(0.5 + 0 * feature.value(), 1.0);
 	else
 		mujKolor = K3_color(0.0, 0.0);
 
+	int k3R, k3G, k3B, k3A;
 	k3R = mujKolor.red(); k3G = mujKolor.green();
 	k3B = mujKolor.blue(); k3A = mujKolor.alpha();
+
+	QColor QmujKolor;
 	QmujKolor.setAlpha((int)(mujKolor.alpha()));
 	QmujKolor.setRed((int)(mujKolor.red()));
 	QmujKolor.setGreen((int)(mujKolor.green()));
 	QmujKolor.setBlue((int)(mujKolor.blue()));
+
 	painter.setBrush(QmujKolor);
 	painter.setPen(QmujKolor);
 	painter.drawEllipse(cx / 2 - dxEyes - cxEyes / 4, yEyes - cyEyes / 4, cxEyes / 2, cyEyes / 2);
 	painter.drawEllipse(cx / 2 + dxEyes - cxEyes / 4, yEyes - cyEyes / 4, cxEyes / 2, cyEyes / 2);
+
+	return QmujKolor;
+}
+
+
+K3ChernoffFace::K3ChernoffFace(int cx, int cy, std::vector<std::optional<double>> k3params) : CImage(cx, cy, CImage::Format::Format_ARGB32) {
+	//  Feature mapping:
+		// +0 skin colour (rainbow scale)
+		// +1 hair colour (incl. facial hair, if any)
+		// +2 - eye size
+		// +3 - nose height
+		// +4 - mouth width
+		// +5 - smile
+		// 6 - eybrow frown
+		// +7 - hair length
+		// +8 - face elongation
+		// +9 - iris color
+
+	
+	QImage* Qthis = (QImage*)this;
+	QPainter painter(Qthis);
+
+	QColor CanvasColor;
+	CanvasColor.setAlpha((int)0);
+	CanvasColor.setRed((int)255);
+	CanvasColor.setGreen((int)255);
+	CanvasColor.setBlue((int)111);
+
+	QPen pen;
+	pen.setColor(CanvasColor);
+
+	painter.fillRect(0, 0, cx, cy / 2, CanvasColor);
+
+	// get face oval
+	auto [cxFace, cyFace] = get_Face_Elong(painter, cx, cy, k3params[8]);
+	
+	// get face color and draw face oval
+	draw_Face_oval(painter, cx, cy, cxFace, cyFace, k3params[0]);
+
+	int yf0 = (cy - cyFace) / 2;
+	int yf1 = yf0 + (1.0 * cyFace) / 12;
+	int yf2 = yf0 + (2.0 * cyFace) / 12;
+	int yf3 = yf0 + (3.0 * cyFace) / 12;
+	int yf4 = yf0 + (4.0 * cyFace) / 12;
+	int yf8 = yf0 + (8.0 * cyFace) / 12;
+	int yf11 = yf0 + (11.0 * cyFace) / 12;
+
+
+	// Now draw hair:
+	QColor Qhaircolor = draw_Hair(painter, cx, cy, cxFace, cyFace, k3params[1], k3params[7]);
+
+
+	// Now eyes:
+	auto [dxEyes, yEyes, cxEyes, cyEyes, RightExoCanthion, RightEndoCanthion, LeftEndoCanthion, LeftExoCanthion] =
+		draw_Eyes(painter, cx, cy, cxFace, cyFace, k3params[2]);
+
+
+	// Irises:
+	QColor QmujKolor = draw_Irises(painter, cx, cy, dxEyes, yEyes, cxEyes, cyEyes, k3params[9]);
+
 
 	// Pupils:
 	painter.setBrush(Qt::black);
@@ -205,7 +292,8 @@ K3ChernoffFace::K3ChernoffFace(int cx, int cy, std::vector<std::optional<double>
 	for (int i88 = -1; i88 < 12; i88++) {
 		double f;
 		f = 0.1 * (double)i88;
-		mujKolor = K3_color(f, 1.0);
+		CRGBA mujKolor = K3_color(f, 1.0);
+		int k3R, k3G, k3B, k3A;
 		k3R = mujKolor.red(); k3G = mujKolor.green();
 		k3B = mujKolor.blue(); k3A = mujKolor.alpha();
 		QmujKolor.setAlpha((int)(mujKolor.alpha()));
