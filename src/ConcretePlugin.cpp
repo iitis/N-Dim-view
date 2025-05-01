@@ -761,9 +761,20 @@ void ConcretePlugin::K3Dance(double grand_scale) {
 			// double alfa = (double)i * 0.25;  // radians!
 // void K3_4x4viewN(MatrixXd *V, int k, double alfa)
 
-			K3_4x4viewN(&K3ViewMat, i_plane, alfa);
-			K3ViewMat *= grand_scale;   //QQ9 SCALE
-			K3ViewMat(4, 4) = 1.0;
+			//K3_4x4viewN(&K3ViewMat, i_plane, alfa);
+			//K3ViewMat *= grand_scale;   //QQ9 SCALE
+			//K3ViewMat(4, 4) = 1.0;
+			//Eigen::MatrixXd X_visible = K3DenseCloud;
+
+			get_observer_matrix(K3ViewMat, i_plane, alfa);
+			
+			K3ViewMat.block(0,0,4,4) *= grand_scale;
+			
+			Eigen::MatrixXd X_spatial = K3DenseCloud.topRows(4);
+			auto mask = create_slab_mask(K3ViewMat, X_spatial, 50.0);
+			Eigen::MatrixXd X_visible = use_mask(K3DenseCloud, mask);
+
+
 			//{
 			//	char DescrIter[300];   // QQ w or no w?  wchar_t
 
@@ -782,7 +793,10 @@ void ConcretePlugin::K3Dance(double grand_scale) {
 				AP::WORKSPACE::setCurrentModel(-1);
 
 				// K3ListMatrix(DATA_PATH(L"MujZrzut.txt").c_str(), K3DenseCloud, "ViewDense"); // FotFilNam);
-				K3AddMyCloud(K3MyModel, K3DenseCloud, K3ViewMat, 5000.4); // 5000000.3);
+				
+				
+				//K3AddMyCloud(K3MyModel, K3DenseCloud, K3ViewMat, 5000.4); // 5000000.3);
+				K3AddMyCloud(K3MyModel, X_visible, K3ViewMat.block(0, 0, 4, 4), 5000.4); // 5000000.3);
 
 
 
@@ -813,7 +827,7 @@ void ConcretePlugin::K3Dance(double grand_scale) {
 				qInfo() << "checkpoint" << Qt::endl;
 
 				//AP::processEvents();
-				//Sleep(40);
+				//Sleep(500);
 
 				QString K3QST = QString().sprintf("Fot_%03d_x_%04d_PK.png", i_plane, static_cast<int>(100.0 * alfa + 3000.0));
 

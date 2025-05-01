@@ -265,6 +265,44 @@ void K3_4x4viewN(MatrixXd* V, int k, double alfa) {
 }
 
 
+void get_observer_matrix(Eigen::MatrixXd &V, int k, double alfa)
+{
+	Eigen::MatrixXd nowa(4, 4);
+	K3_4x4viewN(&nowa, k, alfa);
+
+	V = Eigen::MatrixXd(nowa.rows() + 1, nowa.cols());
+	V << nowa, nowa.row(nowa.rows() - 1);;
+}
+
+Eigen::Array<bool, Eigen::Dynamic, 1> create_slab_mask(Eigen::MatrixXd& V, Eigen::MatrixXd& X_spatial, double slab_threshold)
+{
+	int k = V.rows() - 1;
+	Eigen::MatrixXd X_view = V.topRows(k) * X_spatial;
+	Eigen::VectorXd slab_values = V.row(k) * X_spatial;
+
+	auto mask = (slab_values.cwiseAbs().array() < slab_threshold).eval();
+
+	return mask;
+}
+
+Eigen::MatrixXd use_mask(Eigen::MatrixXd &X_view, Eigen::Array<bool, Eigen::Dynamic, 1> &mask)
+{
+	std::vector<int> indices;
+	for (int i = 0; i < mask.size(); ++i) {
+		if (mask(i)) {
+			indices.push_back(i);
+		}
+	}
+
+	Eigen::MatrixXd X_visible(X_view.rows(), indices.size());
+	for (size_t i = 0; i < indices.size(); ++i) {
+		X_visible.col(i) = X_view.col(indices[i]);
+	}
+
+	return X_visible;
+}
+
+
 
 void K3ArrowsArc(double Center[3], double A[3], double B[3], CModel3D* K3MyModel, double R, int n, CRGBA* colour) {
 	// make arc from Center+A to Center+B, made of 12 short arrows
