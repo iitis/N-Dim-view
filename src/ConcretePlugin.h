@@ -35,7 +35,7 @@ class DPVISION_DLL_API ConcretePlugin : public QObject, public PluginInterface
 	// Mo¿esz sobie to dowolnie zmodyfikowaæ, np dodac nowe elementy
 	QVector<GroupDefinition> groupDefs = {
 		{ "unnamed", {} },
-		{ "spacial", { "X", "Y", "Z", "T" } },
+		{ "spatial", { "X", "Y", "Z", "T" } },
 		{ "visual", { "Skin_C", "Hair_C", "Eye_S", "Nose_L", "Mouth_W", "Smile", "Frown", "Hair_L", "Face_Elong", "Iris_C"}},
 	};
 
