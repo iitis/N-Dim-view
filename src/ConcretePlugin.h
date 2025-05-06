@@ -10,6 +10,7 @@
 
 class CModel3D;
 class QSettings;
+class SwarmOfAvatars3D;
 
 #define PNG_DIR "d:/K3/Wielowymiar/"
 
@@ -50,7 +51,8 @@ class DPVISION_DLL_API ConcretePlugin : public QObject, public PluginInterface
 	};
 
 	Eigen::MatrixXd K3_Get_PCA_Funnel(Eigen::MatrixXd X, int nd);
-	void K3AddMyCloud(CModel3D* K3MyModel, Eigen::MatrixXd K3ObsCloud, Eigen::MatrixXd K3ViewMat, double K3Toler);
+	//void K3AddMyCloud(CModel3D* K3MyModel, Eigen::MatrixXd K3ObsCloud, Eigen::MatrixXd K3ViewMat, double K3Toler);
+	void K3AddMyCloud(SwarmOfAvatars3D* K3MyModel, Eigen::MatrixXd K3ObsCloud, Eigen::MatrixXd K3ViewMat, double K3Toler);
 	int K3FormProjectionMatrix(const Eigen::MatrixXd& RawData);
 	void K3AddMyCloud2(CModel3D* K3MyModel, Eigen::MatrixXd K3ObsCloud, Eigen::MatrixXd K3ViewMat, double K3Toler);
 	void setDatasetLabel();

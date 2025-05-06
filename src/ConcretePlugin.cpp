@@ -252,7 +252,8 @@ Eigen::MatrixXd normalize_visual(const Eigen::MatrixXd& K3ObsCloud)
 }
 
 
-void ConcretePlugin::K3AddMyCloud(CModel3D* K3MyModel, MatrixXd K3ObsCloud, MatrixXd K3ViewMat, double K3Toler)
+//void ConcretePlugin::K3AddMyCloud(CModel3D* K3MyModel, MatrixXd K3ObsCloud, MatrixXd K3ViewMat, double K3Toler)
+void ConcretePlugin::K3AddMyCloud(SwarmOfAvatars3D* K3MyModel, MatrixXd K3ObsCloud, MatrixXd K3ViewMat, double K3Toler)
 {
 	int k = K3ObsCloud.cols();
 	int m = K3ObsCloud.rows();
@@ -784,7 +785,7 @@ void ConcretePlugin::K3Krata(int Nkrat, int Mkrat) {
 
 
 void ConcretePlugin::K3Display() {
-	CModel3D* K3MyModel = new CModel3D();
+	
 	// Eigen::MatrixXd K3FullCloud = current_data_matrix;
 	Eigen::MatrixXd K3DenseCloud = K3BoiledData; // *K3_IObs* K3FullCloud;
 	//		AP::WORKSPACE::addModel(K3MyModel);
@@ -795,12 +796,16 @@ void ConcretePlugin::K3Display() {
 		K3ViewMat(i, i) = 50.0;  // QQ Scale! bigbig
 	}
 	K3ViewMat(4, 4) = 1.0;
-	K3AddMyCloud(K3MyModel, K3DenseCloud, K3ViewMat, 2000.3);
-	K3MyModel->importChildrenGeometry();
+	
+	//CModel3D* K3MyModel = new CModel3D();
+	SwarmOfAvatars3D* K3MyModel = new SwarmOfAvatars3D();
 
+	K3AddMyCloud(K3MyModel, K3DenseCloud, K3ViewMat, 2000.3);
+	//K3MyModel->importChildrenGeometry();
 	K3MyModel->setLabel("Static view");
 
-	AP::WORKSPACE::addModel(K3MyModel); // QQ blok Wlknoc
+	AP::WORKSPACE::addObject(K3MyModel); // QQ blok Wlknoc
+
 	UI::updateAllViews();
 	// _Thrd_yield();
 }
@@ -834,7 +839,6 @@ void ConcretePlugin::delete_old_screenshots(const QString& pattern)
 
 
 void ConcretePlugin::K3Dance(double grand_scale) {
-	CModel3D* K3MyModel = new CModel3D();
 	MatrixXd K3ViewMat(5, 5); // QQ Assuming we only deal with 4 spatial dimensions
 	// Eigen::MatrixXd K3FullCloud = current_data_matrix;
 	Eigen::MatrixXd K3DenseCloud = K3BoiledData; // *K3_IObs* K3FullCloud;
@@ -899,8 +903,9 @@ void ConcretePlugin::K3Dance(double grand_scale) {
 				double RoseStem[3] = { -30, 40, 25 }; // QQ sET STEM LENGTH; was triple 1.
 				AP::WORKSPACE::removeAllModels();
 
-				K3MyModel = new CModel3D();
-				AP::WORKSPACE::addModel(K3MyModel);
+				//CModel3D *K3MyModel = new CModel3D();
+				SwarmOfAvatars3D *K3MyModel = new SwarmOfAvatars3D();
+				AP::WORKSPACE::addObject(K3MyModel);
 				AP::WORKSPACE::setCurrentModel(-1);
 
 				// K3ListMatrix(DATA_PATH(L"MujZrzut.txt").c_str(), K3DenseCloud, "ViewDense"); // FotFilNam);
@@ -931,7 +936,7 @@ void ConcretePlugin::K3Dance(double grand_scale) {
 				//					K3RoseO1fWinds* IlNome = new K3RoseOfWinds(Observer, RoseStem, colorlist);
 				//					K3MyModel->addChild((CMesh*)IlNome); // QQ future orphan
 
-				K3MyModel->importChildrenGeometry();
+				//K3MyModel->importChildrenGeometry();
 
 				UI::updateAllViews(false);
 
