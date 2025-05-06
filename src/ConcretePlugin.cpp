@@ -207,8 +207,119 @@ MatrixXd ConcretePlugin::K3_Get_PCA_Funnel(MatrixXd X, int nd) {
 #define K3avr 4 */
 
 
+#include "Avatar3d.h"
+
+Eigen::VectorXd maxAbsPerRow(const Eigen::MatrixXd& M) {
+	Eigen::VectorXd result(M.rows());
+	for (int i = 0; i < M.rows(); ++i)
+		result(i) = M.row(i).cwiseAbs().maxCoeff();
+	return result;
+}
+
+#include <algorithm>
+
+// Funkcja pomocnicza do wyznaczenia percentyli (prosty wariant)
+double percentile(Eigen::RowVectorXd row, double p) {
+	std::vector<double> values(row.data(), row.data() + row.size());
+	std::sort(values.begin(), values.end());
+	size_t index = static_cast<size_t>(p * (values.size() - 1));
+	return values[index];
+}
+
+
+
+Eigen::MatrixXd normalize_visual(const Eigen::MatrixXd& K3ObsCloud)
+{
+	Eigen::MatrixXd X_view = K3ObsCloud;
+
+	for (int i = 4; i < K3ObsCloud.rows(); ++i) {
+		Eigen::RowVectorXd row = K3ObsCloud.row(i);
+		std::vector<double> values(row.data(), row.data() + row.size());
+		std::sort(values.begin(), values.end());
+
+		double minP = values[static_cast<size_t>(0.05 * (values.size() - 1))];
+		double maxP = values[static_cast<size_t>(0.95 * (values.size() - 1))];
+		double range = maxP - minP;
+		if (range < 1e-6) continue;
+
+		// Normalizacja z przycięciem outlierów do -1 lub 1
+		X_view.row(i) = ((row.array() - minP) / range * 2.0 - 1.0)
+			.min(1.0)
+			.max(-1.0);
+	}
+
+	return X_view;
+}
+
 
 void ConcretePlugin::K3AddMyCloud(CModel3D* K3MyModel, MatrixXd K3ObsCloud, MatrixXd K3ViewMat, double K3Toler)
+{
+	int k = K3ObsCloud.cols();
+	int m = K3ObsCloud.rows();
+
+	//=================================================
+	// To jeśli nie przerzedzamy:
+	//-------------------------------------------------
+	//MatrixXd K3LocalSpots(5, k);
+	//K3LocalSpots.topRows(4) = K3ObsCloud.topRows(4);
+	//K3LocalSpots.row(4) = Eigen::RowVectorXd::Ones(k);
+	//=================================================
+
+	//=================================================
+	// Przerzedzamy, np. co 10 element:
+	//-------------------------------------------------
+	std::vector<int> idx;
+	for (int i = 0; i < k; i += 10)
+		idx.push_back(i);
+
+	// Nowa macierz z co 10. kolumny
+	MatrixXd selected(4, idx.size());
+	for (int j = 0; j < idx.size(); ++j)
+		selected.col(j) = K3ObsCloud.col(idx[j]);
+
+	// Dodanie rzędu jedynek
+	MatrixXd K3LocalSpots(5, selected.cols());
+	K3LocalSpots.topRows(4) = selected;
+	K3LocalSpots.row(4) = RowVectorXd::Ones(selected.cols());
+	//=================================================
+
+	K3LocalSpots = K3ViewMat * K3LocalSpots;
+
+	Eigen::MatrixXd X_view = normalize_visual(K3ObsCloud);
+
+	for (int i = 0; i < K3LocalSpots.cols(); i++)
+	{
+		Eigen::VectorXd P(4);
+		Eigen::VectorXd V(m - 4);
+
+		// DLACZEGO DZIELE PRZEZ PIĄTY ELEMENT == 1 ???
+		double askala = 0.1 / K3LocalSpots(4, i);
+
+		P = K3LocalSpots.block(0, i, 4, 1) * askala;
+		
+		//V = K3ObsCloud.block(4, i, m-4, 1); // jesli nie jest przerzedzone
+		V = X_view.block(4, idx[i], m - 4, 1); // dla przerzedzonych
+
+		//K3Totem* K3TenTotem = new K3Totem(P, V);
+		//K3TenTotem->setLabel(QString("awatar-%1").arg(i));
+		//K3MyModel->addChild(K3TenTotem);
+
+		Avatar3D *av = new Avatar3D(V, P);
+		av->setLabel(QString("awatar-%1").arg(i));
+		K3MyModel->addChild(av);
+
+		if (i % 500 == 0) {
+			UI::updateAllViews();
+			if (i % 1000 == 0) {
+				std::cout << i << "... ";
+			}
+		}
+	}
+}
+
+
+
+void ConcretePlugin::K3AddMyCloud2(CModel3D* K3MyModel, MatrixXd K3ObsCloud, MatrixXd K3ViewMat, double K3Toler)
 {
 	int k = K3ObsCloud.cols();
 	if (k > 200) {

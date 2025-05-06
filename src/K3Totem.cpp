@@ -2,6 +2,48 @@
 
 #include "K3Helpers.h"
 
+//void add_cube(CMesh* ThisMesh, CRGBA Kolor, const double scale[] = {1.0,1.0,1.0})
+//{
+//	int vof = ThisMesh->vertices().size();
+//
+//	std::vector<CVertex> vcs({
+//		CVertex(0.0, 0.0, 0.0), CVertex(0.0, 0.0, 1.0), CVertex(0.0, 1.0, 0.0), CVertex(0.0, 1.0, 1.0),
+//		CVertex(1.0, 0.0, 0.0), CVertex(1.0, 0.0, 1.0), CVertex(1.0, 1.0, 0.0), CVertex(1.0, 1.0, 1.0) });
+//	
+//	ThisMesh->vertices().insert(ThisMesh->vertices().end(), vcs.begin(), vcs.end());
+//
+//	std::vector<CFace> fcs({
+//		CFace(1, 5, 3),CFace(7, 3, 5),
+//		CFace(4, 6, 5),CFace(7, 5, 6),
+//		CFace(0, 2, 4),CFace(6, 4, 2),
+//		CFace(1, 3, 0),CFace(2, 0, 3),
+//		CFace(2, 3, 6),CFace(7, 6, 3),
+//		CFace(0, 4, 1),CFace(5, 1, 4) });
+//
+//	for (auto& f : fcs) {
+//		f[0] += vof;
+//		f[1] += vof;
+//		f[2] += vof;
+//	}
+//
+//	ThisMesh->faces().insert(ThisMesh->faces().end(), fcs.begin(), fcs.end());
+//
+//
+//	// Make front face translucent and red:
+//	for (int i = 0; i < 2; i++) {
+//		// ThisMesh->fcolors().push_back(CRGBA(0.9f, .3f, .3f, 0.3f));
+//		ThisMesh->fcolors().push_back(Kolor);
+//		// ThisMesh->fcolors().push_back(K3Color);
+//	};
+//
+//	for (int i = 0; i < 10; i++) {
+//		// ThisMesh->fcolors().push_back(CRGBA(0.3f, 0.3f, 1.0f, 1.0f));
+//		ThisMesh->fcolors().push_back(Kolor);
+//		// ThisMesh->fcolors().push_back(K3Color);
+//	};
+//
+//}
+
 void K3Totem::K3FillMeshToUnitCube(CMesh* ThisMesh, CRGBA Kolor) { // double l, double a) {
 	//CMesh* K3UnitCube = new CMesh();
 	ThisMesh->addVertex(CVertex(0.0, 0.0, 0.0)); // , Kolor);
@@ -165,48 +207,25 @@ K3Totem::K3Totem(Eigen::VectorXd K3HyperSpot, Eigen::VectorXd K3HyperLook) {
 
 	// UI::MESSAGEBOX::error(L"Totem potem");
 
-	Eigen::Matrix4d K3BodyShape, K3Position, K3LeftArmPosition;
-	K3Position(0, 0) = .51; //  1.0;   // QQ7 SCALING
-	K3Position(0, 1) = 0.0;
-	K3Position(0, 2) = 0.0;
-	K3Position(0, 3) = K3HyperSpot[0];
+	//Eigen::Matrix4d K3Position;
+	//K3Position <<
+	//	0.51, 0.0, 0.0, K3HyperSpot[0],
+	//	0.0, 0.5, 0.0, K3HyperSpot[1],
+	//	0.0, 0.0, 0.5, K3HyperSpot[2],
+	//	0.0, 0.0, 0.0, 0.2;
 
-	K3Position(1, 0) = 0.0;
-	K3Position(1, 1) = .5; // 1.0;
-	K3Position(1, 2) = 0.0;
-	K3Position(1, 3) = K3HyperSpot[1];
-
-	K3Position(2, 0) = 0.0;
-	K3Position(2, 1) = 0.0;
-	K3Position(2, 2) = .5; // 1.0;
-	K3Position(2, 3) = K3HyperSpot[2];
-
-	K3Position(3, 0) = 0.0;
-	K3Position(3, 1) = 0.0;
-	K3Position(3, 2) = 0.0;
-	K3Position(3, 3) = 0.2;    // QQVISUS  (was 1.0)
-
-		/* Od DP:
-		* akurat w wymienionym przypadku można jeszcze prościej:
-
-	Eigen::Matrix4d K3Position = Eigen::Matrix4d::Identity();
-
-	albo:
-	Eigen::Matrix4d K3Position;
-	K3Position.setIdentity();
-
-	ale nie zawsze mamy takie oczywiste macierze :)
-		*/
+	Eigen::Matrix4d K3Position = Eigen::Matrix4d::Zero();
+	K3Position.diagonal() = Eigen::Vector4d(0.51, 0.5, 0.5, 0.2);
+	K3Position.topRightCorner(3, 1) = K3HyperSpot.topRows(3);
 
 	K3FillMeshToUnitCube(korpus, CRGBA(0.2f, 0.20f, 1.0f, 1.0f)); // K3_color(K3HyperLook[19] / 1.0, 1.0)); // CRGBA(1.0f, 1.0f, 0.0f, 0.6f));
+
 	// Body color
 	// CAnnotationPoint *K3Navel = new CAnnotationPoint(0.5, .5, 1.0);
 
+	Eigen::Matrix4d K3BodyShape = Eigen::Matrix4d::Zero();
+	K3BodyShape.diagonal() = Eigen::Vector4d(1.0, 2.0, 0.6, 1.0);
 
-	K3BodyShape.setIdentity();
-	K3BodyShape(0, 0) = 1.0;
-	K3BodyShape(1, 1) = 2.0;
-	K3BodyShape(2, 2) = 0.6;
 	for (int i = 0; i < korpus->vertices().size(); i++)
 	{
 		// QQSize bodyshape in the line below may impact size:
@@ -236,6 +255,9 @@ K3Totem::K3Totem(Eigen::VectorXd K3HyperSpot, Eigen::VectorXd K3HyperLook) {
 		// QQSize size of the arm determined here:
 
 	K3FillMeshToUnitCube(LeftArm, CRGBA(0.0f, 1.0f, 0.0f, 1.0f));
+
+	Eigen::Matrix4d K3LeftArmPosition;
+
 	K3LeftArmPosition.setIdentity(); // = Eigen::Matrix4d::Identity();
 	K3LeftArmPosition(0, 0) = 1.7; // arm is long  (was 1.0 to 2.3)
 	K3LeftArmPosition(1, 1) = .2; // and slim

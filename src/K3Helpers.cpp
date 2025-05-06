@@ -265,6 +265,24 @@ void K3_4x4viewN(MatrixXd* V, int k, double alfa) {
 }
 
 
+
+
+Matrix4d rotateIn3DSubspace(const Vector4d& v1, const Vector4d& v2, const Vector4d& v3, const Matrix3d& R3) {
+	// Ortonormalizuj bazę (QR zapewnia ortonormalność kolumn)
+	MatrixXd Q(4, 3);
+	Q.col(0) = v1.normalized();
+	Q.col(1) = (v2 - Q.col(0) * (Q.col(0).dot(v2))).normalized();
+	Q.col(2) = (v3 - Q.leftCols(2) * (Q.leftCols(2).transpose() * v3)).normalized();
+
+	// Zbuduj rotację w 4D: obrót tylko w podprzestrzeni {v1,v2,v3}
+	Matrix4d R = Matrix4d::Identity();
+	R.block<3, 3>(0, 0) = R3;
+
+	// Przekształcenie: R_full = Q * R * Q.transpose()
+	return Q * R.block<3, 4>(0, 0) * Q.transpose();
+}
+
+
 void get_observer_matrix(Eigen::MatrixXd &V, int k, double alfa)
 {
 	Eigen::MatrixXd nowa(4, 4);
