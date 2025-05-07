@@ -731,21 +731,21 @@ void ConcretePlugin::K3CzteroPajak(double h05) {
 
 
 void ConcretePlugin::K3Krata(int Nkrat, int Mkrat) {
-	CModel3D* K3MyModel = new CModel3D();
+	//CModel3D* K3MyModel = new CModel3D();
+	SwarmOfAvatars3D* K3MyModel = new SwarmOfAvatars3D();
+
 	for (int j = 0; j < Mkrat; j++) {
 		for (int i = 0; i < Nkrat; i++) {
-			K3Totem* ToTen1;
-			Eigen::VectorXd K3HyperSpot(20);
+		
+			Eigen::VectorXd K3HyperSpot(5);
+			K3HyperSpot << 3.0 * i, 2.0 * j, 2.0, 1.0, 1.0;
+
 			Eigen::VectorXd K3HyperLook(20);
 			for (int i88 = 0; i88 < 20; i88++) {
-				K3HyperSpot(i88) = 0.0;
-				K3HyperLook(i88) = 0.5;
+				K3HyperLook(i88) = 0.0;
 			};
-			K3HyperSpot(0) = ((double)i) * 2;
-			K3HyperSpot(1) = ((double)j) * 1.5;
-			K3HyperSpot(2) = (double)2;
 
-			std::vector<int> FeatureSel( { 0, 1, 2, 3, 5, 8, 10, 19 } ); // Note: size should be equal to Nkrat
+			std::vector<int> FeatureSel( { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 } ); // Note: size should be equal to Nkrat
 
 			//  Feature mapping:
 			// +0 skin colour (rainbow scale)
@@ -759,8 +759,11 @@ void ConcretePlugin::K3Krata(int Nkrat, int Mkrat) {
 			// +8 - face elongation
 			// +9 - iris color
 
-			K3HyperLook(FeatureSel[i]) = (double)j / (double)Mkrat;
-			ToTen1 = new K3Totem(K3HyperSpot, K3HyperLook);
+			K3HyperLook(FeatureSel[i]) = 2.0 * (double)j / (double)Mkrat - 1.0;
+			
+			//K3Totem* ToTen1 = new K3Totem(K3HyperSpot, K3HyperLook);
+			Avatar3D* ToTen1 = new Avatar3D(K3HyperLook, K3HyperSpot);
+
 			//K3Totem::K3Totem(Eigen::VectorXd K3HyperSpot, Eigen::VectorXd K3HyperLook) {
 			// Create a totem whose position and appearance represents data.
 			// Assume the given K3HyperSpot = DataPoint*Observer ,
@@ -777,7 +780,9 @@ void ConcretePlugin::K3Krata(int Nkrat, int Mkrat) {
 	
 	K3MyModel->setLabel("Grid of awatars");
 
-	AP::WORKSPACE::addModel(K3MyModel);
+	//AP::WORKSPACE::addModel(K3MyModel);
+	AP::WORKSPACE::addObject(K3MyModel);
+	
 	UI::updateAllViews();
 	// _Thrd_yield();
 
@@ -1037,7 +1042,7 @@ void ConcretePlugin::onButton(std::wstring name)
 	{
 		// UWAGA: Krata nie korzysta z wczytywanych danych...
 
-		K3Krata(8, 6);
+		K3Krata(10, 10);
 	}
 	else if (0 == name.compare(L"K3Display"))
 	{

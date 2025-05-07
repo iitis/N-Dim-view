@@ -282,3 +282,9 @@ bool SwarmOfAvatars3D::wheelEvent(QWheelEvent* event)
     qWarning() << "(Swarm) mouse wheel event";
     return true;
 }
+
+//inline QVector<PropWidget*> SwarmOfAvatars3D::create_propwidget_and_get_subwidgets()
+//{
+//    return PropSwarmOfAvatars3D::create_and_get_subwidgets(this);
+//}
+

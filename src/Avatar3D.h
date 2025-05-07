@@ -81,6 +81,8 @@ public:
 class QMouseEvent;
 class QWheelEvent;
 
+class PropWidget;
+
 class DPVISION_DLL_API SwarmOfAvatars3D : public CObject
 {
 public:
@@ -89,4 +91,67 @@ public:
     virtual bool mouseReleaseEvent(QMouseEvent* event) override;
     virtual bool mouseMoveEvent(QMouseEvent* event) override;
     virtual bool wheelEvent(QWheelEvent* event) override;
+
+    //inline virtual bool has_prop_widget_defined() override { return true; };
+
+    //QVector<PropWidget*> create_propwidget_and_get_subwidgets();
+
 };
+
+//#include "propWidget.h"
+//#include <QVBoxLayout>
+//
+//class DPVISION_DLL_API PropSwarmOfAvatars3D : public PropWidget
+//{
+//    Q_OBJECT
+//
+//    SwarmOfAvatars3D* obj;
+//
+//public:
+//    explicit PropSwarmOfAvatars3D(SwarmOfAvatars3D* swarm, QWidget* parent = 0) : PropWidget(parent) {
+//        obj = swarm;
+//
+//        treeItemLabel = "SwarmOfAvatars3D properties";
+//
+//        //ui.setupUi(this);
+//
+//        //connect(ui.cloud, &QGroupBox::toggled, this, &PropPointCloud::adjustGroupHeight);
+//    };
+//
+//
+//    ~PropSwarmOfAvatars3D() {};
+//
+//
+//    static PropWidget* create(SwarmOfAvatars3D* m, QWidget* parent = 0) {
+//        PropWidget* widget = new PropWidget(parent);
+//        QVBoxLayout* layout = new QVBoxLayout(widget);
+//
+//        //layout->addWidget(new PropBaseObject(m, widget));
+//        layout->addWidget(new PropSwarmOfAvatars3D(m, widget));
+//
+//        widget->resize(layout->sizeHint());
+//        widget->setMinimumSize(layout->sizeHint());
+//        widget->setMaximumSize(layout->sizeHint());
+//
+//        widget->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+//
+//        return widget;
+//    };
+//    
+//    static QVector<PropWidget*> create_and_get_subwidgets(CBaseObject* obj) {
+//        SwarmOfAvatars3D* m = (SwarmOfAvatars3D*)obj;
+//        return QVector<PropWidget*>({
+//            //new PropBaseObject(m),
+//            new PropSwarmOfAvatars3D(m)
+//        });
+//
+//        return QVector<PropWidget*>();
+//    };
+//
+//    virtual void updateProperties() override {};
+//
+//public slots:
+//
+//private:
+//
+//};
