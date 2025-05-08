@@ -745,7 +745,7 @@ void ConcretePlugin::K3Krata(int Nkrat, int Mkrat) {
 				K3HyperLook(i88) = 0.0;
 			};
 
-			std::vector<int> FeatureSel( { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 } ); // Note: size should be equal to Nkrat
+			std::vector<int> FeatureSel( { 0, 8, 1, 2, 3, 4, 5, 6, 7, 9 } ); // Note: size should be equal to Nkrat
 
 			//  Feature mapping:
 			// +0 skin colour (rainbow scale)

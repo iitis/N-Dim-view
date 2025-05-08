@@ -35,12 +35,49 @@ Eigen::Vector3f skin_color_from_feature(float val)
     else if (value > 1.0) value = 1.0;
 
     Eigen::Vector3f light_skin(1.0, 0.85, 0.7);
-    Eigen::Vector3f dark_skin(0.5, 0.35, 0.2);
-    //Eigen::Vector3f light_skin(1.0, 1.0, 0.0);
-    //Eigen::Vector3f dark_skin(0.0, 1.0, 0.0);
+    Eigen::Vector3f dark_skin = Eigen::Vector3f(0.5, 0.35, 0.2) * 0.3;
+
     float t = (value + 1.0) / 2.0;  // [-1, 1] ->[0, 1]
 
     return ((1 - t) * dark_skin + t * light_skin);
+}
+
+Eigen::Vector3f nose_color_from_feature(float val)
+{
+    float value = val;
+
+    if (value < -1.0) value = -1.0;
+    else if (value > 1.0) value = 1.0;
+
+    Eigen::Vector3f green(0.0, 0.75, 0.0);
+    Eigen::Vector3f red(1.0, 0.0, 0.0);
+    
+    float t = (value + 1.0) / 2.0;  // [-1, 1] ->[0, 1]
+
+    return ((1 - t) * green + t * red);
+}
+
+Eigen::Vector3f color_from_feature(float val, Eigen::Vector3f first, Eigen::Vector3f second)
+{
+    float value = std::max(-1.0f, std::min(1.0f, val));  // clamp to [-1, 1]
+
+    float t = (value + 1.0) / 2.0;  // [-1, 1] ->[0, 1]
+
+    return ((1 - t) * first + t * second);
+}
+
+Eigen::Vector3f color_from_feature(float val, Eigen::Vector3f first, Eigen::Vector3f second, Eigen::Vector3f third, float threshold=0.0f)
+{
+    float value = std::max(-1.0f, std::min(1.0f, val));  // clamp to [-1, 1]
+
+    if (value < threshold) {
+        float t = (value + 1.0f) / 1.0f;  // [-1, 0] -> [0, 1]
+        return (1 - t) * first + t * second;
+    }
+    else {
+        float t = value / 1.0f;  // [0, 1] -> [0, 1]
+        return (1 - t) * second + t * third;
+    }
 }
 
 
@@ -50,6 +87,7 @@ inline AvatarPart::AvatarPart()
     m_faces = std::vector<Eigen::Vector3i>();
     m_color = { 0,0,0 };
     m_position = { 0, 0, 0 };
+    m_draw_lines = false;
 }
 
 inline void AvatarPart::draw(Eigen::Vector3f offset)
@@ -58,6 +96,9 @@ inline void AvatarPart::draw(Eigen::Vector3f offset)
 
     glEnable(GL_COLOR_MATERIAL);
     glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+
+    //glEnable(GL_POINT_SMOOTH);
+    glEnable(GL_LINE_SMOOTH);
 
     glColor3f(m_color[0], m_color[1], m_color[2]);
     glBegin(GL_TRIANGLES);
@@ -70,6 +111,41 @@ inline void AvatarPart::draw(Eigen::Vector3f offset)
             glVertex3f(v[0], v[1], v[2]);
         }
     glEnd();
+
+    if (m_draw_lines) {
+        // kolor linii ma tylko odrobinę sie różnić:
+        float cc = (m_color[0] + m_color[1] + m_color[2]) / 3.0f;
+        Eigen::Vector3f nc = cc > 0.5f ? m_color * 0.75f : m_color * 1.25f;
+
+        glColor3f(nc[0], nc[1], nc[2]);
+        glLineWidth(1);
+
+        //glBegin(GL_LINES);
+        //for (Eigen::Vector3i face : m_faces)
+        //{
+        //    for (int j = 0; j < 3; j++)
+        //    {
+        //        int idx1 = face[j];
+        //        int idx2 = face[(j + 1) % 3];  // kolejny wierzchołek w trójkącie
+        //        auto v1 = m_vertices[idx1] + m_position + offset;
+        //        auto v2 = m_vertices[idx2] + m_position + offset;
+        //        glVertex3f(v1[0], v1[1], v1[2]);
+        //        glVertex3f(v2[0], v2[1], v2[2]);
+        //    }
+        //}
+        //glEnd();
+
+        glBegin(GL_LINES);
+
+        for (Eigen::Vector3i face : m_faces)
+            for (int j = 0; j < 3; j++)
+            {
+                int idx = face[j];
+                auto v = m_vertices[idx] + m_position + offset;
+                glVertex3f(v[0], v[1], v[2]);
+            }
+        glEnd();
+    }
 
     glDisable(GL_COLOR_MATERIAL);
 
@@ -149,11 +225,14 @@ inline void Avatar3D::buildCombinedMesh() {
 
 inline Hair::Hair(double feature_4)
 {
-    double hair_color = (feature_4 + 1.0) / 2.0;
-    Eigen::Vector3f c(hair_color, hair_color, hair_color);
+    // auto c = color_from_feature(feature_4, { 0.0f, 0.0f, 1.0f }, { 0.0f, 0.75f, 0.25f }, { 1.0f, 1.0f, 0.0f });
+    auto c = color_from_feature(feature_4, { 0.0f, 0.0f, 1.0f }, { 1.0f, 1.0f, 0.0f });
+
     auto [v, f] = create_box(1.2, 1.0, 0.6);
     set(v, f, c);
     translate(0, 0.4, -0.1);
+
+    m_draw_lines = true;
 }
 
 inline Mouth::Mouth(double feature_2, double feature_3)
@@ -225,6 +304,8 @@ inline Head::Head(double feature_0, double feature_6)
     auto [v, f] = create_box(width, height, depth);
 
     set(v, f, c);
+
+    m_draw_lines = true;
 }
 
 inline Nose::Nose(double feature_1)
@@ -232,7 +313,7 @@ inline Nose::Nose(double feature_1)
     float base = 0.1f;
     float height = 1.0f + feature_1;
 
-    m_color = Eigen::Vector3f(1.0, 0.6, 0.4);
+    m_color = nose_color_from_feature(feature_1); //Eigen::Vector3f(1.0, 0.6, 0.4);
     m_vertices = { { -base, -base, 0 },{ base, -base, 0 },
         { base, base, 0 },{ -base, base, 0 },
         { 0, 0, height } };
@@ -240,14 +321,15 @@ inline Nose::Nose(double feature_1)
     m_faces = { { 0, 1, 4 },{ 1, 2, 4 },{ 2, 3, 4 },{ 3, 0, 4 } };
 
     translate(0, 0, 0.3);
+
+    m_draw_lines = true;
 }
 
 inline Eye::Eye(double feature_5, bool left)
 {
     double radius = 0.15;
 
-    Eigen::Vector3f c(0.0, 0.5, 0.8);
-
+    auto c = color_from_feature(feature_5, { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.25f, 1.0f });
     auto [v, f] = create_box(radius, radius, radius);
 
     set(v, f, c);
@@ -257,6 +339,8 @@ inline Eye::Eye(double feature_5, bool left)
     offset = left ? -offset : offset;
 
     translate(offset, 0.3, 0.3);
+
+    m_draw_lines = true;
 }
 
 bool SwarmOfAvatars3D::mousePressEvent(QMouseEvent* event)
@@ -281,6 +365,23 @@ bool SwarmOfAvatars3D::wheelEvent(QWheelEvent* event)
 {
     qWarning() << "(Swarm) mouse wheel event";
     return true;
+}
+
+#include <QtWidgets>
+
+inline QWidget* SwarmOfAvatars3D::create_prop_widget() {
+    QWidget* widget = new QWidget();
+    QVBoxLayout* layout = new QVBoxLayout(widget);
+
+    layout->addWidget(new QLabel(QString::fromUtf8("MIEJSCE NA TWOJĄ REKLAMĘ")));
+
+    widget->resize(layout->sizeHint());
+    widget->setMinimumSize(layout->sizeHint());
+    widget->setMaximumSize(layout->sizeHint());
+
+    widget->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+
+    return widget;
 }
 
 //inline QVector<PropWidget*> SwarmOfAvatars3D::create_propwidget_and_get_subwidgets()

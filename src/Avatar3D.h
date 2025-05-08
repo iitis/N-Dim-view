@@ -10,6 +10,7 @@ public:
     std::vector<Eigen::Vector3i> m_faces;
     Eigen::Vector3f m_color;
     Eigen::Vector3f m_position;
+    bool m_draw_lines;
 
     AvatarPart();
     void draw(Eigen::Vector3f offset);
@@ -80,8 +81,7 @@ public:
 
 class QMouseEvent;
 class QWheelEvent;
-
-class PropWidget;
+class QWidget;
 
 class DPVISION_DLL_API SwarmOfAvatars3D : public CObject
 {
@@ -92,10 +92,9 @@ public:
     virtual bool mouseMoveEvent(QMouseEvent* event) override;
     virtual bool wheelEvent(QWheelEvent* event) override;
 
-    //inline virtual bool has_prop_widget_defined() override { return true; };
+    inline virtual bool has_prop_widget_defined() override { return true; };
 
-    //QVector<PropWidget*> create_propwidget_and_get_subwidgets();
-
+    QWidget* create_prop_widget();
 };
 
 //#include "propWidget.h"
