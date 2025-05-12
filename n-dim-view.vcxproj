@@ -94,7 +94,7 @@
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <AdditionalDependencies>dpVision.lib;PluginManager.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glu32.lib;$(Qt_LIBS_);dpVision.lib;PluginManager.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)lib\$(Platform)\$(Configuration)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile />
     </Link>
@@ -122,7 +122,7 @@
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <AdditionalDependencies>dpVision.lib;PluginManager.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glu32.lib;$(Qt_LIBS_);dpVision.lib;PluginManager.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)lib\$(Platform)\$(Configuration)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
@@ -141,8 +141,12 @@
     <ClCompile Include="src/K3HyperPoint.cpp" />
     <ClCompile Include="src/K3RoseOfWinds.cpp" />
     <ClCompile Include="src/K3Totem.cpp" />
+    <ClCompile Include="src\Avatar3D.cpp" />
+    <ClCompile Include="src\SwarmOfAvatars3D.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Avatar3D.h" />
+    <QtMoc Include="src\SwarmOfAvatars3D.h" />
     <QtMoc Include="src/ConcretePlugin.h" />
     <QtMoc Include="src/CsvColumnAssignmentDialog.h" />
     <ClInclude Include="src/CsvReader.h" />

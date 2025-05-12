@@ -265,6 +265,92 @@ void K3_4x4viewN(MatrixXd* V, int k, double alfa) {
 }
 
 
+Matrix4d rotateInPlane(const Vector4d& v1, const Vector4d& v2, double angle) {
+	// Zbuduj ortonormalną bazę 2D z v1, v2
+	Vector4d e1 = v1.normalized();
+	Vector4d v2_proj = v2 - (v2.dot(e1)) * e1;
+
+	if (v2_proj.norm() < 1e-8) {
+		throw std::runtime_error("Wektory v1 i v2 są liniowo zależne – nie można zdefiniować płaszczyzny.");
+	}
+
+	Vector4d e2 = v2_proj.normalized();
+
+	// Macierz obrotu w 2D
+	double c = std::cos(angle);
+	double s = std::sin(angle);
+	Matrix2d R2;
+	R2 << c, -s,
+		s, c;
+
+	// Wstaw do 4D jako baza
+	MatrixXd Q(4, 2);
+	Q.col(0) = e1;
+	Q.col(1) = e2;
+
+	// Pełna rotacja w 4D: Q * R2 * Q^T + projekcja ortogonalna
+	Matrix4d R = Matrix4d::Identity();
+	R -= Q * Q.transpose(); // wyzeruj komponenty w kierunku e1/e2
+	R += Q * R2 * Q.transpose(); // dodaj obrotą część
+	return R;
+}
+
+
+Matrix4d rotateIn3DSubspace(const Vector4d& v1, const Vector4d& v2, const Vector4d& v3, const Matrix3d& R3) {
+	// Ortonormalizuj bazę (QR zapewnia ortonormalność kolumn)
+	MatrixXd Q(4, 3);
+	Q.col(0) = v1.normalized();
+	Q.col(1) = (v2 - Q.col(0) * (Q.col(0).dot(v2))).normalized();
+	Q.col(2) = (v3 - Q.leftCols(2) * (Q.leftCols(2).transpose() * v3)).normalized();
+
+	// Zbuduj rotację w 4D: obrót tylko w podprzestrzeni {v1,v2,v3}
+	Matrix4d R = Matrix4d::Identity();
+	R.block<3, 3>(0, 0) = R3;
+
+	// Przekształcenie: R_full = Q * R * Q.transpose()
+	return Q * R.block<3, 4>(0, 0) * Q.transpose();
+}
+
+
+
+void get_observer_matrix(Eigen::MatrixXd &V, int k, double alfa)
+{
+	Eigen::MatrixXd nowa(4, 4);
+	K3_4x4viewN(&nowa, k, alfa);
+
+	V = Eigen::MatrixXd(nowa.rows() + 1, nowa.cols());
+	V << nowa, nowa.row(nowa.rows() - 1);;
+}
+
+Eigen::Array<bool, Eigen::Dynamic, 1> create_slab_mask(Eigen::MatrixXd& V, Eigen::MatrixXd& X_spatial, double slab_threshold)
+{
+	int k = V.rows() - 1;
+	Eigen::MatrixXd X_view = V.topRows(k) * X_spatial;
+	Eigen::VectorXd slab_values = V.row(k) * X_spatial;
+
+	auto mask = (slab_values.cwiseAbs().array() < slab_threshold).eval();
+
+	return mask;
+}
+
+Eigen::MatrixXd use_mask(Eigen::MatrixXd &X_view, Eigen::Array<bool, Eigen::Dynamic, 1> &mask)
+{
+	std::vector<int> indices;
+	for (int i = 0; i < mask.size(); ++i) {
+		if (mask(i)) {
+			indices.push_back(i);
+		}
+	}
+
+	Eigen::MatrixXd X_visible(X_view.rows(), indices.size());
+	for (size_t i = 0; i < indices.size(); ++i) {
+		X_visible.col(i) = X_view.col(indices[i]);
+	}
+
+	return X_visible;
+}
+
+
 
 void K3ArrowsArc(double Center[3], double A[3], double B[3], CModel3D* K3MyModel, double R, int n, CRGBA* colour) {
 	// make arc from Center+A to Center+B, made of 12 short arrows

@@ -14,6 +14,10 @@
 #include "K3ChernoffFace.h"
 #include "K3RoseOfWinds.h"
 
+#include "SwarmOfAvatars3D.h"
+#include "Avatar3D.h"
+
+
 #include <QFileDialog>
 
 using namespace Eigen;
@@ -207,16 +211,130 @@ MatrixXd ConcretePlugin::K3_Get_PCA_Funnel(MatrixXd X, int nd) {
 #define K3avr 4 */
 
 
+Eigen::VectorXd maxAbsPerRow(const Eigen::MatrixXd& M) {
+	Eigen::VectorXd result(M.rows());
+	for (int i = 0; i < M.rows(); ++i)
+		result(i) = M.row(i).cwiseAbs().maxCoeff();
+	return result;
+}
 
-void ConcretePlugin::K3AddMyCloud(CModel3D* K3MyModel, MatrixXd K3ObsCloud, MatrixXd K3ViewMat, double K3Toler)
+#include <algorithm>
+
+// Funkcja pomocnicza do wyznaczenia percentyli (prosty wariant)
+double percentile(Eigen::RowVectorXd row, double p) {
+	std::vector<double> values(row.data(), row.data() + row.size());
+	std::sort(values.begin(), values.end());
+	size_t index = static_cast<size_t>(p * (values.size() - 1));
+	return values[index];
+}
+
+
+
+Eigen::MatrixXd normalize_visual(const Eigen::MatrixXd& K3ObsCloud)
+{
+	Eigen::MatrixXd X_view = K3ObsCloud;
+
+	for (int i = 4; i < K3ObsCloud.rows(); ++i) {
+		Eigen::RowVectorXd row = K3ObsCloud.row(i);
+		std::vector<double> values(row.data(), row.data() + row.size());
+		std::sort(values.begin(), values.end());
+
+		double minP = values[static_cast<size_t>(0.05 * (values.size() - 1))];
+		double maxP = values[static_cast<size_t>(0.95 * (values.size() - 1))];
+		double range = maxP - minP;
+		if (range < 1e-6) continue;
+
+		// Normalizacja z przycięciem outlierów do -1 lub 1
+		X_view.row(i) = ((row.array() - minP) / range * 2.0 - 1.0)
+			.min(1.0)
+			.max(-1.0);
+	}
+
+	return X_view;
+}
+
+
+//void ConcretePlugin::K3AddMyCloud(CModel3D* K3MyModel, MatrixXd K3ObsCloud, MatrixXd K3ViewMat, double K3Toler)
+void ConcretePlugin::K3AddMyCloud(SwarmOfAvatars3D* K3MyModel, MatrixXd K3ObsCloud, MatrixXd K3ViewMat, double K3Toler)
+{
+	int k = K3ObsCloud.cols();
+	int m = K3ObsCloud.rows();
+
+	//=================================================
+	// To jeśli nie przerzedzamy:
+	//-------------------------------------------------
+	//MatrixXd K3LocalSpots(5, k);
+	//K3LocalSpots.topRows(4) = K3ObsCloud.topRows(4);
+	//K3LocalSpots.row(4) = Eigen::RowVectorXd::Ones(k);
+	//=================================================
+
+	//=================================================
+	// Przerzedzamy, np. co 10 element:
+	//-------------------------------------------------
+	std::vector<int> idx;
+	for (int i = 0; i < k; i += 10)
+		idx.push_back(i);
+
+	// Nowa macierz z co 10. kolumny
+	MatrixXd selected(4, idx.size());
+	for (int j = 0; j < idx.size(); ++j)
+		selected.col(j) = K3ObsCloud.col(idx[j]);
+
+	// Dodanie rzędu jedynek
+	MatrixXd K3LocalSpots(5, selected.cols());
+	K3LocalSpots.topRows(4) = selected;
+	K3LocalSpots.row(4) = RowVectorXd::Ones(selected.cols());
+	//=================================================
+
+	K3LocalSpots = K3ViewMat * K3LocalSpots;
+
+	Eigen::MatrixXd X_view = normalize_visual(K3ObsCloud);
+
+	for (int i = 0; i < K3LocalSpots.cols(); i++)
+	{
+		Eigen::VectorXd P(4);
+		Eigen::VectorXd V(m - 4);
+
+		// DLACZEGO DZIELE PRZEZ PIĄTY ELEMENT == 1 ???
+		double askala = 0.1 / K3LocalSpots(4, i);
+
+		P = K3LocalSpots.block(0, i, 4, 1) * askala;
+		
+		//V = K3ObsCloud.block(4, i, m-4, 1); // jesli nie jest przerzedzone
+		V = X_view.block(4, idx[i], m - 4, 1); // dla przerzedzonych
+
+		//K3Totem* K3TenTotem = new K3Totem(P, V);
+		//K3TenTotem->setLabel(QString("awatar-%1").arg(i));
+		//K3MyModel->addChild(K3TenTotem);
+
+		Avatar3D *av = new Avatar3D(V, P);
+		av->setLabel(QString("awatar-%1").arg(i));
+		K3MyModel->addChild(av);
+
+		if (i % 500 == 0) {
+			UI::updateAllViews();
+			if (i % 1000 == 0) {
+				std::cout << i << "... ";
+			}
+		}
+	}
+}
+
+
+
+void ConcretePlugin::K3AddMyCloud2(CModel3D* K3MyModel, MatrixXd K3ObsCloud, MatrixXd K3ViewMat, double K3Toler)
 {
 	int k = K3ObsCloud.cols();
 	if (k > 200) {
 		k = 200;
 	};
 	int m = K3ObsCloud.rows();
+
+
 	MatrixXd K3LocalSpots(5, k);  // QQ: FUTURE: 5 = X Y Z d T (3D + distance from current 3D space + homogeneous extra dim)
 			// RIGHT??: 5 = X Y Z T d (4D + distance from current 3D space)
+
+
 	for (int i = 0; i < k; i += 10) {  // DARKU TUTAJ DALEM 10, ZEBY WYSWIETLAC MNIEJ ELEMENTOW
 		for (int j = 0; j < 5; j++) {
 			// std::cout << "shame on i, j, k:" << i << " " << j << " " << k << std::endl;
@@ -247,9 +365,13 @@ void ConcretePlugin::K3AddMyCloud(CModel3D* K3MyModel, MatrixXd K3ObsCloud, Matr
 			i = i; //qq
 			Eigen::VectorXd P(4);
 			Eigen::VectorXd V(m - 4);
+			
 			// QQSize P is the position vector!
+			
 			double askala = 0.1 / K3LocalSpots(4, i);
+			
 			P << K3LocalSpots(0, i) * askala, K3LocalSpots(1, i)* askala, K3LocalSpots(2, i)* askala, K3LocalSpots(3, i)* askala; // Totem
+			
 			// P << 15.0 * i, 15.0 * i + 0.1, 15.0 * i + 0.2, 4.04; // Totem
 			for (int j88 = 0; j88 < m - 4; j88++) {
 				V(j88) = K3ObsCloud(4 + j88, i);
@@ -295,17 +417,29 @@ int ConcretePlugin::K3FormProjectionMatrix(const Eigen::MatrixXd &RawData) {
 	// Use list of parameter choices and data matrix to create a projection matrix
 	// that projects the raw dimensions into the observables according to user wishes
 	int K3I_ListAnon[100];
-	int i88, j88, j_raw, j;
+	//int i88, j88, j_raw, j;
+	
+	// container for 4 spatial dimensions
 	int K3I_taken_s[4] = { 0,0,0,0 };
-	int K3I_taken_v[10] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-	int K3I_Count_a = 0, K3I_Count_s = 0, K3I_Count_v = 0;
+
+	// container for 10 visual dimensions - NOT USED
+	//int K3I_taken_v[10] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+	
+	// counters for anonimous, spatial and visual dimensions
+	int K3I_Count_a = 0;
+	int K3I_Count_s = 0;
+	int K3I_Count_v = 0;
+
 	if (RawData.rows() * RawData.cols() > 0)
 	{
 		int K3_IDim = RawData.rows();
 		int K3_ICard = RawData.cols();
 
-		K3_IObs = new Eigen::MatrixXd(4 + 10, K3_IDim); // 4 spatial + 10 face params.
-		K3FillMat(*K3_IObs, 0.0);
+		// array: 14 nammed dims x all dims
+		Eigen::MatrixXd K3_IObs(4 + 10, K3_IDim); // 4 spatial + 10 face params.
+
+
+		K3FillMat(K3_IObs, 0.0);
 
 		for (int j = 0; j < K3_IDim; j++) {
 			int j_raw = current_assignment[j].featureIndex;
@@ -322,54 +456,95 @@ int ConcretePlugin::K3FormProjectionMatrix(const Eigen::MatrixXd &RawData) {
 					K3I_taken_s[j_boiled] = 2;
 					K3I_Count_s++;
 				}
-				(*K3_IObs)(j_boiled, current_assignment[j].featureIndex) = 1;
+				K3_IObs(j_boiled, current_assignment[j].featureIndex) = 1;
 				break;
 			case 2:  // visual
 				if (current_assignment[j].label_id.has_value()) {
 					j_boiled = current_assignment[j].label_id.value() + 4;
 					K3I_Count_v++;
 				};
-				(*K3_IObs)(j_boiled, current_assignment[j].featureIndex) = 1;
+				K3_IObs(j_boiled, current_assignment[j].featureIndex) = 1;
 				break;
 
 			}
 		};
+		
+
 		// make funnel. Firt, get the anonymous together:
+		// 
+		// NOTE: full row can be copied in single step:
+		
 		MatrixXd X_anon(K3I_Count_a, K3_ICard);
-		for (j88 = 0; j88 < K3I_Count_a; j88++) {
-			j_raw = K3I_ListAnon[j88];
-			for (i88 = 0; i88 < K3_ICard; i88++) {
-				X_anon(j88, i88) = RawData(j_raw, i88);
-			};
-		};
+		for (int j88 = 0; j88 < K3I_Count_a; ++j88) {
+			X_anon.row(j88) = RawData.row(K3I_ListAnon[j88]);
+		}
+
+		//MatrixXd X_anon(K3I_Count_a, K3_ICard);
+		//for (j88 = 0; j88 < K3I_Count_a; j88++) {
+		//	j_raw = K3I_ListAnon[j88];
+		//	for (i88 = 0; i88 < K3_ICard; i88++) {
+		//		X_anon(j88, i88) = RawData(j_raw, i88);
+		//	};
+		//};
+
+
+
+
+		// if less than 4 spatial dims was selected by user 
+		// use PCA to interpolate missing spatial dimensions:
 		if (K3I_Count_s < 4) {
 			int j_boiled = 0;
-			MatrixXd X88 = K3_Get_PCA_Funnel(X_anon, 4 - K3I_Count_s); // QQ K3I_Count_a);
-			//dp-04-02// K3ListMatrix(DATA_PATH("MojeLeje.txt"), X88, "Lejek");
-			for (j88 = 0; j88 < 4 - K3I_Count_s; j88++) {
-				while (K3I_taken_s[j_boiled] > 0) { // skip the takien rows
-					j_boiled++;
-				}; // qq uwaga na przekroczenie
+			MatrixXd X88 = K3_Get_PCA_Funnel(X_anon, 4 - K3I_Count_s);
+
+			for (int j88 = 0; j88 < 4 - K3I_Count_s; ++j88) {
+				// find first empty row
+				while (j_boiled < 4 && K3I_taken_s[j_boiled] > 0) {
+					++j_boiled;
+				}
 				if (j_boiled < 4) {
 					K3I_taken_s[j_boiled] = 3;
-					for (i88 = 0; i88 < K3I_Count_a; i88++) {
-						(*K3_IObs)(j_boiled, i88) = X88(j88, i88);
-					};
-				};
+					K3_IObs.row(j_boiled).head(K3I_Count_a) = X88.row(j88);
+				}
+			}
+		}
 
-			};
 
-		};
+		// if less than 4 spatial dims was selected by user:
+		//if (K3I_Count_s < 4) {
+		//	int j_boiled = 0;
+		//	
+		//	MatrixXd X88 = K3_Get_PCA_Funnel(X_anon, 4 - K3I_Count_s); // QQ K3I_Count_a);
+		//	
+		//	//dp-04-02// K3ListMatrix(DATA_PATH("MojeLeje.txt"), X88, "Lejek");
+		//	for (j88 = 0; j88 < 4 - K3I_Count_s; j88++) {
+		//		while (K3I_taken_s[j_boiled] > 0) { // skip the taken rows
+		//			j_boiled++;
+		//		}; // qq uwaga na przekroczenie
+		//		
+		//		if (j_boiled < 4) {
+		//			K3I_taken_s[j_boiled] = 3;
+		//			for (i88 = 0; i88 < K3I_Count_a; i88++) {
+		//				K3_IObs(j_boiled, i88) = X88(j88, i88);
+		//			};
+		//		};
+
+		//	};
+
+		//};
+
+
+
 
 		// K3_IObs READY!
 
-		// Now standardize the sigmas:
+		// Now standarize the sigmas:
 
-		K3BoiledData = *K3_IObs * RawData;
+		K3BoiledData = K3_IObs * RawData;
+
 		//dp-04-02// K3ListMatrix(DATA_PATH("MujStat.txt"), RawData, "RawData");
 		//dp-04-02// K3ListMatrix(DATA_PATH("MujStat.txt"), *K3_IObs, "K3_IObs");
 		//dp-04-02// K3ListMatrix(DATA_PATH("MujStat.txt"), K3BoiledData, "K3BoiledData");
-		for (j = 0; j < K3BoiledData.rows(); j++) {
+		for (int j = 0; j < K3BoiledData.rows(); j++) {
 			double S1 = 0.0, S2 = 0.0, M, D;
 			int N = K3BoiledData.cols()-2, i;
 			for (i = 1; i < N; i++) {
@@ -558,21 +733,21 @@ void ConcretePlugin::K3CzteroPajak(double h05) {
 
 
 void ConcretePlugin::K3Krata(int Nkrat, int Mkrat) {
-	CModel3D* K3MyModel = new CModel3D();
+	//CModel3D* K3MyModel = new CModel3D();
+	SwarmOfAvatars3D* K3MyModel = new SwarmOfAvatars3D();
+
 	for (int j = 0; j < Mkrat; j++) {
 		for (int i = 0; i < Nkrat; i++) {
-			K3Totem* ToTen1;
-			Eigen::VectorXd K3HyperSpot(20);
+		
+			Eigen::VectorXd K3HyperSpot(5);
+			K3HyperSpot << 3.0 * i, 2.0 * j, 2.0, 1.0, 1.0;
+
 			Eigen::VectorXd K3HyperLook(20);
 			for (int i88 = 0; i88 < 20; i88++) {
-				K3HyperSpot(i88) = 0.0;
-				K3HyperLook(i88) = 0.5;
+				K3HyperLook(i88) = 0.0;
 			};
-			K3HyperSpot(0) = ((double)i) * 2;
-			K3HyperSpot(1) = ((double)j) * 1.5;
-			K3HyperSpot(2) = (double)2;
 
-			std::vector<int> FeatureSel( { 0, 1, 2, 3, 5, 8, 10, 19 } ); // Note: size should be equal to Nkrat
+			std::vector<int> FeatureSel( { 0, 8, 1, 2, 3, 4, 5, 6, 7, 9 } ); // Note: size should be equal to Nkrat
 
 			//  Feature mapping:
 			// +0 skin colour (rainbow scale)
@@ -586,8 +761,11 @@ void ConcretePlugin::K3Krata(int Nkrat, int Mkrat) {
 			// +8 - face elongation
 			// +9 - iris color
 
-			K3HyperLook(FeatureSel[i]) = (double)j / (double)Mkrat;
-			ToTen1 = new K3Totem(K3HyperSpot, K3HyperLook);
+			K3HyperLook(FeatureSel[i]) = 2.0 * (double)j / (double)Mkrat - 1.0;
+			
+			//K3Totem* ToTen1 = new K3Totem(K3HyperSpot, K3HyperLook);
+			Avatar3D* ToTen1 = new Avatar3D(K3HyperLook, K3HyperSpot);
+
 			//K3Totem::K3Totem(Eigen::VectorXd K3HyperSpot, Eigen::VectorXd K3HyperLook) {
 			// Create a totem whose position and appearance represents data.
 			// Assume the given K3HyperSpot = DataPoint*Observer ,
@@ -604,7 +782,9 @@ void ConcretePlugin::K3Krata(int Nkrat, int Mkrat) {
 	
 	K3MyModel->setLabel("Grid of awatars");
 
-	AP::WORKSPACE::addModel(K3MyModel);
+	//AP::WORKSPACE::addModel(K3MyModel);
+	AP::WORKSPACE::addObject(K3MyModel);
+	
 	UI::updateAllViews();
 	// _Thrd_yield();
 
@@ -612,7 +792,7 @@ void ConcretePlugin::K3Krata(int Nkrat, int Mkrat) {
 
 
 void ConcretePlugin::K3Display() {
-	CModel3D* K3MyModel = new CModel3D();
+	
 	// Eigen::MatrixXd K3FullCloud = current_data_matrix;
 	Eigen::MatrixXd K3DenseCloud = K3BoiledData; // *K3_IObs* K3FullCloud;
 	//		AP::WORKSPACE::addModel(K3MyModel);
@@ -623,12 +803,16 @@ void ConcretePlugin::K3Display() {
 		K3ViewMat(i, i) = 50.0;  // QQ Scale! bigbig
 	}
 	K3ViewMat(4, 4) = 1.0;
-	K3AddMyCloud(K3MyModel, K3DenseCloud, K3ViewMat, 2000.3);
-	K3MyModel->importChildrenGeometry();
+	
+	//CModel3D* K3MyModel = new CModel3D();
+	SwarmOfAvatars3D* K3MyModel = new SwarmOfAvatars3D();
 
+	K3AddMyCloud(K3MyModel, K3DenseCloud, K3ViewMat, 2000.3);
+	//K3MyModel->importChildrenGeometry();
 	K3MyModel->setLabel("Static view");
 
-	AP::WORKSPACE::addModel(K3MyModel); // QQ blok Wlknoc
+	AP::WORKSPACE::addObject(K3MyModel); // QQ blok Wlknoc
+
 	UI::updateAllViews();
 	// _Thrd_yield();
 }
@@ -662,7 +846,6 @@ void ConcretePlugin::delete_old_screenshots(const QString& pattern)
 
 
 void ConcretePlugin::K3Dance(double grand_scale) {
-	CModel3D* K3MyModel = new CModel3D();
 	MatrixXd K3ViewMat(5, 5); // QQ Assuming we only deal with 4 spatial dimensions
 	// Eigen::MatrixXd K3FullCloud = current_data_matrix;
 	Eigen::MatrixXd K3DenseCloud = K3BoiledData; // *K3_IObs* K3FullCloud;
@@ -700,9 +883,20 @@ void ConcretePlugin::K3Dance(double grand_scale) {
 			// double alfa = (double)i * 0.25;  // radians!
 // void K3_4x4viewN(MatrixXd *V, int k, double alfa)
 
-			K3_4x4viewN(&K3ViewMat, i_plane, alfa);
-			K3ViewMat *= grand_scale;   //QQ9 SCALE
-			K3ViewMat(4, 4) = 1.0;
+			//K3_4x4viewN(&K3ViewMat, i_plane, alfa);
+			//K3ViewMat *= grand_scale;   //QQ9 SCALE
+			//K3ViewMat(4, 4) = 1.0;
+			//Eigen::MatrixXd X_visible = K3DenseCloud;
+
+			get_observer_matrix(K3ViewMat, i_plane, alfa);
+			
+			K3ViewMat.block(0,0,4,4) *= grand_scale;
+			
+			Eigen::MatrixXd X_spatial = K3DenseCloud.topRows(4);
+			auto mask = create_slab_mask(K3ViewMat, X_spatial, 50.0);
+			Eigen::MatrixXd X_visible = use_mask(K3DenseCloud, mask);
+
+
 			//{
 			//	char DescrIter[300];   // QQ w or no w?  wchar_t
 
@@ -716,12 +910,16 @@ void ConcretePlugin::K3Dance(double grand_scale) {
 				double RoseStem[3] = { -30, 40, 25 }; // QQ sET STEM LENGTH; was triple 1.
 				AP::WORKSPACE::removeAllModels();
 
-				K3MyModel = new CModel3D();
-				AP::WORKSPACE::addModel(K3MyModel);
+				//CModel3D *K3MyModel = new CModel3D();
+				SwarmOfAvatars3D *K3MyModel = new SwarmOfAvatars3D();
+				AP::WORKSPACE::addObject(K3MyModel);
 				AP::WORKSPACE::setCurrentModel(-1);
 
 				// K3ListMatrix(DATA_PATH(L"MujZrzut.txt").c_str(), K3DenseCloud, "ViewDense"); // FotFilNam);
-				K3AddMyCloud(K3MyModel, K3DenseCloud, K3ViewMat, 5000.4); // 5000000.3);
+				
+				
+				//K3AddMyCloud(K3MyModel, K3DenseCloud, K3ViewMat, 5000.4); // 5000000.3);
+				K3AddMyCloud(K3MyModel, X_visible, K3ViewMat.block(0, 0, 4, 4), 5000.4); // 5000000.3);
 
 
 
@@ -745,14 +943,14 @@ void ConcretePlugin::K3Dance(double grand_scale) {
 				//					K3RoseO1fWinds* IlNome = new K3RoseOfWinds(Observer, RoseStem, colorlist);
 				//					K3MyModel->addChild((CMesh*)IlNome); // QQ future orphan
 
-				K3MyModel->importChildrenGeometry();
+				//K3MyModel->importChildrenGeometry();
 
 				UI::updateAllViews(false);
 
 				qInfo() << "checkpoint" << Qt::endl;
 
 				//AP::processEvents();
-				//Sleep(40);
+				//Sleep(500);
 
 				QString K3QST = QString().sprintf("Fot_%03d_x_%04d_PK.png", i_plane, static_cast<int>(100.0 * alfa + 3000.0));
 
@@ -846,7 +1044,7 @@ void ConcretePlugin::onButton(std::wstring name)
 	{
 		// UWAGA: Krata nie korzysta z wczytywanych danych...
 
-		K3Krata(8, 6);
+		K3Krata(10, 10);
 	}
 	else if (0 == name.compare(L"K3Display"))
 	{

@@ -40,9 +40,11 @@ CsvColumnAssignmentDialog::CsvColumnAssignmentDialog(const QStringList& headers,
     outerLayout->addWidget(okButton);
     setLayout(outerLayout);
 
-    groups.append(GroupDefinition("<skip this feature>", {}));
+    groups.append(GroupDefinition("skipped", {}));
     groups += userGroups;
     buildUI();
+
+    setWindowTitle("Feature Assignment");
 
     scrollArea->setMaximumHeight(QWIDGETSIZE_MAX); // Tymczasowo bez limitu
     innerWidget->adjustSize();

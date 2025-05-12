@@ -24,4 +24,8 @@ void DPVISION_DLL_API K3FindTransform(Eigen::Matrix4d Src, Eigen::Matrix4d Dst, 
 void DPVISION_DLL_API K3FillMat(MatrixXd& X, double a);
 void DPVISION_DLL_API K3_4x4viewN(MatrixXd* V, int k, double alfa);
 
+void DPVISION_DLL_API get_observer_matrix(Eigen::MatrixXd& dst, int k, double alfa);
+Eigen::Array<bool, Eigen::Dynamic, 1> DPVISION_DLL_API create_slab_mask(Eigen::MatrixXd& V, Eigen::MatrixXd& X_spatial, double slab_threshold);
+Eigen::MatrixXd DPVISION_DLL_API use_mask(Eigen::MatrixXd& X_view, Eigen::Array<bool, Eigen::Dynamic, 1>& mask);
+
 void DPVISION_DLL_API K3ArrowsArc(double Center[3], double A[3], double B[3], CModel3D* K3MyModel, double R, int n, CRGBA* colour);
