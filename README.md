@@ -7,7 +7,7 @@
 - **Chernoff-inspired avatars** – Each data point is visualised as a small figure ("avatar") whose facial traits represent selected data dimensions.
 - **3D spatial projection** – Additional dimensions are mapped to position in a 3D coordinate system, allowing for interactive navigation and inspection.
 - **Custom slab slicing** – Users can control the thickness of the visible data layer in nD space, focusing on cross-sections of interest.
-- **Manual or automatic assignment** – Flexible mapping of data dimensions to avatar appearance or spatial coordinates.
+- **Manual assignment** – Flexible mapping of data dimensions to avatar appearance or spatial coordinates.
 - **Support for real and synthetic data** – Tested with a 15D wine quality dataset and an artificial 4D tesseract-shaped dataset.
 
 ## 🧑‍💻 Author and Contributors
