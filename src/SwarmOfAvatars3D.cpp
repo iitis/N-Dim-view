@@ -41,7 +41,7 @@ SwarmWidget::SwarmWidget(QWidget* parent) : QWidget(parent)
 {
     QVBoxLayout* layout = new QVBoxLayout((QWidget *)this);
 
-    layout->addWidget(new QLabel(QString::fromUtf8("MIEJSCE NA TWOJĄ REKLAMĘ")));
+    layout->addWidget(new QLabel(QString::fromUtf8("here will be\nthe swarm of avatars\nproperties panel")));
 
     this->resize(layout->sizeHint());
     this->setMinimumSize(layout->sizeHint());
