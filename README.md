@@ -2,12 +2,14 @@
 
 **N-Dim-view** is a plugin for the open-source platform [dpVision](https://github.com/pojdulos/dpVision) that provides an interactive 3D visualisation of multidimensional data using expressive avatars. The plugin combines spatial projection with glyph-based visual metaphors to help users explore complex datasets in an intuitive and visually engaging way.
 
+The current [version 0.1.0](https://github.com/iitis/N-Dim-view/releases/tag/v0.1.0) refers to the content of the article: **Visualisation of a multidimensional point cloud as a 3D swarm of avatars**, [preprinted on arXiv](http://dx.doi.org/10.48550/arXiv.2504.06751).
+
 ## 🧠 Key Features
 
 - **Chernoff-inspired avatars** – Each data point is visualised as a small figure ("avatar") whose facial traits represent selected data dimensions.
 - **3D spatial projection** – Additional dimensions are mapped to position in a 3D coordinate system, allowing for interactive navigation and inspection.
 - **Custom slab slicing** – Users can control the thickness of the visible data layer in nD space, focusing on cross-sections of interest.
-- **Manual or automatic assignment** – Flexible mapping of data dimensions to avatar appearance or spatial coordinates.
+- **Manual assignment** – Flexible mapping of data dimensions to avatar appearance or spatial coordinates.
 - **Support for real and synthetic data** – Tested with a 15D wine quality dataset and an artificial 4D tesseract-shaped dataset.
 
 ## 🧑‍💻 Author and Contributors
