@@ -14,6 +14,10 @@
 #include "K3ChernoffFace.h"
 #include "K3RoseOfWinds.h"
 
+#include "SwarmOfAvatars3D.h"
+#include "Avatar3D.h"
+
+
 #include <QFileDialog>
 
 using namespace Eigen;
@@ -206,8 +210,6 @@ MatrixXd ConcretePlugin::K3_Get_PCA_Funnel(MatrixXd X, int nd) {
 // reduces to:
 #define K3avr 4 */
 
-
-#include "Avatar3d.h"
 
 Eigen::VectorXd maxAbsPerRow(const Eigen::MatrixXd& M) {
 	Eigen::VectorXd result(M.rows());
