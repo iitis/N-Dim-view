@@ -153,6 +153,54 @@ void ConcretePlugin::onLoad()
 
 
 
+
+Eigen::MatrixXd ConcretePlugin::K3_Get_PCA_Funnel_Norm(Eigen::MatrixXd X, int nd) {
+	// Given an n*m matrix X, and an integer 0<nd<n,
+	// return a matrix R of size nd*n such that R * X reduces to nd dims.
+
+	int n = X.rows(); // number of features
+	int m = X.cols(); // number of samples
+
+	// Step 1: Compute mean (RA) and std.dev (SD) for each row
+	Eigen::MatrixXd RA(n, 1);   // mean
+	Eigen::MatrixXd SD(n, 1);   // std.dev
+
+	RA.setZero();
+	SD.setZero();
+
+	for (int j = 0; j < n; ++j) {
+		double sum = 0.0;
+		double sumSq = 0.0;
+		for (int i = 0; i < m; ++i) {
+			double val = X(j, i);
+			sum += val;
+			sumSq += val * val;
+		}
+		double mean = sum / m;
+		double var = (sumSq / m) - mean * mean;
+		double stddev = std::sqrt(std::max(var, 1e-8)); // avoid div by 0
+
+		RA(j, 0) = mean;
+		SD(j, 0) = stddev;
+	}
+
+	// Step 2: Center and scale the data (Z-score)
+	Eigen::MatrixXd B = X;
+	for (int j = 0; j < n; ++j) {
+		for (int i = 0; i < m; ++i) {
+			B(j, i) = (X(j, i) - RA(j, 0)) / SD(j, 0);
+		}
+	}
+
+	// Step 3: Perform SVD
+	Eigen::BDCSVD<Eigen::MatrixXd> svd(B, Eigen::ComputeFullU | Eigen::ComputeFullV);
+	Eigen::MatrixXd U = svd.matrixU(); // U: n x n
+
+	// Step 4: Return the first nd rows of U as the projection basis
+	return U.block(0, 0, nd, n); // (nd x n)
+}
+
+
 // Principal Component Analysis:
 MatrixXd ConcretePlugin::K3_Get_PCA_Funnel(MatrixXd X, int nd) {
 	// Given an n*m matrix X, and an integer 0<nd<n,
@@ -272,7 +320,7 @@ void ConcretePlugin::K3AddMyCloud(SwarmOfAvatars3D* K3MyModel, MatrixXd K3ObsClo
 	// Przerzedzamy, np. co 10 element:
 	//-------------------------------------------------
 	std::vector<int> idx;
-	for (int i = 0; i < k; i += 10)
+	for (int i = 0; i < k; i += 1)
 		idx.push_back(i);
 
 	// Nowa macierz z co 10. kolumny
@@ -494,7 +542,7 @@ int ConcretePlugin::K3FormProjectionMatrix(const Eigen::MatrixXd &RawData) {
 		// use PCA to interpolate missing spatial dimensions:
 		if (K3I_Count_s < 4) {
 			int j_boiled = 0;
-			MatrixXd X88 = K3_Get_PCA_Funnel(X_anon, 4 - K3I_Count_s);
+			MatrixXd X88 = K3_Get_PCA_Funnel_Norm(X_anon, 4 - K3I_Count_s);
 
 			for (int j88 = 0; j88 < 4 - K3I_Count_s; ++j88) {
 				// find first empty row

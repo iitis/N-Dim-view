@@ -49,7 +49,7 @@ CsvColumnAssignmentDialog::CsvColumnAssignmentDialog(const QStringList& headers,
     scrollArea->setMaximumHeight(QWIDGETSIZE_MAX); // Tymczasowo bez limitu
     innerWidget->adjustSize();
 
-    int maxScrollHeight = 400;
+    int maxScrollHeight = 800;
 
     int scrollContentHeight = innerWidget->sizeHint().height();
     int dialogFrameHeight = layout()->sizeHint().height() - innerWidget->sizeHint().height();
@@ -64,7 +64,7 @@ CsvColumnAssignmentDialog::CsvColumnAssignmentDialog(const QStringList& headers,
 
     scrollArea->setMaximumHeight(maxScrollHeight);
 
-    setMaximumHeight(finalHeight);
+    setMaximumHeight(maxScrollHeight + dialogFrameHeight);
 
     connectSignals();
 

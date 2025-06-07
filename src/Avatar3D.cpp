@@ -4,7 +4,7 @@
 
 #include <Eigen/Dense>
 #include <QOpenGl.h>
-
+#include "K3Helpers.h"
 
 std::pair<std::vector<Eigen::Vector3f>, std::vector<Eigen::Vector3i>> create_box(float w, float h, float d)
 {
@@ -29,6 +29,10 @@ std::pair<std::vector<Eigen::Vector3f>, std::vector<Eigen::Vector3i>> create_box
 
 Eigen::Vector3f skin_color_from_feature(float val)
 {
+    
+    //CRGBA col = K3_color(val, 1.0);
+    //return { col.fR(), col.fG(), col.fB() };
+    
     float value = val;
 
     if (value < -1.0) value = -1.0;
@@ -301,6 +305,7 @@ inline Head::Head(double feature_0, double feature_6)
     double depth = 0.6;
 
     auto c = skin_color_from_feature(feature_6);
+
     auto [v, f] = create_box(width, height, depth);
 
     set(v, f, c);
