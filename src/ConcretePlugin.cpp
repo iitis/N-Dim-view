@@ -272,7 +272,7 @@ void ConcretePlugin::K3AddMyCloud(SwarmOfAvatars3D* K3MyModel, MatrixXd K3ObsClo
 	// Przerzedzamy, np. co 10 element:
 	//-------------------------------------------------
 	std::vector<int> idx;
-	for (int i = 0; i < k; i += 10)
+	for (int i = 0; i < k; i++)//= 10)
 		idx.push_back(i);
 
 	// Nowa macierz z co 10. kolumny
