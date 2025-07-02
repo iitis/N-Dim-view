@@ -2,6 +2,9 @@
 
 #include "K3Helpers.h"
 
+#include <QPen>
+#include <QPainter>
+
 // visual[0] is Skin_C
 void draw_Face_oval(QPainter& painter, int cx, int cy, int cxFace, int cyFace, std::optional<double> feature0)
 {

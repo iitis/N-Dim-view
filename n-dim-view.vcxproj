@@ -78,7 +78,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;$(ProjectDir);$(SolutionDir)include;$(SolutionDir)PluginManager;$(SolutionDir)dpVision\src;$(SolutionDir)dpVision\GeneratedFiles;$(SolutionDir)GLtools;$(SolutionDir)GLee;$(SolutionDir)freeglut\include;$(SolutionDir)Volumetric;$(SolutionDir)PolyVox\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)zPlugins\n-dim-view\;$(SolutionDir)dpVision\src\core\;$(SolutionDir)dpVision\src\libs\PluginManager\;$(SolutionDir)3rd_party\OpenCV\include\;$(SolutionDir)3rd_party\QuaZip\include\;$(SolutionDir)3rd_party\include\;$(SolutionDir)3rd_party\include\boost\;$(Qt_INCLUDEPATH_);$(QtDir)\include\QtZlib</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>DPVISION_PLUGIN_DLL;WIN64;NDEBUG;_WINDOWS;_USRDLL;PLUGINDLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -106,7 +106,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;$(ProjectDir);$(SolutionDir)include;$(SolutionDir)PluginManager;$(SolutionDir)dpVision\src;$(SolutionDir)dpVision\GeneratedFiles;$(SolutionDir)GLtools;$(SolutionDir)GLee;$(SolutionDir)freeglut\include;$(SolutionDir)Volumetric;$(SolutionDir)PolyVox\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)zPlugins\n-dim-view\;$(SolutionDir)dpVision\src\core\;$(SolutionDir)dpVision\src\libs\PluginManager\;$(SolutionDir)3rd_party\OpenCV\include\;$(SolutionDir)3rd_party\QuaZip\include\;$(SolutionDir)3rd_party\include\;$(SolutionDir)3rd_party\include\boost\;$(Qt_INCLUDEPATH_);$(QtDir)\include\QtZlib</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>DPVISION_PLUGIN_DLL;WIN64;NDEBUG;_WINDOWS;_USRDLL;PLUGINDLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
