@@ -161,6 +161,14 @@
   <ItemGroup>
     <None Include="src/metadata.json" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\msvc\dpVision.vcxproj">
+      <Project>{e620b485-5cbf-4fc3-86ba-c491d53e2cb7}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\msvc\PluginManager\PluginManager.vcxproj">
+      <Project>{65705605-7937-4461-82ec-3da08e7494d6}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
     <Import Project="$(QtMsBuild)\qt.targets" />
