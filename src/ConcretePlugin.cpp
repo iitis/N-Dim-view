@@ -675,7 +675,7 @@ void ConcretePlugin::K3CzteroPajak(double h05) {
 
 	CVector3d LiPa(0.0, 0.0, 2.0);
 	double scale = 70.0;
-	CModel3D* K3MyModel = new CModel3D();
+	auto K3MyModel = std::make_shared<CModel3D>();
 	double QuadStem[3] = { scale * -0.7, scale * 2., scale * 1.8 },
 		QuadX[3] = { scale * (-0.5), scale * 0., scale * h05 },
 		QuadY[3] = { scale * 0.5, scale * 0, scale * h05 },
@@ -720,10 +720,10 @@ void ConcretePlugin::K3CzteroPajak(double h05) {
 	K3Neg3(QT, NT);
 	K3R = 4.0;
 	for (int jarc = 0; jarc < 5; jarc++) { // emulate rolling
-		K3ArrowsArc(QuadStem, NT, NZ, K3MyModel, K3R + .0, 8, &K3Blue);
-		K3ArrowsArc(QuadStem, NZ, NY, K3MyModel, K3R + .0, 8, &K3Green);
-		K3ArrowsArc(QuadStem, NY, NX, K3MyModel, K3R + .0, 8, &K3Red);
-		K3ArrowsArc(QuadStem, NX, NT, K3MyModel, K3R + .0, 8, &K3Yellow);
+		K3ArrowsArc(QuadStem, NT, NZ, K3MyModel.get(), K3R + .0, 8, &K3Blue);
+		K3ArrowsArc(QuadStem, NZ, NY, K3MyModel.get(), K3R + .0, 8, &K3Green);
+		K3ArrowsArc(QuadStem, NY, NX, K3MyModel.get(), K3R + .0, 8, &K3Red);
+		K3ArrowsArc(QuadStem, NX, NT, K3MyModel.get(), K3R + .0, 8, &K3Yellow);
 
 	};
 
@@ -936,7 +936,8 @@ void ConcretePlugin::K3Dance(double grand_scale) {
 				colorlist[1] = CRGBA((unsigned char)0, (unsigned char)255, (unsigned char)0);
 				colorlist[2] = CRGBA((unsigned char)0, (unsigned char)0, (unsigned char)255);
 				colorlist[3] = CRGBA((unsigned char)255, (unsigned char)255, (unsigned char)0);
-				K3RoseOfWinds* MyRose = new K3RoseOfWinds(K3ViewMat, RoseStem, colorlist, 20.0);
+				
+				auto MyRose = std::make_shared<K3RoseOfWinds>(K3ViewMat, RoseStem, colorlist, 20.0);
 				// K3MyModel->addChild(MyRose);
 
 				// QQ Fpentli!
