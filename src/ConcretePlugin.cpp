@@ -307,7 +307,7 @@ void ConcretePlugin::K3AddMyCloud(SwarmOfAvatars3D* K3MyModel, MatrixXd K3ObsClo
 		//K3TenTotem->setLabel(QString("awatar-%1").arg(i));
 		//K3MyModel->addChild(K3TenTotem);
 
-		Avatar3D *av = new Avatar3D(V, P);
+		std::shared_ptr<Avatar3D> av = std::make_shared<Avatar3D>(V, P);
 		av->setLabel(QString("awatar-%1").arg(i));
 		K3MyModel->addChild(av);
 
@@ -361,7 +361,7 @@ void ConcretePlugin::K3AddMyCloud2(CModel3D* K3MyModel, MatrixXd K3ObsCloud, Mat
 	for (int i = 0; i < k; i++) {
 		// if ((abs(K3LocalSpots(3, i)) < K3Toler) && (abs(K3LocalSpots(4, i)) != 0))
 		{
-			K3Totem* K3TenTotem;
+			std::shared_ptr<K3Totem> K3TenTotem;
 			i = i; //qq
 			Eigen::VectorXd P(4);
 			Eigen::VectorXd V(m - 4);
@@ -385,7 +385,7 @@ void ConcretePlugin::K3AddMyCloud2(CModel3D* K3MyModel, MatrixXd K3ObsCloud, Mat
 			K3P77[3] = P(3);
 			// QQSize Creating the totem!
 			// K3LogEntry(L"C:/K3/Wielowymiar/MujZrzut.txt", "TotemDone");
-			K3TenTotem = new K3Totem(P, V); // K3ObsCloud.block(5, i, K3hv + K3avr, 1));
+			K3TenTotem = std::make_shared<K3Totem>(P, V); // K3ObsCloud.block(5, i, K3hv + K3avr, 1));
 			// K3ListMatrix(L"C:/K3/Wielowymiar/M1332.txt", K3ObsCloud, "TotemDone");
 			
 			K3TenTotem->setLabel(QString("awatar-%1").arg(i));
@@ -699,13 +699,13 @@ void ConcretePlugin::K3CzteroPajak(double h05) {
 		QuadT[i] += QuadStem[i];
 	};
 	double K3R = 10.0;
-	K3Arrow* Arro1 = new	K3Arrow(QuadStem, QuadX, K3R, &K3Red);
+	std::shared_ptr<K3Arrow> Arro1 = std::make_shared<K3Arrow>(QuadStem, QuadX, K3R, &K3Red);
 	K3MyModel->addChild(Arro1);
-	K3Arrow* Arro2 = new	K3Arrow(QuadStem, QuadY, K3R, &K3Green);
+	std::shared_ptr<K3Arrow> Arro2 = std::make_shared<K3Arrow>(QuadStem, QuadY, K3R, &K3Green);
 	K3MyModel->addChild(Arro2);
-	K3Arrow* Arro3 = new	K3Arrow(QuadStem, QuadZ, K3R, &K3Blue);
+	std::shared_ptr<K3Arrow> Arro3 = std::make_shared<K3Arrow>(QuadStem, QuadZ, K3R, &K3Blue);
 	K3MyModel->addChild(Arro3);
-	K3Arrow* Arro4 = new	K3Arrow(QuadStem, QuadT, K3R, &K3Yellow);
+	std::shared_ptr<K3Arrow> Arro4 = std::make_shared<K3Arrow>(QuadStem, QuadT, K3R, &K3Yellow);
 	K3MyModel->addChild(Arro4);
 
 	//			0, 1, 2, 3,  // 1 2 swapped
@@ -734,7 +734,7 @@ void ConcretePlugin::K3CzteroPajak(double h05) {
 
 void ConcretePlugin::K3Krata(int Nkrat, int Mkrat) {
 	//CModel3D* K3MyModel = new CModel3D();
-	SwarmOfAvatars3D* K3MyModel = new SwarmOfAvatars3D();
+	std::shared_ptr<SwarmOfAvatars3D> K3MyModel = std::make_shared<SwarmOfAvatars3D>();
 
 	for (int j = 0; j < Mkrat; j++) {
 		for (int i = 0; i < Nkrat; i++) {
@@ -764,7 +764,7 @@ void ConcretePlugin::K3Krata(int Nkrat, int Mkrat) {
 			K3HyperLook(FeatureSel[i]) = 2.0 * (double)j / (double)Mkrat - 1.0;
 			
 			//K3Totem* ToTen1 = new K3Totem(K3HyperSpot, K3HyperLook);
-			Avatar3D* ToTen1 = new Avatar3D(K3HyperLook, K3HyperSpot);
+			std::shared_ptr<Avatar3D> ToTen1 = std::make_shared<Avatar3D>(K3HyperLook, K3HyperSpot);
 
 			//K3Totem::K3Totem(Eigen::VectorXd K3HyperSpot, Eigen::VectorXd K3HyperLook) {
 			// Create a totem whose position and appearance represents data.
@@ -805,9 +805,9 @@ void ConcretePlugin::K3Display() {
 	K3ViewMat(4, 4) = 1.0;
 	
 	//CModel3D* K3MyModel = new CModel3D();
-	SwarmOfAvatars3D* K3MyModel = new SwarmOfAvatars3D();
+	std::shared_ptr<SwarmOfAvatars3D> K3MyModel = std::make_shared<SwarmOfAvatars3D>();
 
-	K3AddMyCloud(K3MyModel, K3DenseCloud, K3ViewMat, 2000.3);
+	K3AddMyCloud(K3MyModel.get(), K3DenseCloud, K3ViewMat, 2000.3);
 	//K3MyModel->importChildrenGeometry();
 	K3MyModel->setLabel("Static view");
 
@@ -911,7 +911,7 @@ void ConcretePlugin::K3Dance(double grand_scale) {
 				AP::WORKSPACE::removeAllModels();
 
 				//CModel3D *K3MyModel = new CModel3D();
-				SwarmOfAvatars3D *K3MyModel = new SwarmOfAvatars3D();
+				std::shared_ptr<SwarmOfAvatars3D> K3MyModel = std::make_shared<SwarmOfAvatars3D>();
 				AP::WORKSPACE::addObject(K3MyModel);
 				AP::WORKSPACE::setCurrentModel(-1);
 
@@ -919,7 +919,7 @@ void ConcretePlugin::K3Dance(double grand_scale) {
 				
 				
 				//K3AddMyCloud(K3MyModel, K3DenseCloud, K3ViewMat, 5000.4); // 5000000.3);
-				K3AddMyCloud(K3MyModel, X_visible, K3ViewMat.block(0, 0, 4, 4), 5000.4); // 5000000.3);
+				K3AddMyCloud(K3MyModel.get(), X_visible, K3ViewMat.block(0, 0, 4, 4), 5000.4); // 5000000.3);
 
 
 

@@ -17,7 +17,7 @@ public:
 
 	void K3FillMeshToUnitCube(CMesh* ThisMesh, CRGBA Kolor);
 
-	K3ChernoffFace* make_face(std::vector<std::optional<double>> values, CMesh* korpus);
+	std::shared_ptr<K3ChernoffFace> make_face(std::vector<std::optional<double>> values, CMesh* korpus);
 	
 	// AdjustData(std::vector<double> K3HyperSpot);  Eigen::VectorXd
 };

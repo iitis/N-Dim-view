@@ -370,7 +370,7 @@ void K3ArrowsArc(double Center[3], double A[3], double B[3], CModel3D* K3MyModel
 			b[i88] += Center[i88];
 
 		};
-		K3Arrow* Arro1 = new K3Arrow(a, b, R, colour);
+		std::shared_ptr<K3Arrow> Arro1 = std::make_shared<K3Arrow>(a, b, R, colour);
 		K3MyModel->addChild(Arro1);
 	}
 };
