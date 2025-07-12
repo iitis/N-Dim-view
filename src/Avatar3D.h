@@ -74,7 +74,6 @@ public:
     void translate(const Eigen::Vector3f& delta);
     void buildMesh();
     void draw() const;
-    virtual void renderSelf() override;
     void buildCombinedMesh();
 };
 

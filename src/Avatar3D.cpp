@@ -165,6 +165,9 @@ inline void AvatarPart::translate(float dx, float dy, float dz)
     m_position += Eigen::Vector3f(dx, dy, dz);
 }
 
+
+#include "IAvatar3DRenderer.h"
+
 inline Avatar3D::Avatar3D(const Eigen::VectorXd& features, const Eigen::Vector3d& pos) : CObject()
 {
     Eigen::VectorXd feat = features; // (maxAbs.array().abs() > 1e-12).select(features.array() / maxAbs.array(), features.array());
@@ -178,6 +181,7 @@ inline Avatar3D::Avatar3D(const Eigen::VectorXd& features, const Eigen::Vector3d
 
     m_position = pos.cast<float>();
     //buildMesh();
+    renderer_ = std::make_shared<IAvatar3DRenderer>();
 }
 
 inline void Avatar3D::translate(const Eigen::Vector3f& delta) {
@@ -195,10 +199,6 @@ inline void Avatar3D::draw() const {
     }
 }
 
-inline void Avatar3D::renderSelf()
-{
-    draw();
-}
 
 inline void Avatar3D::buildCombinedMesh() {
     m_vertices.clear();

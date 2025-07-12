@@ -142,10 +142,12 @@
     <ClCompile Include="src/K3RoseOfWinds.cpp" />
     <ClCompile Include="src/K3Totem.cpp" />
     <ClCompile Include="src\Avatar3D.cpp" />
+    <ClCompile Include="src\IAvatar3DRenderer.cpp" />
     <ClCompile Include="src\SwarmOfAvatars3D.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Avatar3D.h" />
+    <ClInclude Include="src\IAvatar3DRenderer.h" />
     <QtMoc Include="src\SwarmOfAvatars3D.h" />
     <QtMoc Include="src/ConcretePlugin.h" />
     <QtMoc Include="src/CsvColumnAssignmentDialog.h" />
