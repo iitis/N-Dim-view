@@ -44,7 +44,7 @@
 //
 //}
 
-void K3Totem::K3FillMeshToUnitCube(CMesh* ThisMesh, CRGBA Kolor) { // double l, double a) {
+void K3Totem::K3FillMeshToUnitCube(std::shared_ptr<CMesh> ThisMesh, CRGBA Kolor) { // double l, double a) {
 	//CMesh* K3UnitCube = new CMesh();
 	ThisMesh->addVertex(CVertex(0.0, 0.0, 0.0)); // , Kolor);
 	ThisMesh->addVertex(CVertex(0.0, 0.0, 1.0)); //, Kolor);
@@ -97,7 +97,7 @@ void K3Totem::K3FillMeshToUnitCube(CMesh* ThisMesh, CRGBA Kolor) { // double l, 
 };
 
 
-std::shared_ptr<K3ChernoffFace> K3Totem::make_face(std::vector<std::optional<double>> values, CMesh* korpus)
+std::shared_ptr<K3ChernoffFace> K3Totem::make_face(std::vector<std::optional<double>> values, std::shared_ptr<CMesh> korpus)
 {
 	//int nnn = K3HyperLook.rows();
 	//double k3xx[] = { 0.4,0.3,0.8,0.9,0.7,0.6,0.5,0.4,0.7, 0.9 };
@@ -198,7 +198,13 @@ std::shared_ptr<K3ChernoffFace> K3Totem::make_face(std::vector<std::optional<dou
 }
 
 
-K3Totem::K3Totem(Eigen::VectorXd K3HyperSpot, Eigen::VectorXd K3HyperLook) {
+//K3Totem::K3Totem(Eigen::VectorXd K3HyperSpot, Eigen::VectorXd K3HyperLook) {
+//}
+
+std::shared_ptr<K3Totem> K3Totem::create(Eigen::VectorXd K3HyperSpot, Eigen::VectorXd K3HyperLook)
+{
+	auto totem = std::make_shared<K3Totem>();
+
 	// Create a totem whose position and appearance represents data.
 	// Assume the given K3HyperSpot = DataPoint*Observer ,
 	// i.e. has been projected into the observation space.
@@ -218,7 +224,7 @@ K3Totem::K3Totem(Eigen::VectorXd K3HyperSpot, Eigen::VectorXd K3HyperLook) {
 	K3Position.diagonal() = Eigen::Vector4d(0.51, 0.5, 0.5, 0.2);
 	K3Position.topRightCorner(3, 1) = K3HyperSpot.topRows(3);
 
-	K3FillMeshToUnitCube(korpus.get(), CRGBA(0.2f, 0.20f, 1.0f, 1.0f)); // K3_color(K3HyperLook[19] / 1.0, 1.0)); // CRGBA(1.0f, 1.0f, 0.0f, 0.6f));
+	totem->K3FillMeshToUnitCube(korpus, CRGBA(0.2f, 0.20f, 1.0f, 1.0f)); // K3_color(K3HyperLook[19] / 1.0, 1.0)); // CRGBA(1.0f, 1.0f, 0.0f, 0.6f));
 
 	// Body color
 	// CAnnotationPoint *K3Navel = new CAnnotationPoint(0.5, .5, 1.0);
@@ -247,14 +253,14 @@ K3Totem::K3Totem(Eigen::VectorXd K3HyperSpot, Eigen::VectorXd K3HyperLook) {
 	K3LeftShoulder.transformByMatrix(K3Position);
 
 	korpus->setLabel("body");
-	this->addChild(korpus);
+	totem->addChild(totem, korpus);
 	// this->addChild(K3Navel);
 	// this->addChild(K3Ad);
 
 	// Make left arm:
 		// QQSize size of the arm determined here:
 
-	K3FillMeshToUnitCube(LeftArm.get(), CRGBA(0.0f, 1.0f, 0.0f, 1.0f));
+	totem->K3FillMeshToUnitCube(LeftArm, CRGBA(0.0f, 1.0f, 0.0f, 1.0f));
 
 	Eigen::Matrix4d K3LeftArmPosition;
 
@@ -311,7 +317,10 @@ K3Totem::K3Totem(Eigen::VectorXd K3HyperSpot, Eigen::VectorXd K3HyperLook) {
 	for (int i = 0; i < std::min(10, static_cast<int>(K3HyperLook.rows())); i++)
 		values[i] = K3HyperLook[i];
 
-	this->addChild( make_face(values, korpus.get() ) );
+	totem->addChild(totem, totem->make_face(values, korpus ) );
 
-};
+
+	return totem;
+}
+;
 // end of K3Totem

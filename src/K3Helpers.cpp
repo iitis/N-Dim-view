@@ -352,7 +352,7 @@ Eigen::MatrixXd use_mask(Eigen::MatrixXd &X_view, Eigen::Array<bool, Eigen::Dyna
 
 
 
-void K3ArrowsArc(double Center[3], double A[3], double B[3], CModel3D* K3MyModel, double R, int n, CRGBA* colour) {
+void K3ArrowsArc(double Center[3], double A[3], double B[3], std::shared_ptr<CModel3D> K3MyModel, double R, int n, CRGBA* colour) {
 	// make arc from Center+A to Center+B, made of 12 short arrows
 	int i, i88, i99;
 	double a[3], b[3];
@@ -371,7 +371,7 @@ void K3ArrowsArc(double Center[3], double A[3], double B[3], CModel3D* K3MyModel
 
 		};
 		std::shared_ptr<K3Arrow> Arro1 = std::make_shared<K3Arrow>(a, b, R, colour);
-		K3MyModel->addChild(Arro1);
+		K3MyModel->addChild(K3MyModel, Arro1);
 	}
 };
 
