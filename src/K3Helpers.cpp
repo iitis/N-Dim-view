@@ -3,13 +3,13 @@
 #include "K3Arrow.h"
 #include "Model3D.h"
 
-#include "qmath.h"
 
 #include "RGBA.h"
 #include "../api/UI.h"
 #include "time.h"
 
-
+#include <qmath.h>
+#include <QString>
 
 QString DATA_PATH(const QString &fname)
 {

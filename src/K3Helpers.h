@@ -9,6 +9,7 @@ class CRGBA;
 class CMesh;
 class CModel3D;
 
+class QString;
 
 #define WORK_DIR "c:/K3/Wielowymiar/"
 
