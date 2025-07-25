@@ -9,6 +9,7 @@ class CRGBA;
 class CMesh;
 class CModel3D;
 
+class QString;
 
 #define WORK_DIR "c:/K3/Wielowymiar/"
 
@@ -28,4 +29,4 @@ void DPVISION_DLL_API get_observer_matrix(Eigen::MatrixXd& dst, int k, double al
 Eigen::Array<bool, Eigen::Dynamic, 1> DPVISION_DLL_API create_slab_mask(Eigen::MatrixXd& V, Eigen::MatrixXd& X_spatial, double slab_threshold);
 Eigen::MatrixXd DPVISION_DLL_API use_mask(Eigen::MatrixXd& X_view, Eigen::Array<bool, Eigen::Dynamic, 1>& mask);
 
-void DPVISION_DLL_API K3ArrowsArc(double Center[3], double A[3], double B[3], CModel3D* K3MyModel, double R, int n, CRGBA* colour);
+void DPVISION_DLL_API K3ArrowsArc(double Center[3], double A[3], double B[3], std::shared_ptr<CModel3D> K3MyModel, double R, int n, CRGBA* colour);
